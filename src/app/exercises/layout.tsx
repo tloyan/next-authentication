@@ -32,6 +32,27 @@ export default function AppLayout({children}: PropsWithChildren) {
                 <span>Instructions</span>
               </Link>
 
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/dashboard"
+              >
+                <span>Dashboard</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/bank-account"
+              >
+                <span>Bank</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/auth"
+              >
+                <span>Auth</span>
+              </Link>
+
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
             <div className="flex items-center space-x-2">
@@ -47,6 +68,25 @@ export default function AppLayout({children}: PropsWithChildren) {
               >
                 Instructions
               </Link>
+              <Link
+                className="text-sm font-semibold underline sm:hidden"
+                href="/exercises/dashboard"
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                className="text-sm font-semibold underline sm:hidden"
+                href="/exercises/bank-account"
+              >
+                Bank
+              </Link>
+              <Link
+                className="text-sm font-semibold underline sm:hidden"
+                href="/exercises/auth"
+              >
+                Auth
+              </Link>
 
               <ModeToggle />
             </div>
@@ -58,8 +98,8 @@ export default function AppLayout({children}: PropsWithChildren) {
       <footer className="border-t">
         <div className="container flex h-14 items-center justify-center px-4 text-center sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">
-            © {new Date().getFullYear()} Next Module . All rights reserved.{' '}
-            <RenderTime name="exercices main layout" />
+            © {new Date().getFullYear()} Next Authentication Module . All
+            rights reserved. <RenderTime name="exercices main layout" />
           </div>
         </div>
       </footer>

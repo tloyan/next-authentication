@@ -52,6 +52,13 @@
       "password": "$2b$10$ctVHPcQ6RdTSIYnxUVbj6uzjbe9P1Cmku.vcon9uLj4I/xYpXGwvO",
       "name": "John",
       "role": "USER"
+    },
+    {
+      "id": "2",
+      "email": "cabanas.mickael@gmail.Com",
+      "password": "$2b$10$63xIgzoFNGjvBD.6WHIHTuaoY5Ogzj3dMD76EsbhD/QcZp8T2IqCO",
+      "name": "John Doe",
+      "role": "SUPER_ADMIN"
     }
   ],
   "sessions": [
@@ -59,6 +66,31 @@
       "sessionId": "1",
       "userId": "1",
       "expiresAt": "2024-07-03T04:35:13.468Z"
+    },
+    {
+      "sessionId": "41552e4a-f979-4e96-9126-3f9bac36b953",
+      "userId": "1",
+      "expiresAt": "2024-07-03T06:40:56.611Z"
+    },
+    {
+      "sessionId": "300befe1-3113-4b75-8f04-ed15c5960f13",
+      "userId": "1",
+      "expiresAt": "2024-07-03T06:53:58.602Z"
+    },
+    {
+      "sessionId": "fc40fadd-e05d-47a8-bbcc-4ec1f2ede986",
+      "userId": "2",
+      "expiresAt": "2024-07-03T06:58:12.066Z"
+    },
+    {
+      "sessionId": "df6c967d-63f5-4ef9-98fa-2c1221089dc2",
+      "userId": "2",
+      "expiresAt": "2024-07-03T07:07:29.040Z"
+    },
+    {
+      "sessionId": "ceab6c5a-8505-4be8-81b2-1c735f4047dd",
+      "userId": "2",
+      "expiresAt": "2024-07-03T07:08:24.744Z"
     }
   ]
 }

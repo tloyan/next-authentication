@@ -49,3 +49,7 @@ export type Session = {
   userId: string
   expiresAt: string
 }
+export enum SessionType {
+  STATELESS = 'STATELESS',
+  DATABASE = 'DATABASE',
+}
