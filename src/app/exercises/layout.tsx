@@ -32,6 +32,47 @@ export default function AppLayout({children}: PropsWithChildren) {
                 <span>Instructions</span>
               </Link>
 
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/dashboard"
+              >
+                <span>Dashboard</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/bank-account"
+              >
+                <span>Bank</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/login"
+              >
+                <span>Login</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/register"
+              >
+                <span>Register</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/logout"
+              >
+                <span>Logout</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/auth"
+              >
+                <span>Auth</span>
+              </Link>
+
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
             <div className="flex items-center space-x-2">

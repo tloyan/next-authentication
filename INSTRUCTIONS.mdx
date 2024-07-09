@@ -1,7 +1,57 @@
-# Selection de l'exercice
+# Routes Login / Register / Logout
 
-Execute la commande suivante dans ton terminal pour changer d'exercice
+### 💡 Préparer les routes pour l’authentification
 
-```bash
-npx go
-```
+## 📝 Tes notes
+
+Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+
+## Comprendre
+
+Dans un site il est fréquent d’avoir des pages publiques, (Home, FAQ, Login, Register etc …) et des pages privées (account, etc …).
+
+Il faut donc un mécanisme pour savoir QUI essaye d’accéder à telle ou telle page. Ce mécanisme ça s’appelle l’authentification.
+
+Pour gérer l’authentification il faut qu’un utilisateur puisse :
+
+- Créer un compte (`register`)
+- Se connecter (`login`)
+- Se déconnecter (`logout`)
+
+## Exercice
+
+**👨‍✈️ Hugo le chef de projet** nous informe que des pages devront être protégées et réservées aux utilisateurs connectés.
+
+- [/exercises/dashboard](http://localhost:3000/exercises/dashboard)
+- [/exercises/bank-account](http://localhost:3000/exercises/bank-account)
+
+Il te demande de créer 3 routes contenant des formulaires / composants permettant de se connecter / s’enregistrer / se déconnecter. Les 3 routes seront
+
+- `/exercises/login`
+- `/exercises/register`
+- `/exercises/logout`
+
+**🐶** Dans un premier temps tu vas devoir créer les formulaires dans les 3 routes.
+
+<aside>
+💡 PS : la route `/exercises/auth` permettra de faire des actions liées à l’authentifcation pour la suite
+
+</aside>
+
+Fichiers
+
+- `src/app/exercises/login.tsx`
+- `src/app/exercises/register.tsx`
+- `src/app/exercises/logout.tsx`
+
+## Ils vont t’aider
+
+- **🐶 Mowgli le Chien** : _Mowgli te guidera dans chaque exercice._
+- **🤖 Ash le Robot** : _Ash le Robot te donnera du code utile._
+- **🚀 Julia La roquette** : _Julia te donnera des défis supplémentaires._
+- **⛏️ Hulk le Marteau** : _Quand du code à supprimer est présent_
+- **👨‍✈️ Hugo le chef de projet** : _Va t'aider sur les spécifications du projet_
+
+## 🐜 Feedback
+
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=01%20preparation-routes).
