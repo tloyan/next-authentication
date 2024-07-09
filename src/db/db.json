@@ -59,6 +59,13 @@
       "password": "$2b$10$63xIgzoFNGjvBD.6WHIHTuaoY5Ogzj3dMD76EsbhD/QcZp8T2IqCO",
       "name": "John Doe",
       "role": "SUPER_ADMIN"
+    },
+    {
+      "id": "3",
+      "email": "admin@mikecodeur.com",
+      "password": "$2b$10$.4MBEI594JXpDBd6A76eXelybMIKM6cRvCo.fnMO891MljuUO2aEu",
+      "name": "John Doe",
+      "role": "REDACTOR"
     }
   ],
   "sessions": [
@@ -91,6 +98,181 @@
       "sessionId": "ceab6c5a-8505-4be8-81b2-1c735f4047dd",
       "userId": "2",
       "expiresAt": "2024-07-03T07:08:24.744Z"
+    },
+    {
+      "sessionId": "29c3299f-b3aa-4c60-bb83-0e8171e27d1b",
+      "userId": "2",
+      "expiresAt": "2024-07-03T09:54:07.191Z"
+    },
+    {
+      "sessionId": "83ea59a5-28d0-4acc-a0e3-bbdf57ec5919",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:01:34.586Z"
+    },
+    {
+      "sessionId": "f8f51d13-c1b5-4cd7-8915-952b90d075f9",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:02:19.625Z"
+    },
+    {
+      "sessionId": "7e915222-20cf-4e4f-8a5f-3ec00d3a9518",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:04:45.548Z"
+    },
+    {
+      "sessionId": "dd00d6a2-a273-429c-8003-a412632d04d4",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:06:51.520Z"
+    },
+    {
+      "sessionId": "041664e4-bc8d-4a1a-bcca-d207a9f09232",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:08:19.669Z"
+    },
+    {
+      "sessionId": "242d623b-5e40-4528-a6bd-6a48d1d158de",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:09:07.649Z"
+    },
+    {
+      "sessionId": "eb60df60-bda6-426e-9a29-b28afb3be187",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:11:39.911Z"
+    },
+    {
+      "sessionId": "e1efc5cb-dcc7-4010-b3d1-461ef9189f1f",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:11:51.736Z"
+    },
+    {
+      "sessionId": "efb3993d-4a00-4012-8355-cd329a3cd999",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:11:56.850Z"
+    },
+    {
+      "sessionId": "ad8a3e9e-6045-4cd0-b95d-de4969a8fc5e",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:12:05.508Z"
+    },
+    {
+      "sessionId": "dc2fbd6a-5192-447b-816a-9afc7b76c2dd",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:12:12.387Z"
+    },
+    {
+      "sessionId": "ca903174-75ae-4475-8350-5fd8b4cf1858",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:13:13.488Z"
+    },
+    {
+      "sessionId": "0891f7f5-8c95-4d1a-b10a-4f742b5dd5d2",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:13:44.971Z"
+    },
+    {
+      "sessionId": "55001897-a0ce-4feb-9699-3ce034a1a91c",
+      "userId": "2",
+      "expiresAt": "2024-07-03T10:25:17.065Z"
+    },
+    {
+      "sessionId": "a589baf0-f137-417b-89fd-60ec95b91410",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:14:41.971Z"
+    },
+    {
+      "sessionId": "959db495-e371-476b-aab1-5f3732a36725",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:15:42.572Z"
+    },
+    {
+      "sessionId": "3a34031b-77cb-48c7-88be-8948f134db74",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:17:13.502Z"
+    },
+    {
+      "sessionId": "1d6a026d-1e22-47a2-999b-950c29525efb",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:17:31.453Z"
+    },
+    {
+      "sessionId": "91d9c482-f673-4b6d-a506-ccca5d63649e",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:17:53.948Z"
+    },
+    {
+      "sessionId": "5783d812-edb2-43e9-bbbd-3d99d2205f7d",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:17:56.189Z"
+    },
+    {
+      "sessionId": "5c0abdc6-4ef6-4f3c-b943-89dda6e57aaa",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:38:12.186Z"
+    },
+    {
+      "sessionId": "3ee358ac-8fe5-4843-8dc4-82508423edcb",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:38:24.653Z"
+    },
+    {
+      "sessionId": "60689cb4-8273-4cbf-973e-c5422612d0ab",
+      "userId": "2",
+      "expiresAt": "2024-07-09T03:51:15.291Z"
+    },
+    {
+      "sessionId": "9c6f84ac-1e3b-4d22-960e-d2a838c8a1a3",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:24:01.030Z"
+    },
+    {
+      "sessionId": "c8b94442-0511-469e-bd9e-6ad11033f78d",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:25:54.690Z"
+    },
+    {
+      "sessionId": "2b838ec0-ccd1-49bf-b93c-6a5b2478d211",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:26:06.360Z"
+    },
+    {
+      "sessionId": "4f14784c-a658-4d8c-a53f-8c00afcb85db",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:27:11.455Z"
+    },
+    {
+      "sessionId": "8c1134ba-eb01-4f56-a2b5-bd40496ad51b",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:27:43.706Z"
+    },
+    {
+      "sessionId": "85f7a8be-a827-45d2-8d92-c3dbf7810cd2",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:29:08.310Z"
+    },
+    {
+      "sessionId": "ca628f03-80c7-4a46-8c8d-c044e8544cfd",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:29:26.962Z"
+    },
+    {
+      "sessionId": "da928827-5ead-4318-bf1c-a9f91157bb45",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:29:50.194Z"
+    },
+    {
+      "sessionId": "922bde16-7739-4c53-b822-6868374d9dab",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:32:14.627Z"
+    },
+    {
+      "sessionId": "fe0a4266-fdc2-4243-9206-ba43e33715f1",
+      "userId": "2",
+      "expiresAt": "2024-07-09T04:33:06.692Z"
+    },
+    {
+      "sessionId": "ad944dd9-5b2c-48a0-99d5-26ea55b0080c",
+      "userId": "3",
+      "expiresAt": "2024-07-09T06:55:18.815Z"
     }
   ]
 }
