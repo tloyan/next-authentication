@@ -35,15 +35,3 @@ export function deleteSession() {
   cookies().delete('session')
 }
 
-export const getConnectedUser = async () => {
-  const session = await verifySession()
-  if (!session || !session?.isAuth) return
-  console.log('getConnectedUser', session)
-  try {
-    const user = await getUserById(session.userId as string)
-    return user
-  } catch (error) {
-    console.error('Failed to fetch user', error)
-    return
-  }
-}
