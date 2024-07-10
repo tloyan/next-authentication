@@ -1,10 +1,4 @@
-import {Label} from '@/components/ui/label'
+export {default} from './page.exercise'
 
-async function Page() {
-  return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
-      <Label>You are not connected</Label>
-    </div>
-  )
-}
-export default Page
+//1. 🚀 Gestion de page avec information session utilisateur
+//export {default} from './page.bonus-1'

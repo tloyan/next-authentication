@@ -2,6 +2,7 @@ import {RoleEnum} from '@/lib/type'
 import bcrypt from 'bcrypt'
 import {addUser, getUserByEmail} from '@/db/sgbd'
 import {SignInError} from './type'
+import {createSession, deleteSession} from './session-stateless'
 
 const signUp = async (email: string, password: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -23,6 +24,7 @@ const signUp = async (email: string, password: string) => {
     role: RoleEnum.SUPER_ADMIN, //RoleEnum.USER,
   }
   const createdUser = await addUser(newUser)
+  await createSession(createdUser.id)
   return {email: createdUser.email, role: createdUser.role}
 }
 
@@ -48,12 +50,13 @@ const signIn = async (email: string, password: string) => {
       message: 'Invalid credentials.',
     } as SignInError
   }
-
+  await createSession(user.id)
   return {email: user.email, role: user.role}
 }
 
 async function logout() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
+  deleteSession()
   return {message: 'Logout successful'}
 }
 

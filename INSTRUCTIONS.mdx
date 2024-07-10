@@ -1,6 +1,6 @@
-# Credentials - Persistance - Encryption
+# Session Management - Cookies
 
-### 💡 Persistance de credentials (encryption)
+### 💡 Comprendre les sessions stateless
 
 ## 📝 Tes notes
 
@@ -8,79 +8,85 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans les sections précédentes nous avons créé des `routes / form / actions` mockés à la librairie d’authentification.
+La gestion de session implique le suivi et la gestion des interactions d'un utilisateur avec l'application au fil du temps, en veillant à ce que son état authentifié soit préservé dans les différentes parties de l'application.
 
-![archi](/course/form-action-lib-db.png)
+Cela évite la nécessité de se reconnecter à plusieurs reprises, améliorant à la fois la sécurité et la commodité pour l'utilisateur.
 
-Nous allons donc maintenant implémenter la librairie d’authentification. Cette couche aura pour role de gérer la logique d’encryption du mot de passe et insertion en base de données. Ensuite la lecture et la vérification du credencials (email/mot de passe)
+Il existe deux méthodes principales pour la gestion des sessions :
 
-### Introduction aux Credentials et au Hachage des Mots de Passe
+- les **sessions basées sur les cookies** (`stateless session`)
+- et les sessions stockées en **base de données**. (`database session`)
 
-Lors de la mise en place d'un système d'authentification, il est crucial de garantir la sécurité des informations sensibles des utilisateurs, notamment les mots de passe. Pour ce faire, nous utilisons des techniques de hachage et de salage afin de protéger les mots de passe stockés dans la base de données.
+Dans cet section nous verrons les sessions simple basées sur les cookies.
 
-### Credentials
+### Principe :
 
-Les credentials (ou identifiants) désignent généralement l'ensemble des informations utilisées pour vérifier l'identité d'un utilisateur. Cela inclut typiquement un nom d'utilisateur (ou email) et un mot de passe. Ces informations permettent à un système de déterminer si un utilisateur est autorisé à accéder à des ressources spécifiques.
+- Lorsque l’utilisateur est connecté → Création d’un Cookie avec `userId` par exemple
+- Ce cookie est présent dans le header des requêtes HTTP
+- La session est décodée / vérifiée pour extraire le `userId` coté le server
+- Il est ensuite possible d’accéder aux données utilisateurs (`userId` ) et de gérer les accès par exemple.
 
-### Hachage et Salage des Mots de Passe
-
-Le hachage est un processus cryptographique qui transforme un mot de passe en une chaîne de caractères unique, appelée "hash". Ce processus est unidirectionnel, ce qui signifie qu'il est pratiquement impossible de récupérer le mot de passe original à partir du hash. Pour renforcer davantage la sécurité, nous ajoutons un "sel" (salt) au mot de passe avant de le hacher.
-
-Le salage est l'ajout d'une valeur aléatoire unique à chaque mot de passe avant de le hacher. Cela empêche les attaquants d'utiliser des tables de hachage pré-calculées (ou "rainbow tables") pour deviner les mots de passe.
-
-Voici un exemple de code utilisant `bcrypt` pour hacher et saler un mot de passe :
+### Cookie server avec Next
 
 ```tsx
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+'use server'
 
-// Génération du sel avec un nombre de tours spécifié
-const salt = await bcrypt.genSalt(saltRounds);
+import { cookies } from 'next/headers'
 
-// Hachage du mot de passe avec le sel
-const hashedPassword = await bcrypt.hash(password, salt);
-
-console.log('Mot de passe haché :', hashedPassword);
-
+export async function handleLogin(sessionData) {
+  const encryptedSessionData = encrypt(sessionData) // Encrypt your session data
+  cookies().set('session', encryptedSessionData, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 24 * 7, // One week
+    path: '/',
+  })
+  // Redirect or handle the response after setting the cookie
+}
 ```
 
 ## Exercice
 
-Dans cette exercice nous allons implémenter `signIn` et `signUp,` pour cela nous avons deja des fonction permettant de lire et d’accéder à notre base de données
+Dans cet exercice tu vas devoir créer le mécanisme de session gérer par cookies.
+
+Pour simplifier l’exercice, nous n’allons pas encore encrypter le cookie, mais seulement manipuler du JSON
 
 ```tsx
-import {addUser, getUserByEmail} from '@/db/sgbd'
+//lib/crypt.ts
+export async function encrypt(payload: SessionPayload) {
+  return JSON.stringify(payload)
+}
+
+export async function decrypt(session: string | undefined = ''): Promise<SessionPayload | undefined> {
+  return JSON.parse(session)
+}
 ```
 
-Spécification des 2 fonctions
+🐶 Dans un premier temps, implémente les 3 fonctions suivantes
 
-- `signIn` (fonction de création de compte)
-  1. Vérification du user en BDD (`getUserByEmail`)
-  2. `Error` si l’utilisateur existe déjà
-  3. Génération d’un `SALT`
-  4. Hash du mot de passe avec `bcrypt.hash`
-  5. Création du user en BDD(`addUser`)
-  6. Retourne le user créé
-- `signUp` (fonction de connexion)
-  1. Récupération de l’utilisateur en BDD (`getUserByEmail`)
-  2. `Error` si l’utilisateur n’existe pas
-  3. Comparaison des mots de passes avec `bcrypt.compare`
-  4. Retourne le user trouvé ou `SignInError`
+- `createSession`
+- `verifySession`
+- `deleteSession`
 
-**🐶 Implémente cela dans le fichier `auth.ts`**
-
-- Teste la création de compte
-- La connexion
-- Les erreurs (doublons et user inexistant)
-
-<aside>
-💡 Tu peux supprimer le fichier `src/db/db.json` pour reset les users en BDD. Par default : [a@a.fr](mailto:a@a.fr) avec le mot de passe `a` existe.
-
-</aside>
+**🐶** Dans **`auth.ts`** créé une session après la création de compte ou la connexion et supprime le cookie sur le `logout`
 
 Fichiers
 
+- `exercise/auth/lib/session-stateless.ts`
 - `exercise/auth/lib/auth.ts`
+
+## Bonus
+
+### 1. 🚀 Gestion de page avec information session utilisateur
+
+Maintenant que nous savons créer des cookies de sessions nous pouvons les utiliser dans nos pages pour récupérer les informations utilisateur.
+
+- Dans cet exercice, **👨‍✈️ Hugo le chef de projet** te demande de modifier la route [/exercices/auth](http://localhost:3000/exercises/auth). Actuellement cette page affiche : **`You are not connected`.**
+- Utilise `verifySession()` et `getUserById` pour afficher : `Hello {user.email}` si un utilisateur est connecter
+
+Fichiers
+
+- `exercise/auth/page.tsx`
 
 ## Aller plus loin
 
@@ -96,4 +102,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=03%20persistance-hash-salt).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=04%20session-management-cookies).
