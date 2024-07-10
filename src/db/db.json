@@ -17,7 +17,7 @@
       "quantity": 19,
       "category": "lighting",
       "createdAt": "2024-04-24T05:56:06.593Z",
-      "updadtedAt": "2024-07-03T04:35:13.468Z"
+      "updadtedAt": "2024-07-10T02:43:59.572Z"
     },
     {
       "id": "2",
@@ -26,7 +26,7 @@
       "quantity": 4,
       "category": "furniture",
       "createdAt": "2024-04-25T05:56:06.593Z",
-      "updadtedAt": "2024-07-03T04:35:13.468Z"
+      "updadtedAt": "2024-07-10T02:43:59.572Z"
     }
   ],
   "todos": [
@@ -34,15 +34,15 @@
       "id": 1,
       "title": "Apprendre React",
       "isCompleted": true,
-      "createdAt": "2024-07-03T04:35:13.468Z",
-      "updadtedAt": "2024-07-03T04:35:13.468Z"
+      "createdAt": "2024-07-10T02:43:59.572Z",
+      "updadtedAt": "2024-07-10T02:43:59.572Z"
     },
     {
       "id": 2,
       "title": "Apprendre Next",
       "isCompleted": false,
-      "createdAt": "2024-07-03T04:35:13.468Z",
-      "updadtedAt": "2024-07-03T04:35:13.468Z"
+      "createdAt": "2024-07-10T02:43:59.572Z",
+      "updadtedAt": "2024-07-10T02:43:59.572Z"
     }
   ],
   "users": [
@@ -58,7 +58,7 @@
     {
       "sessionId": "1",
       "userId": "1",
-      "expiresAt": "2024-07-03T04:35:13.468Z"
+      "expiresAt": "2024-07-10T02:43:59.572Z"
     }
   ]
 }

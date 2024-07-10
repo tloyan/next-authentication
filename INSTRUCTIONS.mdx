@@ -1,6 +1,6 @@
-# Routes Login / Register / Logout
+# Authentification - Validation server action
 
-### 💡 Préparer les routes pour l’authentification
+### 💡 Comprendre et mettre en place une authentification
 
 ## 📝 Tes notes
 
@@ -8,41 +8,142 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans un site il est fréquent d’avoir des pages publiques, (Home, FAQ, Login, Register etc …) et des pages privées (account, etc …).
+Pour mettre en place une authentification (répondant à la question "QUI se connecte"), il est nécessaire de disposer d'une base de données utilisateurs contenant des couples d'identifiants et de mots de passe (credentials). Cet identifiant peut être un `email`, un `nom d'utilisateur`, ou les deux.
 
-Il faut donc un mécanisme pour savoir QUI essaye d’accéder à telle ou telle page. Ce mécanisme ça s’appelle l’authentification.
+- Les utilisateurs doivent pouvoir créer un compte (`register`)
+- Les utilisateurs doivent pouvoir créer se connecter (`login`), c’est à dire vérifier le couple email/mot de passe
 
-Pour gérer l’authentification il faut qu’un utilisateur puisse :
+Avec cette information (qui est connecté) nous pourrons décider de quelles ressources du site sont autorisées ou pas.
 
-- Créer un compte (`register`)
-- Se connecter (`login`)
-- Se déconnecter (`logout`)
+Dans le cas d’application Next ce fonctionnement peut être découpé de la manière suivante :
+
+- `FORM` : Formulaires contenant les champs à transmettre au backend (`action`)
+- `ACTION` : Valide le formulaire et appelle la librairie d’authentification
+- `AUTH LIB` : Librairie contenant la logique / norme / d’authentification
+- `DATABASE` : persistance de données
+
+![Untitled](/course/form-action-lib-db.png)
 
 ## Exercice
 
-**👨‍✈️ Hugo le chef de projet** nous informe que des pages devront être protégées et réservées aux utilisateurs connectés.
+Nous allons dans un premier temps connecter les formulaires aux actions.
 
-- [/exercises/dashboard](http://localhost:3000/exercises/dashboard)
-- [/exercises/bank-account](http://localhost:3000/exercises/bank-account)
+Les formulaires / actions permettrons de
 
-Il te demande de créer 3 routes contenant des formulaires / composants permettant de se connecter / s’enregistrer / se déconnecter. Les 3 routes seront
+1. Valider les champs et afficher des éventuelles erreurs sur les champs.
+2. Si la validation est OK, appelle de la librairie d’authentification
+3. Gestion des erreurs liées à la librairie d’authentification
 
-- `/exercises/login`
-- `/exercises/register`
-- `/exercises/logout`
+Le type de retour des action permet de gérer les messages d’erreurs sur les champs ou un message d’erreur plus général (auth par exemple)
 
-**🐶** Dans un premier temps tu vas devoir créer les formulaires dans les 3 routes.
+```tsx
+export type FormState =
+  | {
+      errors?: {
+        email?: string[]
+        password?: string[]
+        confirmPassword?: string[]
+      }
+      message?: string
+    }
+  | undefined
+```
 
-<aside>
-💡 PS : la route `/exercises/auth` permettra de faire des actions liées à l’authentifcation pour la suite
+- Auth Librairie
 
-</aside>
+Pour le moment cette librairie est `mockée`, nous l’implémenterons plus tard.
+
+```tsx
+const signUp = async (email: string, password: string) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  console.log('Signing up...', email, password)
+  return {email, role: RoleEnum.USER}
+  //
+  // ⚠️ en cas d'erreur de signup on peut lancer une erreur de type SignInError
+  // throw {
+  //   type: 'CredentialsSignin',
+  //   message: 'Invalid User.',
+  // } as SignInError
+}
+
+const signIn = async (email: string, password: string) => {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  console.log('signIn ...', email, password)
+  return {email, role: RoleEnum.USER}
+}
+
+async function logout() {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  return {message: 'Logout successful'}
+}
+```
+
+Type d’erreur levé par la librairie d’auth
+
+```tsx
+export interface SignInError {
+  type: 'CredentialsSignin'
+  message?: string
+}
+//exemple
+throw {
+  type: 'CredentialsSignin',
+  message: 'Invalid User.',
+} as SignInError
+```
+
+ps : Les schémas Zod sont déjà fournis dans `/auth/lib/type.ts`
+
+```tsx
+export const LoginFormSchema = z.object({
+  email: z.string().email({message: 'Please enter a valid email.'}),
+  password: z.string().min(1, {message: 'Password field must not be empty.'}),
+})
+//etc ...
+```
+
+🐶 Dans cet exercice , tu vas devoir
+
+- Implémenter les 2 formulaires (login/register) en utilisant le hook `useActionState`
+- Gérer le `status pending` (`useFormState`)
+- Valider les champs avec `Zod`
+- Gérer les messages d’erreurs
+- Faire appel à la librairie d’authentification
 
 Fichiers
 
-- `src/app/exercises/login.tsx`
-- `src/app/exercises/register.tsx`
-- `src/app/exercises/logout.tsx`
+- `exercise/auth/action.tsx`
+- `exercise/auth/form/form-login.tsx`
+- `exercise/auth/form/form-register.tsx`
+-
+
+## Bonus
+
+### 1. 🚀 Gestion status pending via state (logout)
+
+Pour le `logout` nous avons juste à appeler une fonction logout`await  logout()`. Nous n’avons pas de formulaire ni de champs a valider.
+
+Nous appelons directement une action. Nous n’avons pas accès à `useFormStatus`.
+
+Pour cela allons gerer le status avec un simple `state`. Le principe est d’attendre le retour du server action `logout`
+
+```tsx
+setPending(true)
+await logout()
+setPending(false)
+```
+
+- **🐶** implémente cela pour le logout
+
+Fichiers
+
+- `exercise/auth/form/form-logout.tsx`
+
+###
+
+## Aller plus loin
+
+📑 Le lien vers la doc `useActionState` [https://react.dev/reference/react/useActionState](https://react.dev/reference/react/useActionState)
 
 ## Ils vont t’aider
 
@@ -54,4 +155,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=01%20preparation-routes).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=02%20validation%20action).
