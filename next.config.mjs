@@ -15,6 +15,9 @@ const withMDX = createMDX({
       rehypePrism, // Ajoute la coloration syntaxique aux blocs de code
     ],
   },
+  experimental: {
+    taint: true,
+  },
 })
 
 const nextConfig = {

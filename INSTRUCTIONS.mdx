@@ -1,6 +1,6 @@
-# Session Management - Cookies
+# Session Management JWT - DTO - Cache
 
-### 💡 Comprendre les sessions stateless
+### 💡 Améliorer la sécurité
 
 ## 📝 Tes notes
 
@@ -8,89 +8,176 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-La gestion de session implique le suivi et la gestion des interactions d'un utilisateur avec l'application au fil du temps, en veillant à ce que son état authentifié soit préservé dans les différentes parties de l'application.
+Dans l’exemple précèdent le cookie (contenant des informations sensibles comme le `userId`) était quasiment en claire dans le navigateur (URL encodé)
 
-Cela évite la nécessité de se reconnecter à plusieurs reprises, améliorant à la fois la sécurité et la commodité pour l'utilisateur.
+```html
+%7B%22userId%22%3A%222%22%2C%22expiresAt%22%3A%222024-07-10T08%3A58%3A44.997Z%22%7D
+```
 
-Il existe deux méthodes principales pour la gestion des sessions :
+Il existe une technique pour crypter du json. le [JWT (JSON Web Token)](https://jwt.io/) Ce format est composé d’un Header et d’un Payload (données utiles). Il existe un package JavaScript qui permet de manipuler du JWT.
 
-- les **sessions basées sur les cookies** (`stateless session`)
-- et les sessions stockées en **base de données**. (`database session`)
+- [https://www.npmjs.com/package/jose](https://www.npmjs.com/package/jose)
 
-Dans cet section nous verrons les sessions simple basées sur les cookies.
-
-### Principe :
-
-- Lorsque l’utilisateur est connecté → Création d’un Cookie avec `userId` par exemple
-- Ce cookie est présent dans le header des requêtes HTTP
-- La session est décodée / vérifiée pour extraire le `userId` coté le server
-- Il est ensuite possible d’accéder aux données utilisateurs (`userId` ) et de gérer les accès par exemple.
-
-### Cookie server avec Next
+Nous utiliserons [SignJWT](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md)
 
 ```tsx
-'use server'
+//EXEMPLE d'encodage
+const secret = new TextEncoder().encode(
+  'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2',
+)
+const alg = 'HS256'
 
-import { cookies } from 'next/headers'
+const jwt = await new jose.SignJWT({ 'urn:example:claim': true })
+  .setProtectedHeader({ alg })
+  .setIssuedAt()
+  .setIssuer('urn:example:issuer')
+  .setAudience('urn:example:audience')
+  .setExpirationTime('2h')
+  .sign(secret)
 
-export async function handleLogin(sessionData) {
-  const encryptedSessionData = encrypt(sessionData) // Encrypt your session data
-  cookies().set('session', encryptedSessionData, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24 * 7, // One week
-    path: '/',
-  })
-  // Redirect or handle the response after setting the cookie
-}
+console.log(jwt)
+```
+
+Decode
+
+```tsx
+const secret = jose.base64url.decode('zH4NRP1HMALxxCFnRZABFA7GOJtzU_gIj02alfL1lvI')
+const jwt =
+  'eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..MB66qstZBPxAXKdsjet_lA.WHbtJTl4taHp7otOHLq3hBvv0yNPsPEKHYInmCPdDDeyV1kU-f-tGEiU4FxlSqkqAT2hVs8_wMNiQFAzPU1PUgIqWCPsBrPP3TtxYsrtwagpn4SvCsUsx0Mhw9ZhliAO8CLmCBQkqr_T9AcYsz5uZw.7nX9m7BGUu_u1p1qFHzyIg'
+
+const { payload, protectedHeader } = await jose.jwtDecrypt(jwt, secret, {
+  issuer: 'urn:example:issuer',
+  audience: 'urn:example:audience',
+})
+
+console.log(protectedHeader)
+console.log(payload)
 ```
 
 ## Exercice
 
-Dans cet exercice tu vas devoir créer le mécanisme de session gérer par cookies.
+Dans cet exercice tu vas devoir implémenter `JWT`
 
-Pour simplifier l’exercice, nous n’allons pas encore encrypter le cookie, mais seulement manipuler du JSON
+Pour les simplifier nous avons mis un fichier `.env.local`
 
 ```tsx
-//lib/crypt.ts
-export async function encrypt(payload: SessionPayload) {
-  return JSON.stringify(payload)
-}
+//JWT ou JSON
+SESSION_USE_JWT=false
+//utiliser dans TextEncoder().encode
+SESSION_SECRET=t9wpZYUcVVsdMkb8J+GrJxbYCOHy9mT44S7S0IqFcrg=
 
-export async function decrypt(session: string | undefined = ''): Promise<SessionPayload | undefined> {
-  return JSON.parse(session)
-}
 ```
 
-🐶 Dans un premier temps, implémente les 3 fonctions suivantes
-
-- `createSession`
-- `verifySession`
-- `deleteSession`
-
-**🐶** Dans **`auth.ts`** créé une session après la création de compte ou la connexion et supprime le cookie sur le `logout`
+- 🐶 Crypt et Decrypt la session avec JWT
 
 Fichiers
 
-- `exercise/auth/lib/session-stateless.ts`
-- `exercise/auth/lib/auth.ts`
+- `exercise/auth/lib/crypt.ts`
 
 ## Bonus
 
-### 1. 🚀 Gestion de page avec information session utilisateur
+### 1. 🚀 Cache
 
-Maintenant que nous savons créer des cookies de sessions nous pouvons les utiliser dans nos pages pour récupérer les informations utilisateur.
+Dans la route `/exercice/auth` nous appelons ce code pour décoder la session et récupérer le user en base de données.
 
-- Dans cet exercice, **👨‍✈️ Hugo le chef de projet** te demande de modifier la route [/exercices/auth](http://localhost:3000/exercises/auth). Actuellement cette page affiche : **`You are not connected`.**
-- Utilise `verifySession()` et `getUserById` pour afficher : `Hello {user.email}` si un utilisateur est connecter
+```tsx
+const session = await verifySession()
+const user = await getUserById(session?.userId as string)
+console.log('Page : user', user)
+```
+
+Dans une application il existe de nombreuses ressources / pages qui devront avoir un affichage spécifique pour chaque utilisateur connecté. Comme par exemple
+
+- `login`
+- `logout`
+- `register`
+- `dashboard`
+- `bank-account`
+- etc …
+
+Cela fait autant d’appel à la base de données (performance) et duplique le code (maintenabilité).
+
+Tu vas devoir créer une fonction `getConnectedUser` que l’on pourra utiliser partout dans notre application. Cette fonction utilisera [l’API CACHE de REACT](https://react.dev/reference/react/cache)
+
+```tsx
+//Exemple
+import {cache} from 'react';
+import calculateMetrics from 'lib/metrics';
+
+const getMetrics = cache(calculateMetrics);
+
+function Chart({data}) {
+  const report = getMetrics(data);
+  // ...
+}
+```
+
+- **🐶 Créé** `getConnectedUser` dans page de `auth` (plus tard nous le deplaceront dans le dossier lib)
+
+<aside>
+💡 A noter que le `cache` fonctionne par requête HTTP
+
+</aside>
+
+```tsx
+//GET /exemple/ressources
+cache(getItem)
+
+// This function is called twice, but only executed the first time
+const item = await getItem() // cache MISS
+
+// The second call could be anywhere in your route
+const item = await getItem() // cache HIT
+```
 
 Fichiers
 
 - `exercise/auth/page.tsx`
 
+### 2. 🚀 DAL et DTO Pattern (Data Tranform Object)
+
+Quand on regarde les `log` de `console.log('Page : user', user)` on peut voir l’objet `user` complet (avec le password/salt etc autres informations sensibles)
+
+Pour éviter d’exposer dans données sensibles nous pouvons ajouter une couche qui vient nettoyer certains données : **DAL (Data Accès Layout)**
+
+Le principe est une fonction qui prend un entrée une donnée (venant de la BDD par exemple) et retourner une donné alléger , exemple
+
+```tsx
+//user with password
+function userDTO(user: User): UserDTO {
+
+  return {
+    email: user?.email ?? '',
+    name: user?.name,
+    role: user?.role,
+    //password: user?.password, NOT PASS
+  }
+}
+```
+
+- **🐶 Creer ce DTO et retourne un DTO dans `getConnectedUser`**
+
+Fichiers
+
+- `exercise/auth/page.tsx`
+
+### 3. 🚀 taintUniqueValue et taintObjectReference
+
+React 19 ajoute également `taintUniqueValue` une fonction qui permet de générer une erreur si un objet sensible est envoyé par error au client
+
+Comme c’est encore expérimental il faut éditer `next.config.ts`
+
+```tsx
+experimental: {
+    taint: true,
+  },
+```
+
+📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
+
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/authentication#authentication](https://nextjs.org/docs/app/building-your-application/authentication#authentication)
+📑 Le lien vers la doc [https://www.w3schools.com/html/html_css.asp](https://www.w3schools.com/html/html_css.asp)
 
 ## Ils vont t’aider
 
@@ -102,4 +189,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=04%20session-management-cookies).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-react-avis).

@@ -1,8 +1,9 @@
-//1. 🚀 Cache
+//2. 🚀 DAL et DTO Pattern (Data Tranform Object)
 import {Label} from '@/components/ui/label'
 import {verifySession} from './lib/session-stateless'
 import {getUserById} from '@/db/sgbd'
 import {cache} from 'react'
+import {RoleEnum, User} from '@/lib/type'
 
 async function Page() {
   const user = await getConnectedUser()
@@ -25,9 +26,25 @@ export const getConnectedUser = cache(async () => {
   console.log('getConnectedUser', session)
   try {
     const user = await getUserById(session.userId as string)
-    return user
+    return userDTO(user as User)
   } catch (error) {
     console.error('Failed to fetch user', error)
     return
   }
 })
+
+export function userDTO(user: User): UserDTO {
+  return {
+    email: user?.email ?? '',
+    name: user?.name,
+    role: user?.role,
+    //password: user?.password,
+  }
+}
+
+export type UserDTO = {
+  email: string
+  name?: string
+  role?: RoleEnum
+  password?: string
+}
