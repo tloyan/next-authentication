@@ -52,6 +52,13 @@
       "password": "$2b$10$ctVHPcQ6RdTSIYnxUVbj6uzjbe9P1Cmku.vcon9uLj4I/xYpXGwvO",
       "name": "John",
       "role": "USER"
+    },
+    {
+      "id": "2",
+      "email": "admin@mikecodeur.com",
+      "password": "$2b$10$AH61UXSvLf6Tyg4Ru4Y04eiInNQSH4.Umwp5.gAGAyewQwkMaozci",
+      "name": "John Doe",
+      "role": "SUPER_ADMIN"
     }
   ],
   "sessions": [

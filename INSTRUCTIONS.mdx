@@ -1,6 +1,6 @@
-# Authentification - Validation server action
+# Credentials - Persistance - Encryption
 
-### 💡 Comprendre et mettre en place une authentification
+### 💡 Persistance de credentials (encryption)
 
 ## 📝 Tes notes
 
@@ -8,142 +8,83 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Pour mettre en place une authentification (répondant à la question "QUI se connecte"), il est nécessaire de disposer d'une base de données utilisateurs contenant des couples d'identifiants et de mots de passe (credentials). Cet identifiant peut être un `email`, un `nom d'utilisateur`, ou les deux.
-
-- Les utilisateurs doivent pouvoir créer un compte (`register`)
-- Les utilisateurs doivent pouvoir créer se connecter (`login`), c’est à dire vérifier le couple email/mot de passe
-
-Avec cette information (qui est connecté) nous pourrons décider de quelles ressources du site sont autorisées ou pas.
-
-Dans le cas d’application Next ce fonctionnement peut être découpé de la manière suivante :
-
-- `FORM` : Formulaires contenant les champs à transmettre au backend (`action`)
-- `ACTION` : Valide le formulaire et appelle la librairie d’authentification
-- `AUTH LIB` : Librairie contenant la logique / norme / d’authentification
-- `DATABASE` : persistance de données
+Dans les sections précédentes nous avons créé des `routes / form / actions` mockés à la librairie d’authentification.
 
 ![archi](/course/form-action-lib-db.png)
 
+Nous allons donc maintenant implémenter la librairie d’authentification. Cette couche aura pour role de gérer la logique d’encryption du mot de passe et insertion en base de données. Ensuite la lecture et la vérification du credencials (email/mot de passe)
+
+### Introduction aux Credentials et au Hachage des Mots de Passe
+
+Lors de la mise en place d'un système d'authentification, il est crucial de garantir la sécurité des informations sensibles des utilisateurs, notamment les mots de passe. Pour ce faire, nous utilisons des techniques de hachage et de salage afin de protéger les mots de passe stockés dans la base de données.
+
+### Credentials
+
+Les credentials (ou identifiants) désignent généralement l'ensemble des informations utilisées pour vérifier l'identité d'un utilisateur. Cela inclut typiquement un nom d'utilisateur (ou email) et un mot de passe. Ces informations permettent à un système de déterminer si un utilisateur est autorisé à accéder à des ressources spécifiques.
+
+### Hachage et Salage des Mots de Passe
+
+Le hachage est un processus cryptographique qui transforme un mot de passe en une chaîne de caractères unique, appelée "hash". Ce processus est unidirectionnel, ce qui signifie qu'il est pratiquement impossible de récupérer le mot de passe original à partir du hash. Pour renforcer davantage la sécurité, nous ajoutons un "sel" (salt) au mot de passe avant de le hacher.
+
+Le salage est l'ajout d'une valeur aléatoire unique à chaque mot de passe avant de le hacher. Cela empêche les attaquants d'utiliser des tables de hachage pré-calculées (ou "rainbow tables") pour deviner les mots de passe.
+
+Voici un exemple de code utilisant `bcrypt` pour hacher et saler un mot de passe :
+
+```tsx
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+// Génération du sel avec un nombre de tours spécifié
+const salt = await bcrypt.genSalt(saltRounds);
+
+// Hachage du mot de passe avec le sel
+const hashedPassword = await bcrypt.hash(password, salt);
+
+console.log('Mot de passe haché :', hashedPassword);
+
+```
+
 ## Exercice
 
-Nous allons dans un premier temps connecter les formulaires aux actions.
-
-Les formulaires / actions permettrons de
-
-1. Valider les champs et afficher des éventuelles erreurs sur les champs.
-2. Si la validation est OK, appelle de la librairie d’authentification
-3. Gestion des erreurs liées à la librairie d’authentification
-
-Le type de retour des action permet de gérer les messages d’erreurs sur les champs ou un message d’erreur plus général (auth par exemple)
+Dans cette exercice nous allons implémenter `signIn` et `signUp,` pour cela nous avons deja des fonction permettant de lire et d’accéder à notre base de données
 
 ```tsx
-export type FormState =
-  | {
-      errors?: {
-        email?: string[]
-        password?: string[]
-        confirmPassword?: string[]
-      }
-      message?: string
-    }
-  | undefined
+import {addUser, getUserByEmail} from '@/db/sgbd'
 ```
 
-- Auth Librairie
+Spécification des 2 fonctions
 
-Pour le moment cette librairie est `mockée`, nous l’implémenterons plus tard.
+- `signIn` (fonction de création de compte)
+  1. Vérification du user en BDD (`getUserByEmail`)
+  2. `Error` si l’utilisateur existe déjà
+  3. Génération d’un `SALT`
+  4. Hash du mot de passe avec `bcrypt.hash`
+  5. Création du user en BDD(`addUser`)
+  6. Retourne le user créé
+- `signUp` (fonction de connexion)
+  1. Récupération de l’utilisateur en BDD (`getUserByEmail`)
+  2. `Error` si l’utilisateur n’existe pas
+  3. Comparaison des mots de passes avec `bcrypt.compare`
+  4. Retourne le user trouvé ou `SignInError`
 
-```tsx
-const signUp = async (email: string, password: string) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  console.log('Signing up...', email, password)
-  return {email, role: RoleEnum.USER}
-  //
-  // ⚠️ en cas d'erreur de signup on peut lancer une erreur de type SignInError
-  // throw {
-  //   type: 'CredentialsSignin',
-  //   message: 'Invalid User.',
-  // } as SignInError
-}
+**🐶 Implémente cela dans le fichier `auth.ts`**
 
-const signIn = async (email: string, password: string) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  console.log('signIn ...', email, password)
-  return {email, role: RoleEnum.USER}
-}
+- Teste la création de compte
+- La connexion
+- Les erreurs (doublons et user inexistant)
 
-async function logout() {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return {message: 'Logout successful'}
-}
-```
+<aside>
+💡 Tu peux supprimer le fichier `src/db/db.json` pour reset les users en BDD. Par default : [a@a.fr](mailto:a@a.fr) avec le mot de passe `a` existe.
 
-Type d’erreur levé par la librairie d’auth
-
-```tsx
-export interface SignInError {
-  type: 'CredentialsSignin'
-  message?: string
-}
-//exemple
-throw {
-  type: 'CredentialsSignin',
-  message: 'Invalid User.',
-} as SignInError
-```
-
-ps : Les schémas Zod sont déjà fournis dans `/auth/lib/type.ts`
-
-```tsx
-export const LoginFormSchema = z.object({
-  email: z.string().email({message: 'Please enter a valid email.'}),
-  password: z.string().min(1, {message: 'Password field must not be empty.'}),
-})
-//etc ...
-```
-
-🐶 Dans cet exercice , tu vas devoir
-
-- Implémenter les 2 formulaires (login/register) en utilisant le hook `useActionState`
-- Gérer le `status pending` (`useFormState`)
-- Valider les champs avec `Zod`
-- Gérer les messages d’erreurs
-- Faire appel à la librairie d’authentification
+</aside>
 
 Fichiers
 
-- `exercise/auth/action.tsx`
-- `exercise/auth/form/form-login.tsx`
-- `exercise/auth/form/form-register.tsx`
--
-
-## Bonus
-
-### 1. 🚀 Gestion status pending via state (logout)
-
-Pour le `logout` nous avons juste à appeler une fonction logout`await  logout()`. Nous n’avons pas de formulaire ni de champs a valider.
-
-Nous appelons directement une action. Nous n’avons pas accès à `useFormStatus`.
-
-Pour cela allons gerer le status avec un simple `state`. Le principe est d’attendre le retour du server action `logout`
-
-```tsx
-setPending(true)
-await logout()
-setPending(false)
-```
-
-- **🐶** implémente cela pour le logout
-
-Fichiers
-
-- `exercise/auth/form/form-logout.tsx`
-
-###
+- `exercise/auth/lib/auth.ts`
 
 ## Aller plus loin
 
-📑 Le lien vers la doc `useActionState` [https://react.dev/reference/react/useActionState](https://react.dev/reference/react/useActionState)
+📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/authentication#authentication](https://nextjs.org/docs/app/building-your-application/authentication#authentication)
 
 ## Ils vont t’aider
 
@@ -155,4 +96,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=02%20validation%20action).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=03%20persistance-hash-salt).
