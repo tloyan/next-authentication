@@ -2,8 +2,7 @@
 import {Label} from '@/components/ui/label'
 import {verifySession} from './lib/session-stateless'
 import {getUserById} from '@/db/sgbd'
-// eslint-disable-next-line camelcase
-import {cache, experimental_taintUniqueValue} from 'react'
+import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
 import {RoleEnum, User} from '@/lib/type'
 
 async function Page() {
@@ -35,11 +34,8 @@ export const getConnectedUser = cache(async () => {
 })
 
 export function userDTO(user: User): UserDTO {
-  experimental_taintUniqueValue(
-    'Do not pass password to the client.',
-    user,
-    user?.password
-  )
+  taintUniqueValue('Do not pass password to the client.', user, user?.password)
+  // autre exemple
   // experimental_taintObjectReference(
   //   'Do not pass ALL environment variables to the client.',
   //   process.env

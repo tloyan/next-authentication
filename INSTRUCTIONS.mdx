@@ -163,7 +163,39 @@ Fichiers
 
 ### 3. 🚀 taintUniqueValue et taintObjectReference
 
-React 19 ajoute également `taintUniqueValue` une fonction qui permet de générer une erreur si un objet sensible est envoyé par error au client
+React 19 ajoute également deux nouvelles fonctionnalités ont été introduites pour améliorer la sécurité et la gestion des données sensibles lors de l'utilisation des composants serveurs : `taintObjectReference` et `taintUniqueValue`.
+
+### Résumé
+
+1. **`taintObjectReference`** :
+
+   - **Usage** : Marque des objets spécifiques pour empêcher leur passage aux composants clients.
+   - **Utilisation typique** : Protéger des objets contenant des données sensibles, comme des informations utilisateur, afin qu'ils ne soient pas accidentellement exposés aux composants clients.
+   - **Exemple** : Empêcher l'objet `user` d'être envoyé aux composants clients en l'état.
+
+   ```tsx
+   import { experimental_taintObjectReference } from 'react';
+
+   const user = { id: 1, name: 'John Doe', password: 'secret' };
+   experimental_taintObjectReference('Do not pass the entire user object to the client.', user);
+
+   ```
+
+2. **`taintUniqueValue`** :
+
+   - **Usage** : Marque des valeurs uniques, telles que des mots de passe, des clés ou des jetons, pour empêcher leur passage aux composants clients.
+   - **Utilisation typique** : Protéger des valeurs sensibles comme des clés API ou des mots de passe pour éviter qu'ils ne soient accidentellement exposés aux composants clients.
+   - **Exemple** : Empêcher une clé API d'être envoyée aux composants clients.
+
+   ```tsx
+   import { experimental_taintUniqueValue } from 'react';
+
+   const apiKey = '12345-ABCDE';
+   experimental_taintUniqueValue('Do not pass the API key to the client.', globalThis, apiKey);
+
+   ```
+
+Ces fonctionnalités ajoutent une couche de protection supplémentaire pour éviter les erreurs de manipulation et de transmission de données sensibles dans les applications React, renforçant ainsi la sécurité globale des applications.
 
 Comme c’est encore expérimental il faut éditer `next.config.ts`
 
@@ -173,11 +205,17 @@ experimental: {
   },
 ```
 
+- **🐶 Modifie le DTO en ajoutant `experimental_taintUniqueValue` pour le champs passworrd de objet user**
+
+Fichiers
+
+- `exercise/auth/page.tsx`
+
 📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://www.w3schools.com/html/html_css.asp](https://www.w3schools.com/html/html_css.asp)
+📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
 
 ## Ils vont t’aider
 
@@ -189,4 +227,4 @@ experimental: {
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-react-avis).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=0).
