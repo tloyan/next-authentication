@@ -1,4 +1,12 @@
+import {RoleEnum} from '@/lib/type'
 import {z} from 'zod'
+
+export type UserDTO = {
+  email: string
+  name?: string
+  role?: RoleEnum
+  password?: string
+}
 
 export type SessionPayload = {
   userId?: string | number //used for simple session

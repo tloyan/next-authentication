@@ -1,9 +1,3 @@
-import {BankStatement} from '@/components/bank-statement'
+export {default} from './page.exercise'
 
-export default function Page() {
-  return (
-    <div>
-      <BankStatement />
-    </div>
-  )
-}
+//export {default} from './page.bonus-1'

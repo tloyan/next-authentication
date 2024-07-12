@@ -1,24 +1,8 @@
-//3. 🚀 taintUniqueValue et taintObjectReference
-import {Label} from '@/components/ui/label'
-import {verifySession} from './lib/session-stateless'
-import {getUserById} from '@/db/sgbd'
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
-import {RoleEnum, User} from '@/lib/type'
-
-async function Page() {
-  const user = await getConnectedUser()
-  console.log('Page : user', user)
-  return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
-      {user ? (
-        <Label>Hello {user.email}</Label>
-      ) : (
-        <Label>You are not connected</Label>
-      )}
-    </div>
-  )
-}
-export default Page
+import {verifySession} from './session-stateless'
+import {getUserById} from '@/db/sgbd'
+import {User} from '@/lib/type'
+import {UserDTO} from './type'
 
 export const getConnectedUser = cache(async () => {
   const session = await verifySession()
@@ -46,11 +30,4 @@ export function userDTO(user: User): UserDTO {
     role: user?.role,
     //password: user?.password,
   }
-}
-
-export type UserDTO = {
-  email: string
-  name?: string
-  role?: RoleEnum
-  password?: string
 }

@@ -1,16 +1,17 @@
-//1. 🚀 Cache
 import {Label} from '@/components/ui/label'
-import {verifySession} from './lib/session-stateless'
-import {getUserById} from '@/db/sgbd'
-// 🐶 Importe cache de react
-// import {cache} from 'react'
+//⛏️ supprime import 'getConnectedUser' nous n'en avons plus besoin
+import {getConnectedUser} from './lib/dal'
+// 🐶 importe le HOC 'withAuth'
 
+// 🐶 Ajoute le prop 'user' de type 'UserDTO' à Page (le HOC va l'injecter)
 async function Page() {
-  // 🐶 Remplace verifySession/getUserById par 'getConnectedUser' (à implementer en bas du fichier)
-  // const user = await getConnectedUser()
-  const session = await verifySession()
-  const user = await getUserById(session?.userId as string)
+  //⛏️ supprime 'getConnectedUser' nous n'en avons plus besoin
+  const user = await getConnectedUser()
   console.log('Page : user', user)
+
+  // 🐶 Utilise directement le composant sans avoir a gerer la logique du user non connecté
+  // le HOC t'assure que le user est connecté.
+  // Affiche seulement le message de bienvenue
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
       {user ? (
@@ -21,10 +22,5 @@ async function Page() {
     </div>
   )
 }
+// 🐶 Ajoute le HOC withAuth
 export default Page
-
-// 🐶 Ajoute cette fonction en cache
-// https://react.dev/reference/react/cache
-export const getConnectedUser = async () => {
-  // 🐶 Utilise 'verifySession' et 'getUserById' pour retourner le user ou undefined
-}

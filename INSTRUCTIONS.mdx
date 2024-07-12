@@ -1,6 +1,6 @@
-# Session Management JWT - DTO - Cache
+# HOC User Session
 
-### 💡 Améliorer la sécurité
+### 💡 Proteger des routes avec un HOC
 
 ## 📝 Tes notes
 
@@ -8,216 +8,111 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans l’exemple précèdent le cookie (contenant des informations sensibles comme le `userId`) était quasiment en claire dans le navigateur (URL encodé)
-
-```html
-%7B%22userId%22%3A%222%22%2C%22expiresAt%22%3A%222024-07-10T08%3A58%3A44.997Z%22%7D
-```
-
-Il existe une technique pour crypter du json. le [JWT (JSON Web Token)](https://jwt.io/) Ce format est composé d’un Header et d’un Payload (données utiles). Il existe un package JavaScript qui permet de manipuler du JWT.
-
-- [https://www.npmjs.com/package/jose](https://www.npmjs.com/package/jose)
-
-Nous utiliserons [SignJWT](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md)
+Nous avons maintenant une `session` qui permet de récupérer un `user` connecté. Nous avons créé la fonction `getConnectedUser` (que nous avons déplacer dans `dal.ts`) qui nous permet de détecter si un user est connecté et de gérer l’affichage en fonction, Exemple :
 
 ```tsx
-//EXEMPLE d'encodage
-const secret = new TextEncoder().encode(
-  'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2',
-)
-const alg = 'HS256'
-
-const jwt = await new jose.SignJWT({ 'urn:example:claim': true })
-  .setProtectedHeader({ alg })
-  .setIssuedAt()
-  .setIssuer('urn:example:issuer')
-  .setAudience('urn:example:audience')
-  .setExpirationTime('2h')
-  .sign(secret)
-
-console.log(jwt)
+function Page() {
+  const user = await getConnectedUser()
+  return (
+    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
+      {user ? (
+        <Label>Hello {user.email}</Label>
+      ) : (
+        <Label>You are not connected</Label>
+      )}
+    </div>
+  )
+}
+export default Page
 ```
 
-Decode
+Ce qui revient à
 
 ```tsx
-const secret = jose.base64url.decode('zH4NRP1HMALxxCFnRZABFA7GOJtzU_gIj02alfL1lvI')
-const jwt =
-  'eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..MB66qstZBPxAXKdsjet_lA.WHbtJTl4taHp7otOHLq3hBvv0yNPsPEKHYInmCPdDDeyV1kU-f-tGEiU4FxlSqkqAT2hVs8_wMNiQFAzPU1PUgIqWCPsBrPP3TtxYsrtwagpn4SvCsUsx0Mhw9ZhliAO8CLmCBQkqr_T9AcYsz5uZw.7nX9m7BGUu_u1p1qFHzyIg'
+function Page() {
 
-const { payload, protectedHeader } = await jose.jwtDecrypt(jwt, secret, {
-  issuer: 'urn:example:issuer',
-  audience: 'urn:example:audience',
-})
+  const user = await getConnectedUser()
+  if (!user) {
+	  return <Label>You are not connected</Label>
+  }
 
-console.log(protectedHeader)
-console.log(payload)
+  return (
+    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
+        <Label>Hello {user.email}</Label>
+    </div>
+  )
+}
+export default Page
+```
+
+On pourrait ajouter ce bout de code dans toutes nos routes protégées
+
+```tsx
+  const user = await getConnectedUser()
+  if (!user) {
+	  return <Label>You are not connected</Label>
+  }
+```
+
+Mais on va toujours dupliquer beaucoup de code, ce qui rend la maintenance compliquée (Ne respecte pas le principe `DRY` : [Don't Repeat Yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
+
+Pour protéger nos routes nous allons utiliser un [HOC : High Order Component](https://blog.logrocket.com/understanding-react-higher-order-components/) . Les 3 points d’un HOC
+
+- 1. Réutilisation de la Logique des Composants
+- 2. Manipulation des Props
+- 3. Abstraction et Découplage
+
+Exemple
+
+```tsx
+import React, { useState, useEffect } from 'react';
+
+const withEnhancement = (BaseComponent) => {
+ // HOC logic using hooks
+ return function EnhancedComponent(props) {
+   // HOC-specific logic using hooks
+   return (
+     <BaseComponent {...props} enhancedProp="someValue" />
+   );
+ };
+};
+//utilisation
+function NormalComponent {return <></>}
+return withEnhancement(NormalComponent)
 ```
 
 ## Exercice
 
-Dans cet exercice tu vas devoir implémenter `JWT`
+**🐶** Dans cet exercice tu vas devoir créer un HOC qui aura pour but de
 
-Pour les simplifier nous avons mis un fichier `.env.local`
+- Récupérer le user connecté avec `getConnectedUser`
+- Afficher : `You are not connected` si pas de `user`
+- Injecter le `props user` au composant afin qu’il puisse être utilisé
 
-```tsx
-//JWT ou JSON
-SESSION_USE_JWT=false
-//utiliser dans TextEncoder().encode
-SESSION_SECRET=t9wpZYUcVVsdMkb8J+GrJxbYCOHy9mT44S7S0IqFcrg=
-
-```
-
-- 🐶 Crypt et Decrypt la session avec JWT
+🐶 Utilise ensuite ce HOC dans `/auth/page` et les routes protégées
 
 Fichiers
 
-- `exercise/auth/lib/crypt.ts`
+- `exercise/auth/lib/withAuth.tsx`
+- `exercise/auth/page.tsx`
 
 ## Bonus
 
-### 1. 🚀 Cache
+### 1. 🚀 Protéger les routes `dashboard` et `bank-account`
 
-Dans la route `/exercice/auth` nous appelons ce code pour décoder la session et récupérer le user en base de données.
+**🐶** Protège les routes `dashboard` et `bank-account` avec le HOC.
 
-```tsx
-const session = await verifySession()
-const user = await getUserById(session?.userId as string)
-console.log('Page : user', user)
-```
-
-Dans une application il existe de nombreuses ressources / pages qui devront avoir un affichage spécifique pour chaque utilisateur connecté. Comme par exemple
-
-- `login`
-- `logout`
-- `register`
-- `dashboard`
-- `bank-account`
-- etc …
-
-Cela fait autant d’appel à la base de données (performance) et duplique le code (maintenabilité).
-
-Tu vas devoir créer une fonction `getConnectedUser` que l’on pourra utiliser partout dans notre application. Cette fonction utilisera [l’API CACHE de REACT](https://react.dev/reference/react/cache)
-
-```tsx
-//Exemple
-import {cache} from 'react';
-import calculateMetrics from 'lib/metrics';
-
-const getMetrics = cache(calculateMetrics);
-
-function Chart({data}) {
-  const report = getMetrics(data);
-  // ...
-}
-```
-
-- **🐶 Créé** `getConnectedUser` dans page de `auth` (plus tard nous le deplaceront dans le dossier lib)
-
-<aside>
-💡 A noter que le `cache` fonctionne par requête HTTP
-
-</aside>
-
-```tsx
-//GET /exemple/ressources
-cache(getItem)
-
-// This function is called twice, but only executed the first time
-const item = await getItem() // cache MISS
-
-// The second call could be anywhere in your route
-const item = await getItem() // cache HIT
-```
+**🐶** Ajoute également le HOC sur `Logout` car on doit être connecté pour pouvoir logout
 
 Fichiers
 
-- `exercise/auth/page.tsx`
-
-### 2. 🚀 DAL et DTO Pattern (Data Tranform Object)
-
-Quand on regarde les `log` de `console.log('Page : user', user)` on peut voir l’objet `user` complet (avec le password/salt etc autres informations sensibles)
-
-Pour éviter d’exposer dans données sensibles nous pouvons ajouter une couche qui vient nettoyer certains données : **DAL (Data Accès Layout)**
-
-![dal](/course/dal.png)
-
-Le principe est une fonction qui prend un entrée une donnée (venant de la BDD par exemple) et retourner une donné alléger , exemple
-
-```tsx
-//user with password
-function userDTO(user: User): UserDTO {
-
-  return {
-    email: user?.email ?? '',
-    name: user?.name,
-    role: user?.role,
-    //password: user?.password, NOT PASS
-  }
-}
-```
-
-- **🐶 Creer ce DTO et retourne un DTO dans `getConnectedUser`**
-
-Fichiers
-
-- `exercise/auth/page.tsx`
-
-### 3. 🚀 taintUniqueValue et taintObjectReference
-
-React 19 ajoute également deux nouvelles fonctionnalités ont été introduites pour améliorer la sécurité et la gestion des données sensibles lors de l'utilisation des composants serveurs : `taintObjectReference` et `taintUniqueValue`.
-
-### Résumé
-
-1. **`taintObjectReference`** :
-
-   - **Usage** : Marque des objets spécifiques pour empêcher leur passage aux composants clients.
-   - **Utilisation typique** : Protéger des objets contenant des données sensibles, comme des informations utilisateur, afin qu'ils ne soient pas accidentellement exposés aux composants clients.
-   - **Exemple** : Empêcher l'objet `user` d'être envoyé aux composants clients en l'état.
-
-   ```tsx
-   import { experimental_taintObjectReference } from 'react';
-
-   const user = { id: 1, name: 'John Doe', password: 'secret' };
-   experimental_taintObjectReference('Do not pass the entire user object to the client.', user);
-
-   ```
-
-2. **`taintUniqueValue`** :
-
-   - **Usage** : Marque des valeurs uniques, telles que des mots de passe, des clés ou des jetons, pour empêcher leur passage aux composants clients.
-   - **Utilisation typique** : Protéger des valeurs sensibles comme des clés API ou des mots de passe pour éviter qu'ils ne soient accidentellement exposés aux composants clients.
-   - **Exemple** : Empêcher une clé API d'être envoyée aux composants clients.
-
-   ```tsx
-   import { experimental_taintUniqueValue } from 'react';
-
-   const apiKey = '12345-ABCDE';
-   experimental_taintUniqueValue('Do not pass the API key to the client.', globalThis, apiKey);
-
-   ```
-
-Ces fonctionnalités ajoutent une couche de protection supplémentaire pour éviter les erreurs de manipulation et de transmission de données sensibles dans les applications React, renforçant ainsi la sécurité globale des applications.
-
-Comme c’est encore expérimental il faut éditer `next.config.ts`
-
-```tsx
-experimental: {
-    taint: true,
-  },
-```
-
-- **🐶 Modifie le DTO en ajoutant `experimental_taintUniqueValue` pour le champs passworrd de objet user**
-
-Fichiers
-
-- `exercise/auth/page.tsx`
-
-📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
+- `exercise/bank-account/page`
+- `exercise/dashboard/page`
+- `exercise/dashboard/logout`
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
+📑 Le lien vers la doc [https://blog.logrocket.com/understanding-react-higher-order-components/](https://blog.logrocket.com/understanding-react-higher-order-components/)
 
 ## Ils vont t’aider
 
@@ -229,4 +124,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=0).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=06-hoc-user-session).
