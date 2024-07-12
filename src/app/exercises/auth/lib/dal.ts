@@ -1,5 +1,6 @@
+import 'server-only'
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
-import {verifySession} from './session-stateless'
+import {verifySession, updateSession} from './session-database'
 import {getUserById} from '@/db/sgbd'
 import {User} from '@/lib/type'
 import {UserDTO} from './type'
@@ -7,6 +8,7 @@ import {UserDTO} from './type'
 export const getConnectedUser = cache(async () => {
   const session = await verifySession()
   if (!session || !session?.isAuth) return
+  updateSession()
   console.log('getConnectedUser', session)
   try {
     const user = await getUserById(session.userId as string)

@@ -17,7 +17,7 @@
       "quantity": 19,
       "category": "lighting",
       "createdAt": "2024-04-24T05:56:06.593Z",
-      "updadtedAt": "2024-07-10T02:43:59.572Z"
+      "updadtedAt": "2024-07-12T09:46:07.059Z"
     },
     {
       "id": "2",
@@ -26,7 +26,7 @@
       "quantity": 4,
       "category": "furniture",
       "createdAt": "2024-04-25T05:56:06.593Z",
-      "updadtedAt": "2024-07-10T02:43:59.572Z"
+      "updadtedAt": "2024-07-12T09:46:07.059Z"
     }
   ],
   "todos": [
@@ -34,15 +34,15 @@
       "id": 1,
       "title": "Apprendre React",
       "isCompleted": true,
-      "createdAt": "2024-07-10T02:43:59.572Z",
-      "updadtedAt": "2024-07-10T02:43:59.572Z"
+      "createdAt": "2024-07-12T09:46:07.059Z",
+      "updadtedAt": "2024-07-12T09:46:07.059Z"
     },
     {
       "id": 2,
       "title": "Apprendre Next",
       "isCompleted": false,
-      "createdAt": "2024-07-10T02:43:59.572Z",
-      "updadtedAt": "2024-07-10T02:43:59.572Z"
+      "createdAt": "2024-07-12T09:46:07.059Z",
+      "updadtedAt": "2024-07-12T09:46:07.059Z"
     }
   ],
   "users": [
@@ -56,14 +56,7 @@
     {
       "id": "2",
       "email": "admin@mikecodeur.com",
-      "password": "$2b$10$AH61UXSvLf6Tyg4Ru4Y04eiInNQSH4.Umwp5.gAGAyewQwkMaozci",
-      "name": "John Doe",
-      "role": "SUPER_ADMIN"
-    },
-    {
-      "id": "3",
-      "email": "admin@mikecodeur.comd",
-      "password": "$2b$10$TbFmbpCp25wE49hX13nYwuQNegjmaWDmQVR2vYx2xDZFA25c0Kxb6",
+      "password": "$2b$10$uSEad4NQL0lEQQxUWzN3J.LV0vENYSCqBHb9EmNl8ltAAiotpVkWK",
       "name": "John Doe",
       "role": "SUPER_ADMIN"
     }
@@ -72,7 +65,7 @@
     {
       "sessionId": "1",
       "userId": "1",
-      "expiresAt": "2024-07-10T02:43:59.572Z"
+      "expiresAt": "2024-07-12T09:46:07.059Z"
     }
   ]
 }

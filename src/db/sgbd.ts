@@ -340,6 +340,7 @@ export async function addSession(session: Session) {
       sessionId: session.sessionId,
       userId: session.userId,
       expiresAt: session.expiresAt,
+      userAgent: session.userAgent,
     })
   })
 }
@@ -367,4 +368,47 @@ export async function findSession(sessionId: string) {
   // eslint-disable-next-line unicorn/no-null
   const user = sessions.find((u) => u.sessionId === sessionId) ?? null
   return user
+}
+
+export async function findSessionByUid(userId: string) {
+  console.log('findSessionByUid', userId)
+
+  const db = await lowDb()
+  const sessions: Session[] = db.data.sessions ?? []
+
+  // Rechercher la session en fonction du userId et du userAgent
+  const session = sessions.find((s) => s.userId === userId) ?? undefined
+  return session
+}
+
+export async function findSessionByUidUserAgent(
+  userId: string,
+  userAgent: string
+) {
+  console.log('findSessionByUidUserAgent', userId, userAgent)
+
+  const db = await lowDb()
+  const sessions: Session[] = db.data.sessions ?? []
+
+  // Rechercher la session en fonction du userId et du userAgent
+  const session =
+    sessions.find((s) => s.userId === userId && s.userAgent === userAgent) ??
+    undefined
+
+  return session
+}
+
+export async function deleteSession(sessionId: string) {
+  console.log('deleteSession', sessionId)
+  const db = await lowDb()
+  await db.update(({sessions}) => {
+    if (sessions) {
+      const index = sessions.findIndex((item) => item.sessionId === sessionId)
+      if (index === -1) {
+        throw new Error(`Session with id ${sessionId} not found`)
+      } else {
+        sessions.splice(index, 1)
+      }
+    }
+  })
 }

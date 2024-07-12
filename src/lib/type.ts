@@ -48,4 +48,5 @@ export type Session = {
   sessionId: string
   userId: string
   expiresAt: string
+  userAgent?: string | null
 }

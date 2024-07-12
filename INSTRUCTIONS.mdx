@@ -1,6 +1,6 @@
-# Auth redirection (client/server)
+# Database Session Management
 
-### 💡 Rediriger correctement après une authentification
+### 💡 Comprendre les Sessions gérer en base de données
 
 ## 📝 Tes notes
 
@@ -8,63 +8,215 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Après une connexion ou déconnexion on peut avoir a rédiger vers des pages spécifiques. Le mécanisme de redirection est different entre les RCC et RSC
+Dans les sections précédentes nous avons implémenté une gestion des sessions en cookies, c’est à dire sans état (aucune gestion de la session coté serveur).
 
-**Redirection RSC (`redirect`) :**
+Seul le client gère sa session (_date d’expiration par exemple_), aucune information de session est sauvegardé coté serveur.
 
-```tsx
-import { redirect } from 'next/navigation'
+Avoir une session gérer en base de données coté serveur permet de gérer la fin de sessions, les multisessions etc …
 
-export default async function Profile({ params }) {
-  const user = await getUser()
-  if (!user) {
-    redirect('/login')
-  }
-}
-```
-
-📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/redirect
-
-**Redirection RCC (`useRouter`) :**
+Pour fonctionner il faut pouvoir persister les données de sessions en BDD. Pour les besoins de l’exercice nous avons déjà des fonctions permettant de gérer cela
 
 ```tsx
-'use client'
+import {
+  addSession,
+  findSession,
+  updateSession,
+  deleteSession,
+} from '@/db/sgbd'
 
-import { useRouter } from 'next/navigation'
-
-export default function Page() {
-  const router = useRouter()
-
-  return (
-    <button
-      type="button"
-      onClick={() => router.push('/dashboard')}
-    >
-      Dashboard
-    </button>
-  )
-}
+const session = await findSession(sessionId)
+const session = await addSession(session)
+const session = await updateSession(session)
+await deleteSession(sessionId)
 ```
 
-📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
+Pour ne pas confondre ces fonctions de la couche de persistance avec la couche de gestion de sessions nous les renommerons en `DAO`
+
+```tsx
+import {
+  addSession as addSessionDao,
+  findSession as findSessionDao,
+  updateSession as updateSessionDao,
+  deleteSession as deleteSessionDao,
+} from '@/db/sgbd'
+
+const session = await findSessionDao(sessionId)
+const session = await addSessionDao(session)
+const session = await updateSessionDao(session)
+await deleteSessionDao(sessionId)
+```
+
+### Les Cookies ?
+
+- Les cookies sont toujours utile mais cette fois ci, aucune information (comme le `userId`) et garder dans les cookies.
+- La seule information stockée et utile est la `sessionId`
+- Avec cette infirmation on pourra retrouver : la `session`, puis le `userId`, puis le `user`
 
 ## Exercice
 
-- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers le `dahsboard /exercises/dashboard` après une connexion (ou si l’utilisateur est connecté).**
-- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers `auth /exercises/auth` après une inscription (ou si l’utilisateur est connecté).**
-- **👨‍✈️ Il te demande également de revenir sur la page `Home (/exercises/)` après une déconnexion**
+**👨‍✈️ Hugo le chef de projet demande de pouvoir gérer 2 types de sessions dans l’application.**
+
+- Les sessions `stateless` (déjà fait)
+- Les sessions gérer en BDD (à implémenter)
+
+Nous allons donc avoir les même fonctions mais avec des implémentations différentes
+
+- `createSession` (création la session : Cookies + BDD)
+- `verifySession`
+  - Décode la session via les Cookies
+  - Vérifie la date d’expiration en BDD (et non basé sur expiration date du cookies)
+- `deleteSession` : Suppression Cookie + BDD
+
+**🐶 Implémente ces fonctions dans le fichier `session-database.ts` .** Pour simplifier l’exercice nous avons modifier les imports de `auth.ts` et `dal.ts` pour qu’ils appellent les fonction de **`session-database.ts`$**
+
+Pour le moment **`session-database.ts` est un simple wrapper qui appelle `session-stateless.ts`**
+
+```tsx
+import {
+  createSession as createSessionStateLess,
+  deleteSession as deleteSessionStateLess,
+  verifySession as verifySessionStateless,
+} from './session-stateless'
+
+export async function createSession(userId: string) {
+  return await createSessionStateLess(userId)
+}
+
+export async function verifySession() {
+  return await verifySessionStateless()
+}
+
+export function deleteSession() {
+  return deleteSessionStateLess()
+}
+```
+
+En conclusion pour le moment nous avons le même fonctionnement qu’avant (`statless`). Tu vas simplement pouvoir implémenter la sessions database ici sans te préoccuper des imports.
+
+**🐶 Edite `session-database.ts` et implémente le database session**
+
+_ps : edite le `.env.local` si tu souhaites lire le données des cookies dans le browser_
+
+```tsx
+SESSION_USE_JWT=false
+```
+
+_ps2: Regarde le fichier `db.json` pour analyser les sessions_
+
+```tsx
+ "sessions": [
+    {
+      "sessionId": "1",
+      "userId": "1",
+      "expiresAt": "2024-07-12T07:19:11.389Z"
+    },
+    {
+      "sessionId": "c89b4c72-81a0-4d1e-85fd-244a4b176543",
+      "userId": "2",
+      "expiresAt": "2024-07-12T07:32:33.958Z"
+    }
+```
 
 Fichiers
 
-- `exercise/login/page.tsx`
-- `exercise/register/page.tsx`
-- `exercise/auth/form/logout-form.tsx`
+- `exercise/auth/lib/session-database.ts`
 
-##
+## Bonus
+
+### 1. 🚀 Update Session
+
+On peut parfois avoir besoin de mettre à jour la session (étendre la date d’expiration par exemple) ou invalider la session (cela déconnectera les users utilisant la session).
+
+**🐶 Dans cet exercice tu vas devoir implémenter `updateSession` .** Pour simplifier l’exercice `updateSession` est deja appeler dans `getConnectedUser` de `dal.ts`.
+
+L’idée est de mettre à jour la session a chaque fois qu’un requête utilisateur arrive
+
+Voila les grandes étapes :
+
+- Récupération et décryptage de la session
+- Recalcule d’une nouvelle date d’expiration
+
+```tsx
+const expires = new Date(Date.now() + EXPIRE_TIME)
+```
+
+- Recherche de la session en BDD (`findSessionDao`)
+- Mise à jour du champs `expiresAt`
+- Mise a jour de la session en BDD (`updateSessionDao`)
+- Essaye egalement de mettre à jour le cookie (`expires`)
+
+```tsx
+  cookies().set('session', session, {
+    httpOnly: true,
+    secure: true,
+    expires,
+    sameSite: 'lax',
+    path: '/',
+  })
+```
+
+- Constate le problème : `Cookies can only be modified in a Server Action or Route Handler`
+- Constate le probleme de boucle (HMR) et fait un build de prod
+
+Fichiers
+
+- `exercise/auth/lib/session-database.ts`
+
+### 2. 🚀 Session Unique
+
+Si le même utilisateur se connecte plusieurs fois (sans `logout`), plusieurs sessions seront en BDD. Parfois il est nécessaire de gérer les sessions et de s’assurer qu’une seule session est gérer.
+
+**👨‍✈️ Hugo le chef de projet te demande d’adapter `createSession` pour ne pas dupliquer les sessions**
+
+Les grandes étapes.
+
+- Vérifier la présence d’une session en BDD : `const sessionByUid = await findSessionByUid(uid)`
+  - vérifier expiration
+- Si présence, alors ne pas créer de nouvelle session et mettre à jour la session avec nouvelle date d’expiration
+- Sinon créer une nouvelle session
+- Mettre à jour le cookie
+
+### 2. 🚀 Session segmenter par user agent
+
+On peut aussi avoir a gérer des session distincte par user agent (Ihpone, Ipad, Chrome) etc … Ce qui permet d’identifier (et déconnecter) certain appareil.
+
+**👨‍✈️ Hugo le chef de projet te demande d’adapter `createSession` pour gerer les sessions par user et userAgent**
+
+Les grandes étapes.
+
+- Identique a précédemment mis a part
+- Recuperation du User Agent via le header
+
+```tsx
+const headersList = headers()
+const userAgent = headersList.get('User-Agent')
+
+//creation session avec userAgent
+await addSessionDao({
+    sessionId,
+    userId: uid,
+    expiresAt: expiresAt.toISOString(),
+    userAgent,
+  })
+// Recherche
+const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
+```
+
+- **🐶 Adapte l’algorithme**
+
+_ps : Supprime les sessions de la BDD pour le user-agent_
+
+_ps : Connecte toi avec 2 navigateurs (navigation privé) et expire les date en BDD pour constater les déconnexion_
+
+`ps : on pourrait affiner les sessions avec IP etc …`
+
+Fichiers
+
+- `exercise/auth/lib/session-database.ts`
 
 ## Aller plus loin
 
-📑 Le lien vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
+📑 Le lien vers la doc [https://nextjs.org/docs/app/api-reference/functions/headers](https://nextjs.org/docs/app/api-reference/functions/headers)
 
 ## Ils vont t’aider
 
@@ -76,4 +228,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-react-avis).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=08-session-database).
