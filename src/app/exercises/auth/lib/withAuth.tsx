@@ -1,3 +1,25 @@
-export {default} from './withAuth.exercise'
+import React from 'react'
+import {getConnectedUser} from './dal'
+import {Label} from '@/components/ui/label'
+import {WithAuthProps} from './type'
 
-//export {default} from './withAuth.final'
+const withAuth = <P extends object>(
+  WrappedComponent: React.ComponentType<P & WithAuthProps>
+) => {
+  console.log(`withAuth Component ${WrappedComponent.name} mounted`)
+  return async function WithAuth(props: P) {
+    const user = await getConnectedUser()
+
+    if (!user) {
+      return (
+        <div className="mx-auto max-w-2xl p-6 text-center text-lg">
+          <Label className="text-l mb-4">You are not connected</Label>
+        </div>
+      )
+    }
+
+    return <WrappedComponent {...props} user={user} />
+  }
+}
+
+export default withAuth

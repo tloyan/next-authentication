@@ -1,6 +1,6 @@
-# HOC User Session
+# Auth redirection (client/server)
 
-### 💡 Proteger des routes avec un HOC
+### 💡 Rediriger correctement après une authentification
 
 ## 📝 Tes notes
 
@@ -8,111 +8,63 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Nous avons maintenant une `session` qui permet de récupérer un `user` connecté. Nous avons créé la fonction `getConnectedUser` (que nous avons déplacer dans `dal.ts`) qui nous permet de détecter si un user est connecté et de gérer l’affichage en fonction, Exemple :
+Après une connexion ou déconnexion on peut avoir a rédiger vers des pages spécifiques. Le mécanisme de redirection est different entre les RCC et RSC
+
+**Redirection RSC (`redirect`) :**
 
 ```tsx
-function Page() {
-  const user = await getConnectedUser()
+import { redirect } from 'next/navigation'
+
+export default async function Profile({ params }) {
+  const user = await getUser()
+  if (!user) {
+    redirect('/login')
+  }
+}
+```
+
+📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/redirect
+
+**Redirection RCC (`useRouter`) :**
+
+```tsx
+'use client'
+
+import { useRouter } from 'next/navigation'
+
+export default function Page() {
+  const router = useRouter()
+
   return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
-      {user ? (
-        <Label>Hello {user.email}</Label>
-      ) : (
-        <Label>You are not connected</Label>
-      )}
-    </div>
+    <button
+      type="button"
+      onClick={() => router.push('/dashboard')}
+    >
+      Dashboard
+    </button>
   )
 }
-export default Page
 ```
 
-Ce qui revient à
-
-```tsx
-function Page() {
-
-  const user = await getConnectedUser()
-  if (!user) {
-	  return <Label>You are not connected</Label>
-  }
-
-  return (
-    <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
-        <Label>Hello {user.email}</Label>
-    </div>
-  )
-}
-export default Page
-```
-
-On pourrait ajouter ce bout de code dans toutes nos routes protégées
-
-```tsx
-  const user = await getConnectedUser()
-  if (!user) {
-	  return <Label>You are not connected</Label>
-  }
-```
-
-Mais on va toujours dupliquer beaucoup de code, ce qui rend la maintenance compliquée (Ne respecte pas le principe `DRY` : [Don't Repeat Yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
-
-Pour protéger nos routes nous allons utiliser un [HOC : High Order Component](https://blog.logrocket.com/understanding-react-higher-order-components/) . Les 3 points d’un HOC
-
-- 1. Réutilisation de la Logique des Composants
-- 2. Manipulation des Props
-- 3. Abstraction et Découplage
-
-Exemple
-
-```tsx
-import React, { useState, useEffect } from 'react';
-
-const withEnhancement = (BaseComponent) => {
- // HOC logic using hooks
- return function EnhancedComponent(props) {
-   // HOC-specific logic using hooks
-   return (
-     <BaseComponent {...props} enhancedProp="someValue" />
-   );
- };
-};
-//utilisation
-function NormalComponent {return <></>}
-return withEnhancement(NormalComponent)
-```
+📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
 
 ## Exercice
 
-**🐶** Dans cet exercice tu vas devoir créer un HOC qui aura pour but de
-
-- Récupérer le user connecté avec `getConnectedUser`
-- Afficher : `You are not connected` si pas de `user`
-- Injecter le `props user` au composant afin qu’il puisse être utilisé
-
-🐶 Utilise ensuite ce HOC dans `/auth/page` et les routes protégées
+- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers le `dahsboard /exercises/dashboard` après une connexion (ou si l’utilisateur est connecté).**
+- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers `auth /exercises/auth` après une inscription (ou si l’utilisateur est connecté).**
+- **👨‍✈️ Il te demande également de revenir sur la page `Home (/exercises/)` après une déconnexion**
 
 Fichiers
 
-- `exercise/auth/lib/withAuth.tsx`
-- `exercise/auth/page.tsx`
+- `exercise/login/page.tsx`
+- `exercise/register/page.tsx`
+- `exercise/auth/form/logout-form.tsx`
 
-## Bonus
-
-### 1. 🚀 Protéger les routes `dashboard` et `bank-account`
-
-**🐶** Protège les routes `dashboard` et `bank-account` avec le HOC.
-
-**🐶** Ajoute également le HOC sur `Logout` car on doit être connecté pour pouvoir logout
-
-Fichiers
-
-- `exercise/bank-account/page`
-- `exercise/dashboard/page`
-- `exercise/dashboard/logout`
+##
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://blog.logrocket.com/understanding-react-higher-order-components/](https://blog.logrocket.com/understanding-react-higher-order-components/)
+📑 Le lien vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
 
 ## Ils vont t’aider
 
@@ -124,4 +76,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=06-hoc-user-session).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-react-avis).

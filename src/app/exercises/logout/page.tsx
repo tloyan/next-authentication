@@ -1,4 +1,12 @@
-export {default} from './page.exercise'
+import Logout from '@/app/exercises/auth/form/logout-form'
+import withAuth from '../auth/lib/withAuth'
 
-//1. 🚀 Protéger les routes dashbaord et bank-account
-//export {default} from './page.bonus-1'
+function Page() {
+  return (
+    <div className="mx-auto flex max-w-2xl justify-center p-6 text-lg">
+      <Logout />
+    </div>
+  )
+}
+
+export default withAuth(Page)

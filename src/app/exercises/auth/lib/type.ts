@@ -8,6 +8,10 @@ export type UserDTO = {
   password?: string
 }
 
+export type WithAuthProps = {
+  user: UserDTO
+}
+
 export type SessionPayload = {
   userId?: string | number //used for simple session
   sessionId?: string //used for multisession db
