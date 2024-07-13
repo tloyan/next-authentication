@@ -1,7 +1,7 @@
 'use client'
 import React, {useState} from 'react'
 import {Button} from '@/components/ui/button'
-import {logout} from '@/app/exercises/auth/actions'
+import {logout} from '@/app/exercises/auth/actions-auth'
 import {UserDTO} from '@/app/exercises/auth/lib/type'
 import {useRouter} from 'next/navigation'
 

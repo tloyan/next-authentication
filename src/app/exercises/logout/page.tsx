@@ -1,4 +1,4 @@
-import Logout from './logout'
+import Logout from '../auth/form/logout'
 
 async function Page() {
   return (

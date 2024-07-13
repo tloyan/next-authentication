@@ -1,5 +1,6 @@
 import {SessionPayload} from './type'
 import {SignJWT, jwtVerify} from 'jose'
+import bcrypt from 'bcryptjs'
 
 const ONE_MINUTE = 60 * 1000
 export const EXPIRE_TIME = 10 * ONE_MINUTE //expires in 1 minutes
@@ -50,4 +51,17 @@ export const isExpired = (expiresAt?: string) => {
     return true
   }
   return new Date(expiresAt) < new Date()
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10)
+  const hash = await bcrypt.hash(password, salt)
+  return hash
+}
+
+export async function verifyPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, hash)
 }

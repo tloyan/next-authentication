@@ -5,10 +5,13 @@ import ChangeRoleForm from './form/change-role-form'
 import {RoleEnum} from '@/lib/type'
 import AdminChangeRoleForm from './form/admin-role-form'
 import withAuth from './lib/withAuth'
+//import {getProducts} from '@/db/sgbg-unstorage'
 
 async function Page() {
+  //const products = await getProducts()
   const userLogged = await getConnectedUser()
-  console.log('user', userLogged?.email ?? 'no user logged')
+  // console.log('user', userLogged?.email ?? 'no user logged')
+  // console.log('products', products)
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
       {!userLogged && <Label> You are not connected</Label>}

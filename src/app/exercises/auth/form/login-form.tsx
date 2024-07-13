@@ -1,16 +1,23 @@
-'use client'
-import React from 'react'
-import {useFormState as useActionState, useFormStatus} from 'react-dom'
-import {authenticate} from '@/app/exercises/auth/actions'
+//'use client'
+
+//import {useFormState as useActionState, useFormStatus} from 'react-dom'
+//import {authenticate} from '@/app/exercises/auth/actions-auth'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
+import {signIn} from '@/auth'
 
 export default function LoginForm() {
-  const [actionState, authenticateAction] = useActionState(authenticate, {})
+  //const [actionState, authenticateAction] = useActionState(authenticate, {})
   return (
     <div>
       <h1 className="mb-4 text-center text-3xl font-bold">Login</h1>
-      <form action={authenticateAction}>
+      {/* <form action={authenticateAction}> */}
+      <form
+        action={async (formData) => {
+          'use server'
+          await signIn('credentials', formData)
+        }}
+      >
         <Input
           type="email"
           name="email"
@@ -18,9 +25,9 @@ export default function LoginForm() {
           required
           className="mb-4"
         />
-        {actionState?.errors?.email && (
+        {/* {actionState?.errors?.email && (
           <p className="text-sm text-red-500">{actionState.errors.email}</p>
-        )}
+        )} */}
         <Input
           type="password"
           name="password"
@@ -28,30 +35,26 @@ export default function LoginForm() {
           required
           className="mb-4"
         />
-        {actionState?.errors?.password && (
+        {/* {actionState?.errors?.password && (
           <p className="text-sm text-red-500">{actionState.errors.password}</p>
-        )}
+        )} */}
 
-        <div className="text-red-500">
+        {/* <div className="text-red-500">
           {actionState?.message && <p>{actionState.message}</p>}
-        </div>
+        </div> */}
         <LoginButton />
       </form>
     </div>
   )
 }
 function LoginButton() {
-  const {pending} = useFormStatus()
+  // const {pending} = useFormStatus()
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (pending) {
-      event.preventDefault()
-    }
-  }
+  // const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   if (pending) {
+  //     event.preventDefault()
+  //   }
+  // }
 
-  return (
-    <Button disabled={pending} type="submit" onClick={handleClick}>
-      Login
-    </Button>
-  )
+  return <Button type="submit">Login</Button>
 }

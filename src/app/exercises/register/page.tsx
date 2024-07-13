@@ -4,7 +4,7 @@ import {redirect} from 'next/navigation'
 
 export default async function Page() {
   const userLogged = await getConnectedUser()
-
+  console.log('userLogged register', userLogged)
   if (userLogged) {
     redirect('/exercises/auth')
   }

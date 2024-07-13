@@ -54,7 +54,7 @@ export async function verifySession() {
       sessionId: session.sessionId,
     }
   }
-  console.log('verifySession Session (database) expired')
+  console.log('verifySession Session (database) expired', sessionDao)
   //deleteSession() cannot delete cookie from server side
   return {
     isAuth: false,

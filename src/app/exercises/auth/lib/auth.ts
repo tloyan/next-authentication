@@ -1,9 +1,10 @@
 import {addUser, getUserByEmail} from '@/db/sgbd'
 import {RoleEnum} from '@/lib/type'
-import bcrypt from 'bcrypt'
+//import bcrypt from 'bcrypt'
 
-import {createSession, deleteSession} from './session'
+import {deleteSession} from './session'
 import {SignInError} from './type'
+import {hashPassword, verifyPassword} from './crypt'
 
 const signUp = async (email: string, password: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -13,19 +14,17 @@ const signUp = async (email: string, password: string) => {
     throw new Error('User already exists')
   }
   console.log('Signing up...', email, password)
-  const saltRounds = 10
-  const salt = await bcrypt.genSalt(saltRounds)
 
   // Hachage du mot de passe avec le salt
-  const hashedPassword = await bcrypt.hash(password, salt)
+  const hashedPassword = await hashPassword(password)
   const newUser = {
     email,
     password: hashedPassword,
     name: 'John Doe',
     role: RoleEnum.SUPER_ADMIN, //RoleEnum.USER,
   }
-  const createdUser = await addUser(newUser)
-  await createSession(createdUser.id)
+  await addUser(newUser)
+  //await createSession(createdUser.id)
   return {email: newUser.email, role: newUser.role}
 }
 
@@ -42,7 +41,7 @@ const signIn = async (email: string, password: string) => {
     } as SignInError
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password)
+  const passwordMatch = await verifyPassword(password, user.password)
 
   if (!passwordMatch) {
     // eslint-disable-next-line no-throw-literal
@@ -51,7 +50,7 @@ const signIn = async (email: string, password: string) => {
       message: 'Invalid credentials.',
     } as SignInError
   }
-  await createSession(user.id)
+  //await createSession(user.id)
   return {email: user.email, role: user.role}
 }
 
