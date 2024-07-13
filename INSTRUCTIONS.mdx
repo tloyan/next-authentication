@@ -1,6 +1,6 @@
-# Strategy Pattern
+# Next Middleware
 
-### 💡 Comprendre Strategy Pattern
+### 💡 Comprendre Next Middleware
 
 ## 📝 Tes notes
 
@@ -8,129 +8,79 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans le développement de logiciels, il est souvent nécessaire de pouvoir modifier le comportement d'un objet sans changer son code source. C'est là que le pattern Strategy intervient. Ce pattern permet de définir une famille d'algorithmes, de les encapsuler individuellement et de les rendre interchangeables. Cela permet de varier l'algorithme ou la logique utilisée par un objet sans altérer son fonctionnement global.
+Les middlewares dans Next.js **permettent d'exécuter du code avant qu'une requête ne soit complétée**. Grâce aux middlewares, vous pouvez modifier la réponse en réécrivant, redirigeant, modifiant les en-têtes de requête ou de réponse, ou en répondant directement en fonction de la requête entrante.
 
-Le pattern Strategy est particulièrement utile dans les situations où plusieurs algorithmes pour effectuer une tâche sont disponibles et où l'algorithme à utiliser peut varier en fonction du contexte. Ce pattern favorise également la réutilisabilité du code et la séparation des préoccupations.
+Les middlewares s'exécutent avant que le contenu mis en cache et les routes ne soient appariés.
 
-### Exemple Pratique dans Next.js
+### Cas d'Utilisation des Middlewares
 
-Pour illustrer le pattern Strategy, prenons l'exemple de la gestion des sessions utilisateur dans une application Next.js. Selon l'environnement ou les exigences spécifiques, vous pouvez choisir de gérer les sessions de manière **stateless** (sans état) ou en les stockant dans une **base de données**. Le pattern Strategy permet de basculer entre ces deux méthodes de manière transparente.
+Intégrer des middlewares dans votre application peut entraîner des améliorations significatives en termes de performances, de sécurité et d'expérience utilisateur. Voici quelques scénarios courants où les middlewares sont particulièrement efficaces :
 
-### Définition des Stratégies
+- **Authentification et Autorisation** : Vérifiez l'identité de l'utilisateur et contrôlez les cookies de session avant de lui accorder l'accès à des pages ou des routes API spécifiques.
+- **Redirections Serveur** : Redirigez les utilisateurs au niveau du serveur en fonction de certaines conditions (par exemple, la langue, le rôle de l'utilisateur).
+- **Réécriture de Chemins** : Prenez en charge les tests A/B, les déploiements de fonctionnalités ou les chemins d'accès hérités en réécrivant dynamiquement les chemins vers des routes API ou des pages en fonction des propriétés de la requête.
+- **Détection de Bots** : Protégez vos ressources en détectant et en bloquant le trafic des bots.
+- **Journalisation et Analyse** : Capturez et analysez les données de la requête pour obtenir des informations avant le traitement par la page ou l'API.
+- **Gestion de Fonctionnalités** : Activez ou désactivez des fonctionnalités de manière dynamique pour des déploiements de fonctionnalités ou des tests en douceur.
 
-Nous avons developper deux stratégies pour la gestion des sessions :
+### Scénarios à Éviter avec les Middlewares
 
-1. **Stateless** : Les sessions sont gérées sans état, souvent à l'aide de JSON Web Tokens (JWT).
-2. **Database** : Les sessions sont stockées dans une base de données.
+Il est également important de reconnaître les situations où les middlewares ne sont pas la solution optimale :
 
-Nous avons des fonctions spécifiques pour chaque méthode de gestion des sessions :
+- **Récupération et Manipulation Complexe de Données** : Les middlewares ne sont pas conçus pour la récupération directe ou la manipulation des données, cela doit être fait au sein des gestionnaires de routes ou des utilitaires côté serveur.
+- **Tâches Computationnelles Lourdes** : Les middlewares doivent être légers et répondre rapidement. Les tâches computationnelles lourdes ou les processus de longue durée doivent être effectués dans des gestionnaires de routes dédiés.
+- **Gestion Extensive de Sessions** : Bien que les middlewares puissent gérer des tâches de session basiques, la gestion extensive de sessions doit être confiée à des services d'authentification dédiés ou aux gestionnaires de routes.
+- **Opérations Directes sur la Base de Données** : Les opérations directes sur la base de données dans les middlewares ne sont pas recommandées. Les interactions avec la base de données doivent être effectuées dans les gestionnaires de routes ou les utilitaires côté serveur.
 
-- `createSession`
-- `verifySession`
-- `updateSession`
-- `deleteSession`
+Un exemple simple est par exemple de dire
 
-Chacune de ces fonctions a une implémentation pour chaque stratégie.
-
-### Implémentation du Pattern Strategy
-
-L’idée est que les couches qui appellent les fonctions de sessions n’ont pas a ce préoccuper du type de gestion de session.
-
-Pour cela nous allons interdire ce type d’import spécifique
+- Si une requête est faite sur `‘/’` on redirige vers `‘/exercises’`
 
 ```tsx
-//❌
-import {createSession, deleteSession} from './session-database'
-//❌
-import {createSession, deleteSession} from './session-stateless'
+//src/middleware.ts
+import {NextResponse, type NextRequest} from 'next/server'
 
-// Mais on autorise
-//✅
-import {createSession, deleteSession} from './session'
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname
+  if (path === '/') {
+    return NextResponse.redirect(new URL('/exercises', request.url))
+  }
+  return NextResponse.next()
+}
 ```
 
-Il est possible de définir des règles au niveau du `linter` pour interdire ces imports
-
-```json
-//.eslintrc.json
-"no-restricted-imports": [
-      "error",
-      {
-        "paths": [
-          {
-            "name": "./session-stateless",
-            "importNames": ["createSession", "deleteSession", "verifySession"],
-            "message": "Do not import these session management functions from this module."
-          },
-          {
-            "name": "./session-database",
-            "importNames": ["createSession", "deleteSession", "verifySession"],
-            "message": "Do not import these session management functions from this module."
-          }
-        ]
-      }
-    ]
-```
+📑 Le liens vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 
 ## Exercice
 
-Dans cet exercice tu as un type à disposition : `SessionType`
+Dans les exercices précédents nous avons utiliser un HOC `withAuth` pour protéger nos routes. Nous allons ici une autre méthode, le `middleware next`. Pour les besoins de l’exercice nous avons supprimer `withAuth` des routes protégées (`dashboard` / `bank-account` etc …)
 
-```tsx
-export enum SessionType {
-  STATELESS = 'STATELESS',
-  DATABASE = 'DATABASE',
-}
-```
+- Elles ne sont donc plus protégées
 
-Et le type de session sera définis en variable d’environnement
+**🐶 Dans cet exercice tu vas devoir implémenter un middleware pour protéger les routes privées.**
 
-```json
-SESSION_TYPE=DATABASE
-```
+\*\*\*\*Le principe va être de :
 
-Pour déterminer le type il suffira de faire dans notre fichier `session.ts`
-
-```tsx
-const SESSION_TYPE: SessionType = process.env.SESSION_TYPE as SessionType
-```
-
-Pour les besoins de l’exercice nous avons modifier tous les imports de sessions dans `auth.ts et dal.ts` et nous avons maintenant un fichier `sessions.ts` qui appelle la version stateless
-
-```tsx
-export async function createSession(userId: string) {
-  return await createSessionStateLess(userId)
-}
-export async function verifySession() {
-  return await verifySessionStateless()
-}
-export async function updateSession() {
-  return await updateSessionStateLess()
-}
-
-export function deleteSession() {
-  return deleteSessionStateLess()
-}
-```
-
-- **🐶 Implémente le stategy pattern pour pouvoir switcher d’implementation en fonction de** `SESSION_TYPE` défini dans le `.env`
-
-ps : pense à tester tous les cas de types de sessions
-
-```tsx
-//.env
-SESSION_TYPE=DATABASE
-SESSION_TYPE=STATELESS
-SESSION_TYPE=
-```
+- Analyser la route demandér (publique ou privée)
+- Décrypter le cookie
+- Vérifier la présence ou non de `sessionId` ou `userId`
+- Rediriger en conséquence
+  - Route privée
+    - Pas de session → redirection `/login`
+    - Si session → on laisse passer
+  - Route publique
+    - Pas de session → on laisse passer
+    - Si session → redirection `/auth`
 
 Fichiers
 
-- `exercise/auth/lib/session.ts`
+- `src/middleware.ts`
+
+##
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://en.wikipedia.org/wiki/Strategy_pattern](https://en.wikipedia.org/wiki/Strategy_pattern)
+📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/routing/redirecting#nextresponseredirect-in-middleware](https://nextjs.org/docs/app/building-your-application/routing/redirecting#nextresponseredirect-in-middleware)
 
 ## Ils vont t’aider
 
@@ -142,4 +92,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=09-stategy-pattern).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=10%20middleware).
