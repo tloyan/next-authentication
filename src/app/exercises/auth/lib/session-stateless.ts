@@ -33,3 +33,21 @@ export async function verifySession() {
 export function deleteSession() {
   cookies().delete('session')
 }
+
+export async function updateSession() {
+  const session = cookies().get('session')?.value
+  const payload = await decrypt(session)
+
+  if (!session || !payload) {
+    return
+  }
+
+  //const expires = new Date(Date.now() + EXPIRE_TIME)
+  // cookies().set('session', session, {
+  //   httpOnly: true,
+  //   secure: true,
+  //   expires,
+  //   sameSite: 'lax',
+  //   path: '/',
+  // })
+}

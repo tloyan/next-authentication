@@ -1,6 +1,11 @@
 import {RoleEnum} from '@/lib/type'
 import {z} from 'zod'
 
+export enum SessionType {
+  STATELESS = 'STATELESS',
+  DATABASE = 'DATABASE',
+}
+
 export type UserDTO = {
   email: string
   name?: string

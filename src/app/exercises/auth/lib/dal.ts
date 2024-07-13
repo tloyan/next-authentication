@@ -1,6 +1,6 @@
 import 'server-only'
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
-import {verifySession, updateSession} from './session-database'
+import {verifySession, updateSession} from './session'
 import {getUserById} from '@/db/sgbd'
 import {User} from '@/lib/type'
 import {UserDTO} from './type'

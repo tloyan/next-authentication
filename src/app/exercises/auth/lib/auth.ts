@@ -2,7 +2,7 @@ import {RoleEnum} from '@/lib/type'
 import bcrypt from 'bcrypt'
 import {addUser, getUserByEmail} from '@/db/sgbd'
 import {SignInError} from './type'
-import {createSession, deleteSession} from './session-database'
+import {createSession, deleteSession} from './session'
 
 const signUp = async (email: string, password: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000))
