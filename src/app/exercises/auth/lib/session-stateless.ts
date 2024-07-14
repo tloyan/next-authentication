@@ -3,10 +3,12 @@ import 'server-only'
 import {cookies} from 'next/headers'
 
 import {EXPIRE_TIME, decrypt, encrypt} from './crypt'
+import {getUserById} from '@/db/sgbd'
 
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
-  const session = await encrypt({userId, expiresAt})
+  const user = await getUserById(userId)
+  const session = await encrypt({userId, expiresAt, role: user?.role})
 
   cookies().set('session', session, {
     httpOnly: true,
@@ -27,7 +29,7 @@ export async function verifySession() {
     return
   }
 
-  return {isAuth: true, userId: session.userId}
+  return {isAuth: true, userId: session.userId, role: session.role}
 }
 
 export function deleteSession() {

@@ -59,6 +59,13 @@
       "password": "$2b$10$uSEad4NQL0lEQQxUWzN3J.LV0vENYSCqBHb9EmNl8ltAAiotpVkWK",
       "name": "John Doe",
       "role": "SUPER_ADMIN"
+    },
+    {
+      "id": "3",
+      "email": "b@b.fr",
+      "password": "$2b$10$ctVHPcQ6RdTSIYnxUVbj6uzjbe9P1Cmku.vcon9uLj4I/xYpXGwvO",
+      "name": "John Doe",
+      "role": "REDACTOR"
     }
   ],
   "sessions": [

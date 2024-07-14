@@ -1,6 +1,6 @@
-# Next Middleware
+# Middleware - AuthZ (Authorization)
 
-### 💡 Comprendre Next Middleware
+### 💡 Protéger des routes avec de l’autorisation
 
 ## 📝 Tes notes
 
@@ -8,79 +8,127 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Les middlewares dans Next.js **permettent d'exécuter du code avant qu'une requête ne soit complétée**. Grâce aux middlewares, vous pouvez modifier la réponse en réécrivant, redirigeant, modifiant les en-têtes de requête ou de réponse, ou en répondant directement en fonction de la requête entrante.
+Dans le monde de la sécurité informatique, deux concepts fondamentaux jouent un rôle crucial dans la protection des systèmes et des données : l'authentification (AuthN) et l'autorisation (AuthZ). Bien que souvent confondus, ces termes désignent des processus distincts mais complémentaires. Comprendre la différence entre l'authentification et l'autorisation est essentiel pour sécuriser efficacement vos applications et services.
 
-Les middlewares s'exécutent avant que le contenu mis en cache et les routes ne soient appariés.
+### **Authentification (AuthN)** :
 
-### Cas d'Utilisation des Middlewares
+L'authentification est le processus de vérification de l'identité d'un utilisateur. Elle répond à la question "Qui es-tu ?". Lorsqu'un utilisateur tente d'accéder à une application ou un service, il doit prouver son identité, généralement par des moyens tels qu'un nom d'utilisateur et un mot de passe, un jeton (token), ou d'autres formes de preuve d'identité comme des empreintes digitales ou des codes envoyés par SMS. Une fois l'identité vérifiée, l'utilisateur est authentifié.
 
-Intégrer des middlewares dans votre application peut entraîner des améliorations significatives en termes de performances, de sécurité et d'expérience utilisateur. Voici quelques scénarios courants où les middlewares sont particulièrement efficaces :
+Exemple :
 
-- **Authentification et Autorisation** : Vérifiez l'identité de l'utilisateur et contrôlez les cookies de session avant de lui accorder l'accès à des pages ou des routes API spécifiques.
-- **Redirections Serveur** : Redirigez les utilisateurs au niveau du serveur en fonction de certaines conditions (par exemple, la langue, le rôle de l'utilisateur).
-- **Réécriture de Chemins** : Prenez en charge les tests A/B, les déploiements de fonctionnalités ou les chemins d'accès hérités en réécrivant dynamiquement les chemins vers des routes API ou des pages en fonction des propriétés de la requête.
-- **Détection de Bots** : Protégez vos ressources en détectant et en bloquant le trafic des bots.
-- **Journalisation et Analyse** : Capturez et analysez les données de la requête pour obtenir des informations avant le traitement par la page ou l'API.
-- **Gestion de Fonctionnalités** : Activez ou désactivez des fonctionnalités de manière dynamique pour des déploiements de fonctionnalités ou des tests en douceur.
+- **Connexion à un site web** : Lorsqu'un utilisateur entre son nom d'utilisateur et son mot de passe, le système vérifie que ces informations correspondent à celles enregistrées dans la base de données. Si elles correspondent, l'utilisateur est authentifié et peut accéder à son compte.
 
-### Scénarios à Éviter avec les Middlewares
+### **Autorisation (AuthZ)** :
 
-Il est également important de reconnaître les situations où les middlewares ne sont pas la solution optimale :
+L'autorisation, en revanche, détermine les permissions et les niveaux d'accès d'un utilisateur authentifié. Elle répond à la question "Que peux-tu faire ?". Une fois qu'un utilisateur est authentifié, le système doit vérifier quels privilèges et accès lui sont accordés. Cela peut inclure l'accès à certaines ressources, la capacité à exécuter des actions spécifiques ou des niveaux de permissions particuliers.
 
-- **Récupération et Manipulation Complexe de Données** : Les middlewares ne sont pas conçus pour la récupération directe ou la manipulation des données, cela doit être fait au sein des gestionnaires de routes ou des utilitaires côté serveur.
-- **Tâches Computationnelles Lourdes** : Les middlewares doivent être légers et répondre rapidement. Les tâches computationnelles lourdes ou les processus de longue durée doivent être effectués dans des gestionnaires de routes dédiés.
-- **Gestion Extensive de Sessions** : Bien que les middlewares puissent gérer des tâches de session basiques, la gestion extensive de sessions doit être confiée à des services d'authentification dédiés ou aux gestionnaires de routes.
-- **Opérations Directes sur la Base de Données** : Les opérations directes sur la base de données dans les middlewares ne sont pas recommandées. Les interactions avec la base de données doivent être effectuées dans les gestionnaires de routes ou les utilitaires côté serveur.
+Exemple :
 
-Un exemple simple est par exemple de dire
+- **Accès aux fonctionnalités** : Après s'être connecté, un utilisateur avec le rôle "Admin" peut avoir accès à des fonctionnalités d'administration comme la gestion des utilisateurs et la modification des paramètres du site, tandis qu'un utilisateur avec le rôle "Utilisateur" n'aura accès qu'à ses propres données et fonctionnalités limitées.
 
-- Si une requête est faite sur `‘/’` on redirige vers `‘/exercises’`
+### Pourquoi ces distinctions sont-elles importantes ?
+
+Dans toute application sécurisée, il est crucial de mettre en œuvre à la fois l'authentification et l'autorisation. L'authentification assure que les utilisateurs sont bien ceux qu'ils prétendent être, tandis que l'autorisation garantit que ces utilisateurs n'accèdent qu'aux ressources et actions pour lesquelles ils sont autorisés. Ignorer l'une de ces étapes peut entraîner des failles de sécurité importantes, comme l'accès non autorisé à des données sensibles ou la prise de contrôle de fonctionnalités critiques.
+
+### En résumé
+
+- **Authentification (AuthN)** : Vérifie l'identité de l'utilisateur.
+- **Autorisation (AuthZ)** : Détermine ce que l'utilisateur authentifié est autorisé à faire.
+
+Jusqu'à la nous avons mise en place l’authentification, nous allons maintenant faire de l’autorisation avec un cas relativement basique. La protection de routes en fonction des rôles. Jusque là nous avions :
+
+- Non authentifier → routes publiques
+- Authentifier → routes protégées
+
+Nous n’avons pas assez de finesse pour gérer d’autres type de routes comme par exemple celles d’un administrateur. Pour faire cela nous allons introduire des ROLES
 
 ```tsx
-//src/middleware.ts
-import {NextResponse, type NextRequest} from 'next/server'
-
-export async function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname
-  if (path === '/') {
-    return NextResponse.redirect(new URL('/exercises', request.url))
-  }
-  return NextResponse.next()
+export enum RoleEnum {
+  USER = 'USER',
+  GUEST = 'GUEST ',
+  REDACTOR = 'REDACTOR',
+  MODERATOR = 'MODERATOR ',
+  ADMIN = 'ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN',
 }
 ```
 
-📑 Le liens vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+Il va falloir ce baser sur ces rôles pour gérer les accès.
+
+### Accès Database dans le middleware ?
+
+Dans le middleware nous accédons a la session stocké dans le cookies
+
+```tsx
+const hasSession = session?.userId || session?.sessionId
+```
+
+On pourrait envisager faire un appelle à cette fonction pour récupérer le rôle
+
+```tsx
+const user = await getUserById(session?.userId)
+user.role
+```
+
+**Mais cela n’est pas une bonne approche !**
+
+- Le middleware s’exécute dans le runtime [EDGE](https://vercel.com/docs/functions/runtimes/edge-runtime) (qui n’a pas accès toutes l’api de Node, comme par exemple FS) Il nous est donc impossible d’appeler notre BDD.
+- On pourrait utiliser d’autre système compatible (`unstorage`, `drizzle`) mais il ne faut pas oublier que le `midleware` est exécuter à chaque requête serveur. Faire des appels en BDD ralentirait considérablement le site.
+
+**La solution ?**
+
+- Mettre l’information rôle dans la session (cookie)
+- Il sera peu couteux de récupérer cette information dans le middleware
+
+**Est ce sécure ?**
+
+- Un utilisateur malveillant pourrait envoyer une requête en changeant le role (USER→ ADMIN) dans la requête HTTP.
+- Pour éviter cela, **IL EST IMPERATIF d’utiliser JWT. Avec** JWT une requête modifiée serait invalidée coté serveur.
 
 ## Exercice
 
-Dans les exercices précédents nous avons utiliser un HOC `withAuth` pour protéger nos routes. Nous allons ici une autre méthode, le `middleware next`. Pour les besoins de l’exercice nous avons supprimer `withAuth` des routes protégées (`dashboard` / `bank-account` etc …)
+**👨‍✈️ Hugo le chef de projet te demande** d’implémenter un système d’autorisation et d’implémenter les règles suivantes
 
-- Elles ne sont donc plus protégées
+- Si un utilisateur a le rôle `ADMIN` ou `SUPER_AMDIN` : il peut accéder à tout plus : `/exercices/admin`
+- Si un utilisateur a le rôle `REDACTOR` ou `MODERATOR` : il peut accéder à tout plus : `/exercices/ban`
 
-**🐶 Dans cet exercice tu vas devoir implémenter un middleware pour protéger les routes privées.**
+Pour simplifier l’exercice le `rôle` a été ajouté dans la session, il sera donc accessible dans le middleware.
 
-\*\*\*\*Le principe va être de :
+```tsx
+//type.ts
+export type SessionPayload = {
+  userId?: string | number
+  sessionId?: string
+  expiresAt: Date
+  role?: RoleEnum
+}
+//session.ts
+const user = await getUserById(uid)
+const session = await encrypt({
+  sessionId: sessionByUid.sessionId,
+  expiresAt,
+  role: user?.role,
+})
+```
 
-- Analyser la route demandér (publique ou privée)
-- Décrypter le cookie
-- Vérifier la présence ou non de `sessionId` ou `userId`
-- Rediriger en conséquence
-  - Route privée
-    - Pas de session → redirection `/login`
-    - Si session → on laisse passer
-  - Route publique
-    - Pas de session → on laisse passer
-    - Si session → redirection `/auth`
+2 routes fictives ont été ajoutées
+
+- `/admin`
+- `/redaction`
+
+Ainsi qu’une route `/restricted` qui affiche un message de restriction
+
+**🐶 Implémente les règles demandé par le chef de projet.**
+
+ps : édite le fichier `src/db/db.json` pour changer les rôles
 
 Fichiers
 
 - `src/middleware.ts`
 
-##
-
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/routing/redirecting#nextresponseredirect-in-middleware](https://nextjs.org/docs/app/building-your-application/routing/redirecting#nextresponseredirect-in-middleware)
+📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 
 ## Ils vont t’aider
 
@@ -92,4 +140,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=10%20middleware).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=11-middleware-authorization).

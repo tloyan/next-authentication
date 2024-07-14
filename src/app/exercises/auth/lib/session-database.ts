@@ -7,6 +7,7 @@ import {
   deleteSession as deleteSessionDao,
   updateSession as updateSessionDao,
   findSessionByUidUserAgent,
+  getUserById,
 } from '@/db/sgbd'
 import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
@@ -17,6 +18,7 @@ export async function createSession(uid: string) {
   console.log('createSession userAgent', userAgent)
 
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
+  const user = await getUserById(uid)
 
   //1 . recuperation session par uid et userAgent
   const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
@@ -31,6 +33,7 @@ export async function createSession(uid: string) {
     const session = await encrypt({
       sessionId: sessionByUid.sessionId,
       expiresAt,
+      role: user?.role,
     })
     cookies().set('session', session, {
       httpOnly: true,
@@ -50,9 +53,10 @@ export async function createSession(uid: string) {
     userId: uid,
     expiresAt: expiresAt.toISOString(),
     userAgent,
+    role: user?.role, // 2. Encrypt the session ID
   })
   // 2. Encrypt the session ID
-  const session = await encrypt({sessionId, expiresAt})
+  const session = await encrypt({sessionId, expiresAt, role: user?.role})
 
   // 3. Store the session in cookies for optimistic auth checks
   cookies().set('session', session, {
@@ -80,6 +84,7 @@ export async function verifySession() {
       isAuth: true,
       userId: sessionDao.userId,
       sessionId: session.sessionId,
+      role: sessionDao.role,
     }
   }
   console.log('verifySession Session (database) expired')

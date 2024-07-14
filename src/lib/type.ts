@@ -49,4 +49,5 @@ export type Session = {
   userId: string
   expiresAt: string
   userAgent?: string | null
+  role?: RoleEnum
 }
