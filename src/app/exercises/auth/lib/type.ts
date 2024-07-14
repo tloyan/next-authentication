@@ -55,4 +55,15 @@ export const SignupFormSchema = z
     }
   )
 
+export const ChangeRoleSchema = z.object({
+  role: z.nativeEnum(RoleEnum, {
+    message: 'Role must be a valid RoleEnum value',
+  }),
+})
+export const ChangeUserRoleSchema = z.object({
+  email: z.string().email({message: 'Please enter a valid email.'}),
+  role: z.nativeEnum(RoleEnum, {
+    message: 'Role must be a valid RoleEnum value',
+  }),
+})
 //export type FormSchemaType = z.infer<typeof SignupFormSchema>

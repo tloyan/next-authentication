@@ -1,6 +1,6 @@
-# Middleware - AuthZ (Authorization)
+# Autorization (AuthZ) Server Action
 
-### 💡 Protéger des routes avec de l’autorisation
+### 💡 Protéger les server actions
 
 ## 📝 Tes notes
 
@@ -8,127 +8,74 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans le monde de la sécurité informatique, deux concepts fondamentaux jouent un rôle crucial dans la protection des systèmes et des données : l'authentification (AuthN) et l'autorisation (AuthZ). Bien que souvent confondus, ces termes désignent des processus distincts mais complémentaires. Comprendre la différence entre l'authentification et l'autorisation est essentiel pour sécuriser efficacement vos applications et services.
+Nous avons vu précèdent comment vérifier qu’un utilisateur est connecté ou non pour autoriser l’accès à des routes. Nous avons également vu comment autoriser certaines routes en fonction du rôle (RBAC)
 
-### **Authentification (AuthN)** :
-
-L'authentification est le processus de vérification de l'identité d'un utilisateur. Elle répond à la question "Qui es-tu ?". Lorsqu'un utilisateur tente d'accéder à une application ou un service, il doit prouver son identité, généralement par des moyens tels qu'un nom d'utilisateur et un mot de passe, un jeton (token), ou d'autres formes de preuve d'identité comme des empreintes digitales ou des codes envoyés par SMS. Une fois l'identité vérifiée, l'utilisateur est authentifié.
-
-Exemple :
-
-- **Connexion à un site web** : Lorsqu'un utilisateur entre son nom d'utilisateur et son mot de passe, le système vérifie que ces informations correspondent à celles enregistrées dans la base de données. Si elles correspondent, l'utilisateur est authentifié et peut accéder à son compte.
-
-### **Autorisation (AuthZ)** :
-
-L'autorisation, en revanche, détermine les permissions et les niveaux d'accès d'un utilisateur authentifié. Elle répond à la question "Que peux-tu faire ?". Une fois qu'un utilisateur est authentifié, le système doit vérifier quels privilèges et accès lui sont accordés. Cela peut inclure l'accès à certaines ressources, la capacité à exécuter des actions spécifiques ou des niveaux de permissions particuliers.
-
-Exemple :
-
-- **Accès aux fonctionnalités** : Après s'être connecté, un utilisateur avec le rôle "Admin" peut avoir accès à des fonctionnalités d'administration comme la gestion des utilisateurs et la modification des paramètres du site, tandis qu'un utilisateur avec le rôle "Utilisateur" n'aura accès qu'à ses propres données et fonctionnalités limitées.
-
-### Pourquoi ces distinctions sont-elles importantes ?
-
-Dans toute application sécurisée, il est crucial de mettre en œuvre à la fois l'authentification et l'autorisation. L'authentification assure que les utilisateurs sont bien ceux qu'ils prétendent être, tandis que l'autorisation garantit que ces utilisateurs n'accèdent qu'aux ressources et actions pour lesquelles ils sont autorisés. Ignorer l'une de ces étapes peut entraîner des failles de sécurité importantes, comme l'accès non autorisé à des données sensibles ou la prise de contrôle de fonctionnalités critiques.
-
-### En résumé
-
-- **Authentification (AuthN)** : Vérifie l'identité de l'utilisateur.
-- **Autorisation (AuthZ)** : Détermine ce que l'utilisateur authentifié est autorisé à faire.
-
-Jusqu'à la nous avons mise en place l’authentification, nous allons maintenant faire de l’autorisation avec un cas relativement basique. La protection de routes en fonction des rôles. Jusque là nous avions :
-
-- Non authentifier → routes publiques
-- Authentifier → routes protégées
-
-Nous n’avons pas assez de finesse pour gérer d’autres type de routes comme par exemple celles d’un administrateur. Pour faire cela nous allons introduire des ROLES
+Il est important également de protéger les Server Actions (qui ne sont pas des routes). Un méthode simple consiste a vérifier que le user est `authentifier` (via la session par exemple)
 
 ```tsx
-export enum RoleEnum {
-  USER = 'USER',
-  GUEST = 'GUEST ',
-  REDACTOR = 'REDACTOR',
-  MODERATOR = 'MODERATOR ',
-  ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN',
-}
+//action.ts
+'use server';
+export async function addItem(formData: FormData) {
+  const {userId} = session();
+
+  if (!userId) {
+    throw new Error('You must be signed in to add an item to your cart');
+  }
+
+  console.log('add item server action', formData);
+  }
 ```
 
-Il va falloir ce baser sur ces rôles pour gérer les accès.
-
-### Accès Database dans le middleware ?
-
-Dans le middleware nous accédons a la session stocké dans le cookies
+Mais il est également possible de protéger certaines fonctionnalité en fonction du `role`. Exemple
 
 ```tsx
-const hasSession = session?.userId || session?.sessionId
+//action.ts
+'use server';
+export async function addItem(formData: FormData) {
+  const {role} = session();
+
+  if (role !=== 'ADMIN') {
+    throw new Error('You cannot delete this product listing');
+  }
+	deleteProduct(formData.get('id'))
+  }
 ```
-
-On pourrait envisager faire un appelle à cette fonction pour récupérer le rôle
-
-```tsx
-const user = await getUserById(session?.userId)
-user.role
-```
-
-**Mais cela n’est pas une bonne approche !**
-
-- Le middleware s’exécute dans le runtime [EDGE](https://vercel.com/docs/functions/runtimes/edge-runtime) (qui n’a pas accès toutes l’api de Node, comme par exemple FS) Il nous est donc impossible d’appeler notre BDD.
-- On pourrait utiliser d’autre système compatible (`unstorage`, `drizzle`) mais il ne faut pas oublier que le `midleware` est exécuter à chaque requête serveur. Faire des appels en BDD ralentirait considérablement le site.
-
-**La solution ?**
-
-- Mettre l’information rôle dans la session (cookie)
-- Il sera peu couteux de récupérer cette information dans le middleware
-
-**Est ce sécure ?**
-
-- Un utilisateur malveillant pourrait envoyer une requête en changeant le role (USER→ ADMIN) dans la requête HTTP.
-- Pour éviter cela, **IL EST IMPERATIF d’utiliser JWT. Avec** JWT une requête modifiée serait invalidée coté serveur.
 
 ## Exercice
 
-**👨‍✈️ Hugo le chef de projet te demande** d’implémenter un système d’autorisation et d’implémenter les règles suivantes
-
-- Si un utilisateur a le rôle `ADMIN` ou `SUPER_AMDIN` : il peut accéder à tout plus : `/exercices/admin`
-- Si un utilisateur a le rôle `REDACTOR` ou `MODERATOR` : il peut accéder à tout plus : `/exercices/ban`
-
-Pour simplifier l’exercice le `rôle` a été ajouté dans la session, il sera donc accessible dans le middleware.
+Dans cet exercice nous avons sur la page `exercices/auth` 2 nouveaux formulaires.
 
 ```tsx
-//type.ts
-export type SessionPayload = {
-  userId?: string | number
-  sessionId?: string
-  expiresAt: Date
-  role?: RoleEnum
-}
-//session.ts
-const user = await getUserById(uid)
-const session = await encrypt({
-  sessionId: sessionByUid.sessionId,
-  expiresAt,
-  role: user?.role,
-})
+//exercices/auth/page.tsx
+<ChangeRoleForm />
+<AdminChangeRoleForm />
 ```
 
-2 routes fictives ont été ajoutées
+2 formulaires qui permettent de :
 
-- `/admin`
-- `/redaction`
+- `ChangeRoleForm` : Changer le rôle de l’utilisateur connecté
+- `AdminChangeRoleForm` : Changer le rôle de n’importe quel user dans l’application
 
-Ainsi qu’une route `/restricted` qui affiche un message de restriction
+Pour simplifier l’exercice, ces formulaire sont fournis et connecté au server actions.
 
-**🐶 Implémente les règles demandé par le chef de projet.**
+Mais aucune règle n’est présente pour déterminer ce que l’utilisateur peut faire.
 
-ps : édite le fichier `src/db/db.json` pour changer les rôles
+**👨‍✈️ Hugo le chef de projet te demande de gérer l’autorisation des actions avec les règles suivantes :**
+
+- **Les utilisateurs peuvent changer `LEURS` rôles ( `changeConnectedUserRole` ) mais sans augmentation de privilèges** Exemple:
+  - Passer de `ADMIN` à `REDACTOR` → OK
+  - Passer de `REDACTOR` à `ADMIN` → KO
+- Les `ADMIN` et `SUPER_ADMIN` peuvent changer le rôles de n’importe qu’el user dans l’application (`changeUserRole`)
 
 Fichiers
 
-- `src/middleware.ts`
+- `exercise/auth/action.ts`
+
+##
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+📑 Le lien vers la doc [https://www.w3schools.com/html/html_css.asp](https://www.w3schools.com/html/html_css.asp)
 
 ## Ils vont t’aider
 
@@ -140,4 +87,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=11-middleware-authorization).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=12-authorization-server-action).

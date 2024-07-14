@@ -51,14 +51,14 @@
       "email": "a@a.fr",
       "password": "$2b$10$ctVHPcQ6RdTSIYnxUVbj6uzjbe9P1Cmku.vcon9uLj4I/xYpXGwvO",
       "name": "John",
-      "role": "USER"
+      "role": "ADMIN"
     },
     {
       "id": "2",
       "email": "admin@mikecodeur.com",
       "password": "$2b$10$uSEad4NQL0lEQQxUWzN3J.LV0vENYSCqBHb9EmNl8ltAAiotpVkWK",
       "name": "John Doe",
-      "role": "SUPER_ADMIN"
+      "role": "USER"
     },
     {
       "id": "3",
