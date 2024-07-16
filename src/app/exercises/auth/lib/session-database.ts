@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 //3. 🚀 Session segmenter par user agent
 import {cookies, headers} from 'next/headers'
 import {randomUUID} from 'node:crypto'

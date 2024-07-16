@@ -1,8 +1,9 @@
 import {RoleEnum} from '@/lib/type'
 import bcrypt from 'bcrypt'
-import {addUser, getUserByEmail} from '@/db/sgbd'
+import {addUser, getUserByEmail} from '@/db/sgbg-unstorage'
 import {SignInError} from './type'
 import {createSession, deleteSession} from './session'
+import {hashPassword} from './crypt'
 
 const signUp = async (email: string, password: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -12,11 +13,14 @@ const signUp = async (email: string, password: string) => {
     throw new Error('User already exists')
   }
   console.log('Signing up...', email, password)
-  const saltRounds = 10
-  const salt = await bcrypt.genSalt(saltRounds)
 
+  //DECOMMINSSION BCRYPT EDGE
+  //const saltRounds = 10
+  //const salt = await bcrypt.genSalt(saltRounds)
   // Hachage du mot de passe avec le salt
-  const hashedPassword = await bcrypt.hash(password, salt)
+  //const hashedPassword = await bcrypt.hash(password, salt)
+
+  const hashedPassword = await hashPassword(password)
   const newUser = {
     email,
     password: hashedPassword,
@@ -24,7 +28,7 @@ const signUp = async (email: string, password: string) => {
     role: RoleEnum.SUPER_ADMIN, //RoleEnum.USER,
   }
   const createdUser = await addUser(newUser)
-  await createSession(createdUser.id)
+  //await createSession(createdUser.id)
   return {email: createdUser.email, role: createdUser.role}
 }
 

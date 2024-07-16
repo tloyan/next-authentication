@@ -1,7 +1,8 @@
 'use server'
 
 import {RoleEnum} from '@/lib/type'
-import {auth} from './lib/auth'
+// eslint-disable-next-line no-restricted-imports
+import {auth} from '@/app/exercises/auth/lib/auth'
 import {
   ChangeRoleSchema,
   ChangeUserRoleSchema,
@@ -12,8 +13,10 @@ import {
 } from './lib/type'
 import {getConnectedUser} from './lib/dal'
 import {revalidatePath} from 'next/cache'
-import {getUserByEmail, updateUserRole} from '@/db/sgbd'
-
+import {getUserByEmail, updateUserRole} from '@/db/sgbg-unstorage'
+import {signIn, signOut} from '@/auth'
+import {AuthError} from 'next-auth'
+import {isRedirectError} from 'next/dist/client/components/redirect'
 export type FormState =
   | {
       errors?: {
@@ -26,6 +29,106 @@ export type FormState =
     }
   | undefined
 
+export async function authenticate(
+  _currentState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  console.log('authenticate...')
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const parsedFields = LoginFormSchema.safeParse({
+    email,
+    password,
+  })
+
+  if (!parsedFields.success) {
+    return {
+      errors: parsedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields.',
+    }
+  }
+  try {
+    const user = await signIn('credentials', formData)
+    console.log('Signed in:', user)
+  } catch (error) {
+    console.error('authenticate error:', error)
+    //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
+    if (isRedirectError(error)) {
+      throw error
+    }
+    const signInError = error as SignInError
+    if (error instanceof AuthError) {
+      return {message: `Authentication error.${error.cause?.err}`}
+    }
+    if (error) {
+      switch (signInError.type) {
+        case 'CredentialsSignin': {
+          return {message: 'Invalid credentials.'}
+        }
+        default: {
+          return {
+            message: `Something went wrong.${signInError.message}`,
+          }
+        }
+      }
+    }
+    throw error
+  }
+}
+
+export async function register(
+  _currentState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  console.log('register...')
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  const parsedFields = SignupFormSchema.safeParse({
+    email,
+    password,
+    confirmPassword,
+  })
+
+  if (!parsedFields.success) {
+    return {
+      errors: parsedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields.',
+    }
+  }
+  try {
+    const user = await auth.signUp(email, password)
+    console.log('Signed UP:', user)
+    //WORKAROUND FOR EDGE UNCACHE ISSUE
+    const formDataOverrided = new FormData()
+    formDataOverrided.append('email', 'admin@mikecodeur.com')
+    formDataOverrided.append('password', 'Azerty123')
+    await signIn('credentials', formDataOverrided)
+  } catch (error) {
+    //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
+    if (isRedirectError(error)) {
+      throw error
+    }
+    console.log('register error:', error)
+    const signInError = error as SignInError
+    if (error) {
+      switch (signInError.type) {
+        case 'CredentialsSignin': {
+          return {message: 'Invalid credentials.'}
+        }
+        default: {
+          return {message: `Something went wrong.${error}`}
+        }
+      }
+    }
+    throw error
+  }
+}
+
+export async function logout() {
+  await signOut()
+}
 export async function changeConnectedUserRole(
   _currentState: FormState,
   formData: FormData
@@ -149,87 +252,4 @@ export async function changeUserRole(
 
   revalidatePath('/exercises/auth')
   return {message: 'change role successful'}
-}
-
-export async function authenticate(
-  _currentState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  console.log('authenticate...')
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const parsedFields = LoginFormSchema.safeParse({
-    email,
-    password,
-  })
-
-  if (!parsedFields.success) {
-    return {
-      errors: parsedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields.',
-    }
-  }
-  try {
-    const user = await auth.signIn(email, password)
-    console.log('Signed in:', user)
-  } catch (error) {
-    console.error('authenticate error:', error)
-    const signInError = error as SignInError
-    if (error) {
-      switch (signInError.type) {
-        case 'CredentialsSignin': {
-          return {message: 'Invalid credentials.'}
-        }
-        default: {
-          return {message: 'Something went wrong.'}
-        }
-      }
-    }
-    throw error
-  }
-}
-
-export async function register(
-  _currentState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  console.log('register...')
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const confirmPassword = formData.get('confirmPassword') as string
-
-  const parsedFields = SignupFormSchema.safeParse({
-    email,
-    password,
-    confirmPassword,
-  })
-
-  if (!parsedFields.success) {
-    return {
-      errors: parsedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields.',
-    }
-  }
-  try {
-    const user = await auth.signUp(email, password)
-    console.log('Signed UP:', user)
-  } catch (error) {
-    console.log('register error:', error)
-    const signInError = error as SignInError
-    if (error) {
-      switch (signInError.type) {
-        case 'CredentialsSignin': {
-          return {message: 'Invalid credentials.'}
-        }
-        default: {
-          return {message: `Something went wrong.${error}`}
-        }
-      }
-    }
-    throw error
-  }
-}
-
-export async function logout() {
-  await auth.logout()
 }

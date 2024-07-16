@@ -67,6 +67,17 @@
             "name": "./session-database",
             "importNames": ["createSession", "deleteSession", "verifySession"],
             "message": "Do not import these session management functions from this module."
+          },
+          {
+            "name": "@/db/sgbd",
+            "importNames": ["getUserByEmail", "addUser", "updateUser", "updateUserRole", "getUserByEmail", "getUserById", "addSession", "updateSession"],
+            "message": "Do not import these session management functions from this module."
+          }
+          ,
+          {
+            "name": "@/app/exercises/auth/lib/auth",
+            "importNames": ["auth", "signUp", "signIn", "logout"],
+            "message": "Do not import these session management functions from this module."
           }
         ]
       }

@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use server'
+// 🐶 adapte la fonction 'authenticate'
 
+// 🐶 importe {signIn, signOut} de NextAuth
+// 🤖 import {signIn, signOut} from '@/auth'
 import {RoleEnum} from '@/lib/type'
-import {auth} from './lib/auth'
+import {auth} from '@/app/exercises/auth/lib/auth'
 import {
   ChangeRoleSchema,
   ChangeUserRoleSchema,
@@ -13,7 +15,9 @@ import {
 } from './lib/type'
 import {getConnectedUser} from './lib/dal'
 import {revalidatePath} from 'next/cache'
-import {getUserByEmail, updateUserRole} from '@/db/sgbd'
+import {getUserByEmail, updateUserRole} from '@/db/sgbg-unstorage'
+import {isRedirectError} from 'next/dist/client/components/redirect'
+import {AuthError} from 'next-auth'
 
 export type FormState =
   | {
@@ -21,133 +25,13 @@ export type FormState =
         email?: string[]
         password?: string[]
         confirmPassword?: string[]
-        //🐶 Note que nous avons ajouter role dans le FormState
         role?: string[]
       }
       message?: string
     }
   | undefined
 
-// 🐶 'changeConnectedUserRole' : Cette fonction permet de changer le role de l'utilisateur connecté
-// sans aucune restriction
-// Adapte la pour emepecher un utilisateur de se donner un role superieur au sien
-export async function changeConnectedUserRole(
-  _currentState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  const requestedRole = formData.get('role') as RoleEnum
-  const parsedFields = ChangeRoleSchema.safeParse({
-    role: requestedRole,
-  })
-
-  // 1.  Si les champs ne sont pas valides, on retourne les erreurs
-  if (!parsedFields.success) {
-    return {
-      errors: parsedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields.',
-    }
-  }
-  // 2. On récupère l'utilisateur connecté
-  const userConnected = await getConnectedUser()
-  if (!userConnected) {
-    return {message: 'vous etes pas connecté'}
-  }
-  // 🐶 Empeche l'appel à 'updateUserRole' si le role demandé est superieur au role de l'utilisateur connecté
-  // pour cela on va se basé sur l'ordre des roles
-  // const roleHierarchy = [
-  //   RoleEnum.USER,
-  //   RoleEnum.REDACTOR,
-  //   RoleEnum.MODERATOR,
-  //   RoleEnum.ADMIN,
-  //   RoleEnum.SUPER_ADMIN,
-  // ]
-
-  // 🐶 Determine le niveau de l'utilisateur
-  const userRoleIndex = 1
-  // 🐶 Determine le niveau demandé
-  const requestedRoleIndex = 1
-
-  // 🐶 Si le role demandé est superieur au role de l'utilisateur connecté, on retourne une erreur
-
-  // return {
-  //   errors: {
-  //     role: [
-  //       'Vous ne pouvez pas vous attribuer un rôle avec plus de privilèges',
-  //     ],
-  //   },
-  //   message:
-  //     'Vous ne pouvez pas vous attribuer un rôle avec plus de privilèges',
-  // }
-
-  // 🐶 Note : Tu peux deplacer ce code dans une fonction 'checkRoleHierarchy'
-
-  try {
-    await updateUserRole(userConnected.email, requestedRole)
-  } catch (error) {
-    console.error('changeConnectedUserRole error:', error)
-    return {message: 'Something went wrong during update db.', errors: {}}
-  }
-
-  revalidatePath('/exercises/auth')
-  return {message: 'change role successful'}
-}
-
-// 🐶 Adapte cette fonction pour empecher un utilisateur non admin de changer le role des autres users
-export async function changeUserRole(
-  _currentState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  const requestedRole = formData.get('role') as RoleEnum
-  const requestedEmail = formData.get('email') as string
-
-  const parsedFields = ChangeUserRoleSchema.safeParse({
-    role: requestedRole,
-    email: requestedEmail,
-  })
-
-  if (!parsedFields.success) {
-    return {
-      errors: parsedFields.error.flatten().fieldErrors,
-      message: 'Invalid fields.',
-    }
-  }
-  const userConnected = await getConnectedUser()
-  if (!userConnected) {
-    return {message: 'vous etes pas connecté'}
-  }
-
-  // 🐶 Verifie que le role du userConnected est OK
-
-  // SINON on retourne une erreur
-  // return {
-  //   errors: {
-  //     role: ['Seuls les ADMIN et SUPER_ADMIN peuvent changer les rôles'],
-  //   },
-  //   message: 'Seuls les ADMIN et SUPER_ADMIN peuvent changer les rôles',
-  // }
-
-  const user = await getUserByEmail(requestedEmail)
-  if (!user) {
-    return {
-      errors: {
-        email: ['Utilisateur non trouvé'],
-      },
-      message: 'Impossible de changer le role',
-    }
-  }
-  try {
-    await updateUserRole(requestedEmail, requestedRole)
-  } catch (error) {
-    console.error('changeConnectedUserRole error:', error)
-    return {message: 'Something went wrong during update db.', errors: {}}
-  }
-
-  revalidatePath('/exercises/auth')
-  return {message: 'change role successful'}
-}
-
+// 🐶 adapte 'authenticate'
 export async function authenticate(
   _currentState: FormState,
   formData: FormData
@@ -167,18 +51,33 @@ export async function authenticate(
     }
   }
   try {
+    // ⛏️ supprime l'appelle a 'auth.signIn' notre auth custom
     const user = await auth.signIn(email, password)
+    // 🐶 remplace par 'signIn' de nextAuth
     console.log('Signed in:', user)
   } catch (error) {
     console.error('authenticate error:', error)
+    //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
+    // 🐶 Next auth 5 étant en beta il y a un workaround 'isRedirectError'
+    if (isRedirectError(error)) {
+      throw error
+    }
     const signInError = error as SignInError
+    // 🐶 Catch les error de nextAuth (levè dans auth.ts)
+
+    // 🤖
+    // if (error instanceof AuthError) {
+    //   return {message: `Authentication error.${error.cause?.err}`}
+    // }
     if (error) {
       switch (signInError.type) {
         case 'CredentialsSignin': {
           return {message: 'Invalid credentials.'}
         }
         default: {
-          return {message: 'Something went wrong.'}
+          return {
+            message: `Something went wrong.${signInError.message}`,
+          }
         }
       }
     }
@@ -208,9 +107,27 @@ export async function register(
     }
   }
   try {
+    // 🐶 NextAuth n'a pas de SignUp on gardre notre implementation
     const user = await auth.signUp(email, password)
     console.log('Signed UP:', user)
+
+    // 🐶 Il faut ensuite gerer un signIn ici pour creer la session JWT
+    //
+    // 🤖 await signIn('credentials', formData)
+
+    // ATTENTION EDGE
+    // La creation du user ne se fait pas (edge ne supporte pas FS)
+    // pour les besoin de l exercice on bypass avec un fake signIn
+    // WORKAROUND FOR EDGE UNCACHE ISSUE
+    // const formDataOverrided = new FormData()
+    // formDataOverrided.append('email', 'admin@mikecodeur.com')
+    // formDataOverrided.append('password', 'Azerty123')
+    // await signIn('credentials', formDataOverrided)
   } catch (error) {
+    //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
+    if (isRedirectError(error)) {
+      throw error
+    }
     console.log('register error:', error)
     const signInError = error as SignInError
     if (error) {
@@ -229,4 +146,129 @@ export async function register(
 
 export async function logout() {
   await auth.logout()
+}
+
+export async function changeConnectedUserRole(
+  _currentState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  const requestedRole = formData.get('role') as RoleEnum
+  const parsedFields = ChangeRoleSchema.safeParse({
+    role: requestedRole,
+  })
+
+  if (!parsedFields.success) {
+    return {
+      errors: parsedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields.',
+    }
+  }
+  const userConnected = await getConnectedUser()
+  if (!userConnected) {
+    return {message: 'vous etes pas connecté'}
+  }
+  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  if (checkRoleHierarchy(userConnected, requestedRole)) {
+    return checkRoleHierarchy(userConnected, requestedRole)
+  }
+  try {
+    await updateUserRole(userConnected.email, requestedRole)
+  } catch (error) {
+    console.error('changeConnectedUserRole error:', error)
+    return {message: 'Something went wrong during update db.', errors: {}}
+  }
+
+  revalidatePath('/exercises/auth')
+  return {message: 'change role successful'}
+}
+
+function checkRoleHierarchy(
+  userConnected: UserDTO,
+  requestedRole: RoleEnum
+): FormState {
+  // Définir l'ordre des privilèges
+  const roleHierarchy = [
+    RoleEnum.USER,
+    RoleEnum.REDACTOR,
+    RoleEnum.MODERATOR,
+    RoleEnum.ADMIN,
+    RoleEnum.SUPER_ADMIN,
+  ]
+  const useRole = userConnected?.role ?? RoleEnum.USER
+  const userRoleIndex = roleHierarchy.indexOf(useRole)
+  const requestedRoleIndex = roleHierarchy.indexOf(requestedRole)
+
+  if (requestedRoleIndex > userRoleIndex) {
+    return {
+      errors: {
+        role: [
+          'Vous ne pouvez pas vous attribuer un rôle avec plus de privilèges',
+        ],
+      },
+      message:
+        'Vous ne pouvez pas vous attribuer un rôle avec plus de privilèges',
+    }
+  }
+}
+
+function checkIsAdmin(userConnected: UserDTO): FormState {
+  if (
+    userConnected.role !== RoleEnum.ADMIN &&
+    userConnected.role !== RoleEnum.SUPER_ADMIN
+  ) {
+    return {
+      errors: {
+        role: ['Seuls les ADMIN et SUPER_ADMIN peuvent changer les rôles'],
+      },
+      message: 'Seuls les ADMIN et SUPER_ADMIN peuvent changer les rôles',
+    }
+  }
+}
+
+export async function changeUserRole(
+  _currentState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  const requestedRole = formData.get('role') as RoleEnum
+  const requestedEmail = formData.get('email') as string
+
+  const parsedFields = ChangeUserRoleSchema.safeParse({
+    role: requestedRole,
+    email: requestedEmail,
+  })
+
+  if (!parsedFields.success) {
+    return {
+      errors: parsedFields.error.flatten().fieldErrors,
+      message: 'Invalid fields.',
+    }
+  }
+  const userConnected = await getConnectedUser()
+  if (!userConnected) {
+    return {message: 'vous etes pas connecté'}
+  }
+  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  if (checkIsAdmin(userConnected)) {
+    return checkIsAdmin(userConnected)
+  }
+  const user = await getUserByEmail(requestedEmail)
+  if (!user) {
+    return {
+      errors: {
+        email: ['Utilisateur non trouvé'],
+      },
+      message: 'Impossible de changer le role',
+    }
+  }
+  try {
+    await updateUserRole(requestedEmail, requestedRole)
+  } catch (error) {
+    console.error('changeConnectedUserRole error:', error)
+    return {message: 'Something went wrong during update db.', errors: {}}
+  }
+
+  revalidatePath('/exercises/auth')
+  return {message: 'change role successful'}
 }

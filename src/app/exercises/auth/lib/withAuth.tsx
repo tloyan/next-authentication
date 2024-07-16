@@ -9,7 +9,7 @@ const withAuth = <P extends object>(
   console.log(`withAuth Component ${WrappedComponent.name} mounted`)
   return async function WithAuth(props: P) {
     const user = await getConnectedUser()
-
+    console.log('withAuth user', user)
     if (!user) {
       return (
         <div className="mx-auto max-w-2xl p-6 text-center text-lg">

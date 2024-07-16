@@ -1,17 +1,17 @@
 import 'server-only'
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
-import {verifySession, updateSession} from './session'
-import {getUserById} from '@/db/sgbd'
+import {getUserByEmail} from '@/db/sgbg-unstorage'
 import {User} from '@/lib/type'
 import {UserDTO} from './type'
+import {auth} from '@/auth'
 
 export const getConnectedUser = cache(async () => {
-  const session = await verifySession()
-  if (!session || !session?.isAuth) return
-  updateSession()
-  console.log('getConnectedUser', session)
+  //const session = await verifySession()
+  const session = await auth()
+  if (!session?.user || !session.user.email) return
+  console.log('getConnectedUser session.user', session.user)
   try {
-    const user = await getUserById(session.userId as string)
+    const user = await getUserByEmail(session.user.email as string)
     return userDTO(user as User)
   } catch (error) {
     console.error('Failed to fetch user', error)
@@ -19,7 +19,8 @@ export const getConnectedUser = cache(async () => {
   }
 })
 
-export function userDTO(user: User): UserDTO {
+export function userDTO(user: User): UserDTO | undefined {
+  if (!user) return undefined
   taintUniqueValue('Do not pass password to the client.', user, user?.password)
   // autre exemple
   // experimental_taintObjectReference(

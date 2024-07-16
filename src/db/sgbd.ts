@@ -34,7 +34,7 @@ const defaultData: BddDataType = {
       quantity: 19,
       category: CategoriesEnum.lighting,
       createdAt: '2024-04-24T05:56:06.593Z',
-      updadtedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: '2',
@@ -43,7 +43,7 @@ const defaultData: BddDataType = {
       quantity: 4,
       category: CategoriesEnum.furniture,
       createdAt: '2024-04-25T05:56:06.593Z',
-      updadtedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
   ],
   todos: [
@@ -52,14 +52,14 @@ const defaultData: BddDataType = {
       title: 'Apprendre React',
       isCompleted: true,
       createdAt: new Date().toISOString(),
-      updadtedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: 2,
       title: 'Apprendre Next',
       isCompleted: false,
       createdAt: new Date().toISOString(),
-      updadtedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
   ],
   users: [
@@ -106,13 +106,13 @@ export async function addTodo(todo: AddTodo) {
       title: todo.title,
       isCompleted: todo.isCompleted,
       createdAt: todo.createdAt ?? new Date().toISOString(),
-      updadtedAt: todo.updadtedAt ?? new Date().toISOString(),
+      updatedAt: todo.updatedAt ?? new Date().toISOString(),
     })
   })
 }
 export async function updateTodo(todo: Todo) {
   await simulateUnstableServer()
-  todo.updadtedAt = new Date().toISOString()
+  todo.updatedAt = new Date().toISOString()
   const db = await lowDb()
   await db.update(({todos}) => {
     updateById(todos ?? [], todo)
@@ -140,7 +140,7 @@ export async function addProduct(product: Product) {
       category: product.category,
       quantity: product.quantity,
       createdAt: product.createdAt ?? new Date().toISOString(),
-      updadtedAt: product.updadtedAt ?? new Date().toISOString(),
+      updatedAt: product.updatedAt ?? new Date().toISOString(),
     })
   })
 }
@@ -153,7 +153,7 @@ export async function persistProduct(product: Product) {
 export async function updateProduct(product: Product) {
   console.log('updateProduct', product)
   await simulateUnstableServer({slow: true})
-  product.updadtedAt = product.updadtedAt ?? new Date().toISOString()
+  product.updatedAt = product.updatedAt ?? new Date().toISOString()
   const db = await lowDb()
   await db.update(({products}) => {
     updateById(products ?? [], product)
@@ -299,7 +299,7 @@ export async function addUser(user: AddUser) {
 export async function updateUser(user: User) {
   console.log('updateUser', user)
   await simulateUnstableServer({slow: true})
-  //user.updadtedAt = user.updadtedAt ?? new Date().toISOString()
+  //user.updatedAt = user.updatedAt ?? new Date().toISOString()
   const db = await lowDb()
   await db.update(({users}) => {
     updateById(users ?? [], user)
@@ -348,7 +348,7 @@ export async function addSession(session: Session) {
 export async function updateSession(session: Session) {
   console.log('updateSession', session)
   //await simulateUnstableServer({slow: true})
-  //user.updadtedAt = user.updadtedAt ?? new Date().toISOString()
+  //user.updatedAt = user.updatedAt ?? new Date().toISOString()
   const db = await lowDb()
   await db.update(({sessions}) => {
     const index =

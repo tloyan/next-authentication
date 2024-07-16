@@ -1,6 +1,6 @@
-# Autorization (AuthZ) Server Action
+# Librairie Next-Auth
 
-### 💡 Protéger les server actions
+### 💡 Utiliser NextAuth (AuthJS)
 
 ## 📝 Tes notes
 
@@ -8,74 +8,307 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Nous avons vu précèdent comment vérifier qu’un utilisateur est connecté ou non pour autoriser l’accès à des routes. Nous avons également vu comment autoriser certaines routes en fonction du rôle (RBAC)
+Dans les modules précédents, nous avons créé notre propre système d'authentification par credentials ainsi que la gestion des sessions. Cependant, il est parfois nécessaire d'utiliser un ou plusieurs systèmes d'authentifications tiers, qu'ils soientt privés ou publique.
 
-Il est important également de protéger les Server Actions (qui ne sont pas des routes). Un méthode simple consiste a vérifier que le user est `authentifier` (via la session par exemple)
+Par exemple, nous pourrions avoir besoin de permettre la connexion via Google, Facebook, Github ou n'importe quel autre fournisseur. Pour cela, il existe une librairie appelée `Next Auth`, récemment renommée [`AuthJS`](https://authjs.dev/getting-started/installation?framework=next.js). Son objectif est d'abstraire la gestion des sessions et de simplifier l'intégration avec d'autres systèmes d'authentification.
 
-```tsx
-//action.ts
-'use server';
-export async function addItem(formData: FormData) {
-  const {userId} = session();
+## Installation :
 
-  if (!userId) {
-    throw new Error('You must be signed in to add an item to your cart');
-  }
+Les 3 fichiers principaux :
 
-  console.log('add item server action', formData);
-  }
-```
+### `auth.ts`
 
-Mais il est également possible de protéger certaines fonctionnalité en fonction du `role`. Exemple
+Le fichier principal contenant toute la configuration, providers etc …
 
 ```tsx
-//action.ts
-'use server';
-export async function addItem(formData: FormData) {
-  const {role} = session();
+//./auth.ts
+import NextAuth from "next-auth"
 
-  if (role !=== 'ADMIN') {
-    throw new Error('You cannot delete this product listing');
-  }
-	deleteProduct(formData.get('id'))
-  }
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [],
+})
 ```
+
+### `route.ts`
+
+La route de callback
+
+```tsx
+//./app/api/auth/[...nextauth]/route.ts
+import { handlers } from "@/auth" // Referring to the auth.ts we just created
+export const { GET, POST } = handlers
+```
+
+### `middleware.ts`
+
+Le middleware
+
+```tsx
+//./middleware.ts
+export { auth as middleware } from "@/auth"
+```
+
+📑 Le liens vers la doc [https://fr.reactjs.org/docs/getting-started.html](https://fr.reactjs.org/docs/getting-started.html)
+
+## Providers :
+
+Il existe de nombreux providers comme Google, Facebook etc …
+
+Il sont regroupés par types
+
+- Oauth
+- Magic Link
+- Credential
+- WebAuthn
+
+Pour ajouter un provider( exemple Google)
+
+```tsx
+
+import NextAuth from "next-auth"
+import Google from "next-auth/providers/google"
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [Google],
+})
+
+```
+
+Et ensuite
+
+```tsx
+import { signIn } from "@/auth"
+
+export function SignIn() {
+  return (
+    <form
+      action={async () => {
+        "use server"
+        await signIn("google")
+      }}
+    >
+      <button type="submit">Signin with Google</button>
+    </form>
+  )
+}
+```
+
+Doc : https://authjs.dev/getting-started/authentication/oauth
 
 ## Exercice
 
-Dans cet exercice nous avons sur la page `exercices/auth` 2 nouveaux formulaires.
+Dans cet exercice tu vas devoir décommissionner l’ancien mode de fonctionnement et utiliser `Next-Auth`
+
+<aside>
+💡 
+Les middlewares de `Next.js` et `NextAuth` fonctionnent avec le runtime `Edge`, optimisés pour des réponses rapides. Ils n'incluent pas l**'intégralité des API Node.js**, notamment `fs` (système de fichiers). Cela permet une exécution plus légère et sécurisée en environnement Edge.
+
+</aside>
+
+Runtime check
 
 ```tsx
-//exercices/auth/page.tsx
-<ChangeRoleForm />
-<AdminChangeRoleForm />
+console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 ```
 
-2 formulaires qui permettent de :
+Pour les besoins de l’exercice nous avons changer `lowDb` par `Unstorage` qui permet d’avoir un DB en mémoire (ce qui nous permet d’appeler des fonction comme `getUserByEmail` depuis le middleware/nextAuth).
 
-- `ChangeRoleForm` : Changer le rôle de l’utilisateur connecté
-- `AdminChangeRoleForm` : Changer le rôle de n’importe quel user dans l’application
+En production et pour de projet de plus grande ampleur il faut utiliser une librairie de gestion de BDD compatible
 
-Pour simplifier l’exercice, ces formulaire sont fournis et connecté au server actions.
+- [https://authjs.dev/getting-started/database](https://authjs.dev/getting-started/database)
+- `bcrypt` à été remplacer par `bcryptjs` mais le fonctionnement reste le meme
 
-Mais aucune règle n’est présente pour déterminer ce que l’utilisateur peut faire.
+Pour simplifier l’exercice voila l’ensemble du décommissionnement
 
-**👨‍✈️ Hugo le chef de projet te demande de gérer l’autorisation des actions avec les règles suivantes :**
+### Décommissionnement
 
-- **Les utilisateurs peuvent changer `LEURS` rôles ( `changeConnectedUserRole` ) mais sans augmentation de privilèges** Exemple:
-  - Passer de `ADMIN` à `REDACTOR` → OK
-  - Passer de `REDACTOR` à `ADMIN` → KO
-- Les `ADMIN` et `SUPER_ADMIN` peuvent changer le rôles de n’importe qu’el user dans l’application (`changeUserRole`)
+- `@/db/sgbd`
+  - Remplacé par `@/db/sgbd-unstorage`
+- `@/app/exercises/auth/lib/auth`
+  - `Next-Auth`
+- `@/app/exercises/auth/session`
+  - `Next-Auth`
+
+### Adaptation
+
+- `bcrypt`
+  - Remplacé par `bcryptjs`
+- dal (`verifySession`)
+  - `Next-Auth`
+- action (`import {auth} from '@/app/exercises/auth/lib/auth`’)
+  - `Next-Auth`
+
+Tu retrouveras également des formulaires déjà connecté
+
+```tsx
+ <div className="mx-auto max-w-2xl p-6  text-lg ">
+      {/* <LoginForm></LoginForm> */}
+      <h1 className="mb-4 text-center text-3xl font-bold">Google</h1>
+      <SignInGoogle></SignInGoogle>
+      <h1 className="mb-4 text-center text-3xl font-bold">Credentials</h1>
+      <SignInCredential />
+      <h1 className="mb-4 text-center text-3xl font-bold">Resend</h1>
+      <SignInResend />
+    </div>
+```
+
+Pour [Google](https://developers.google.com/identity/protocols/oauth2?hl=fr) autre provider cela requiert des clef API a créer sur Google Cloud ou sur [Github](https://authjs.dev/guides/configuring-github)
+
+Nous allons ici nous concentrer sur le `credentials` `<SignInCredential />`
+
+Dans la documentation nous avons a appel à singIn
+
+```tsx
+import { signIn } from "@/auth"
+
+export function SignIn() {
+  return (
+    <form
+      action={async (formData) => {
+        "use server"
+        await signIn("credentials", formData)
+      }}
+    >
+      <label>
+        Email
+        <input name="email" type="email" />
+      </label>
+      <label>
+        Password
+        <input name="password" type="password" />
+      </label>
+      <button>Sign In</button>
+    </form>
+  )
+}
+```
+
+Dans notre cas nous appellerons d’abord le server action avec le hook `useActionstate` ce qui nous permettra de gerer les errors et le `formStatus`
+
+```tsx
+const [actionState, authenticateAction] = useActionState(authenticate, {})
+```
+
+- **🐶 Dans un premier temps va décommissionner l’appel a notre lib `auth.ts` perso dans la fonction `authenticate` et utilise `signIn` de `nextAuth` à la place**
+- **🐶** Déplace la logique de validation user/mdp dans le fichier auth.ts de `nextAuth`
 
 Fichiers
 
-- `exercise/auth/action.ts`
+- `/auth.ts`
+- `/app/exercices/auth/action.ts`
 
-##
+## Bonus
+
+### 1. 🚀 Register
+
+Adapte la fonction `register` de l’action. Le but étant de s’inscrire et de générer une session pour être directement connecté.
+
+Fichiers
+
+- `/app/exercices/auth/action.ts`
+
+### 2. 🚀 Protected route (Role Based)
+
+Pou protéger les routes
+
+```tsx
+import { auth } from "@/auth"
+
+export default async function Page() {
+  const session = await auth()
+  if (!session) return <div>Not authenticated</div>
+
+  return (
+    <div>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+https://authjs.dev/getting-started/session-management/protecting
+
+Mais il est possible de le faire dans auth.ts grace un callback `authorized`
+
+```tsx
+export const {handlers, signIn, signOut, auth} = NextAuth({
+  callbacks: {
+    authorized: async ({auth, request: {nextUrl}}) => {
+    if (isProtectedRoute && !hasSession) {
+        return Response.redirect(new URL('/exercises/login', nextUrl))
+     }
+  return true
+    },
+  },
+```
+
+Dans cet exercice tu vas devoir implémenter la même règle de protection des routes que précédemment : Rappel :
+
+```tsx
+
+// 1. Specify protected and public routes
+const protectedRoutes = new Set([
+  '/exercises/dashboard',
+  '/exercises/bank-account',
+])
+const publicRoutes = new Set(['/'])
+
+const adminRoutes = new Set(['/admin'])
+
+const redactorRoutes = new Set(['/redaction'])
+
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname
+  const isProtectedRoute = protectedRoutes.has(path)
+  const isPublicRoute = publicRoutes.has(path)
+  const isAdminRoute = adminRoutes.has(path)
+  const isRedactorRoute = redactorRoutes.has(path)
+
+  const cookie = cookies().get('session')?.value
+  const session = await decrypt(cookie)
+
+  const role = session?.role
+  console.log('middleware role', role)
+
+  const hasSession = session?.userId || session?.sessionId
+
+  if (isProtectedRoute && !hasSession) {
+    return NextResponse.redirect(new URL('/exercises/login', request.nextUrl))
+  }
+  //admin route
+  if (
+    isAdminRoute &&
+    !role?.includes(RoleEnum.ADMIN) &&
+    !role?.includes(RoleEnum.SUPER_ADMIN)
+  ) {
+    return NextResponse.redirect(new URL('/restricted/', request.nextUrl))
+  }
+  // Redactor route
+  if (
+    isRedactorRoute &&
+    !role?.includes(RoleEnum.ADMIN) &&
+    !role?.includes(RoleEnum.SUPER_ADMIN) &&
+    !role?.includes(RoleEnum.REDACTOR) &&
+    !role?.includes(RoleEnum.MODERATOR)
+  ) {
+    return NextResponse.redirect(new URL('/restricted/', request.nextUrl))
+  }
+  if (isPublicRoute && hasSession) {
+    return NextResponse.redirect(new URL('/exercises/auth', request.nextUrl))
+  }
+  NextResponse.next()
+}
+```
+
+- **🐶 Récupère le ROLE du user avec `getUserByEmail` et implémente les même règles**
+
+Fichiers
+
+- `auth.ts`
 
 ## Aller plus loin
 
-📑 Le lien vers la doc [https://www.w3schools.com/html/html_css.asp](https://www.w3schools.com/html/html_css.asp)
+📑 Le lien vers la doc [https://authjs.dev/getting-started/installation?framework=next.js](https://authjs.dev/getting-started/installation?framework=next.js)
 
 ## Ils vont t’aider
 
@@ -87,4 +320,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=12-authorization-server-action).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=13-next-auth).
