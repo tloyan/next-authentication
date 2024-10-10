@@ -1,4 +1,4 @@
-// 🐶 Importe les 2 composants ci-dessous ils seronts utiles pour le formulaire de login
+// 🐶 Importe les 2 composants ci-dessous ils seronts utiles pour le formulaire de `login`
 // 🤖
 // import {Input} from '@/components/ui/input'
 // import {Button} from '@/components/ui/button'
@@ -6,7 +6,7 @@
 export default function Page() {
   return (
     <div className="mx-auto max-w-2xl p-6 text-lg ">
-      {/* 🐶 modifie <RegisterForm> pour ajouter les champs  email / password / confirmPassword  */}
+      {/* 🐶 mMdifie `<RegisterForm>` pour ajouter les champs `email` / `password` / `confirmPassword`  */}
       <RegisterForm></RegisterForm>
     </div>
   )

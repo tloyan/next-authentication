@@ -1,4 +1,4 @@
-// 🐶 Importe les 2 composants ci-dessous ils seronts utile pour le formulaire de login
+// 🐶 Importe les 2 composants ci-dessous ils seronts utiles pour le formulaire de login
 // 🤖
 // import {Button} from '@/components/ui/button'
 // import {Input} from '@/components/ui/input'
@@ -6,7 +6,7 @@
 function Page() {
   return (
     <div className="mx-auto max-w-2xl p-6  text-lg ">
-      {/* 🐶 va dans le composant <LoginForm> pour le creer le formulaire */}
+      {/* 🐶 Vas dans le composant `<LoginForm>` pour créer le formulaire */}
       <LoginForm></LoginForm>
     </div>
   )
@@ -17,7 +17,7 @@ function LoginForm() {
     <div>
       <h1 className="mb-4 text-center text-3xl font-bold">Login</h1>
       <form>
-        {/* 🐶 Creer les 2 champs input email et password */}
+        {/* 🐶 Crée les 2 champs `input` `email` et `password` */}
         {/* <Input
           type="email"
           name="email"
@@ -34,7 +34,7 @@ function LoginForm() {
           className="mb-4"
         /> */}
 
-        {/* 🐶 Dans  <LoginButton /> creer le bouton */}
+        {/* 🐶 Dans `<LoginButton />` crée le bouton */}
         <LoginButton />
       </form>
     </div>
