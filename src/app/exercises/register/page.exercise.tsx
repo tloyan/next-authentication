@@ -6,7 +6,7 @@
 export default function Page() {
   return (
     <div className="mx-auto max-w-2xl p-6 text-lg ">
-      {/* 🐶 mMdifie `<RegisterForm>` pour ajouter les champs `email` / `password` / `confirmPassword`  */}
+      {/* 🐶 Modifie `<RegisterForm>` pour ajouter les champs `email` / `password` / `confirmPassword`  */}
       <RegisterForm></RegisterForm>
     </div>
   )
