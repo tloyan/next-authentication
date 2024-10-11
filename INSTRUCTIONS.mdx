@@ -4,11 +4,11 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Les middlewares dans Next.js **permettent d'exécuter du code avant qu'une requête ne soit complétée**. Grâce aux middlewares, vous pouvez modifier la réponse en réécrivant, redirigeant, modifiant les en-têtes de requête ou de réponse, ou en répondant directement en fonction de la requête entrante.
+Les middlewares dans `Next.js` **permettent d'exécuter du code avant qu'une requête ne soit complétée**. Grâce aux `middlewares`, vous pouvez modifier la réponse en réécrivant, redirigeant, modifiant les en-têtes de requête ou de réponse, ou en répondant directement en fonction de la requête entrante.
 
 Les middlewares s'exécutent avant que le contenu mis en cache et les routes ne soient appariés.
 
@@ -16,11 +16,11 @@ Les middlewares s'exécutent avant que le contenu mis en cache et les routes ne 
 
 Intégrer des middlewares dans votre application peut entraîner des améliorations significatives en termes de performances, de sécurité et d'expérience utilisateur. Voici quelques scénarios courants où les middlewares sont particulièrement efficaces :
 
-- **Authentification et Autorisation** : Vérifiez l'identité de l'utilisateur et contrôlez les cookies de session avant de lui accorder l'accès à des pages ou des routes API spécifiques.
+- **Authentification et Autorisation** : Vérifiez l'identité de l'utilisateur et contrôlez les cookies de session avant de lui accorder l'accès à des pages ou des routes `API` spécifiques.
 - **Redirections Serveur** : Redirigez les utilisateurs au niveau du serveur en fonction de certaines conditions (par exemple, la langue, le rôle de l'utilisateur).
-- **Réécriture de Chemins** : Prenez en charge les tests A/B, les déploiements de fonctionnalités ou les chemins d'accès hérités en réécrivant dynamiquement les chemins vers des routes API ou des pages en fonction des propriétés de la requête.
+- **Réécriture de Chemins** : Prenez en charge les tests `A/B`, les déploiements de fonctionnalités ou les chemins d'accès hérités en réécrivant dynamiquement les chemins vers des routes `API` ou des pages en fonction des propriétés de la requête.
 - **Détection de Bots** : Protégez vos ressources en détectant et en bloquant le trafic des bots.
-- **Journalisation et Analyse** : Capturez et analysez les données de la requête pour obtenir des informations avant le traitement par la page ou l'API.
+- **Journalisation et Analyse** : Capturez et analysez les données de la requête pour obtenir des informations avant le traitement par la page ou l'`API`.
 - **Gestion de Fonctionnalités** : Activez ou désactivez des fonctionnalités de manière dynamique pour des déploiements de fonctionnalités ou des tests en douceur.
 
 ### Scénarios à Éviter avec les Middlewares
@@ -49,22 +49,22 @@ export async function middleware(request: NextRequest) {
 }
 ```
 
-📑 Le liens vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+📑 Le lien vers la doc [https://nextjs.org/docs/app/building-your-application/routing/middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
 
 ## Exercice
 
-Dans les exercices précédents nous avons utiliser un HOC `withAuth` pour protéger nos routes. Nous allons ici une autre méthode, le `middleware next`. Pour les besoins de l’exercice nous avons supprimer `withAuth` des routes protégées (`dashboard` / `bank-account` etc …)
+Dans les exercices précédents, nous avons utilisé un `HOC withAuth` pour protéger nos routes. Nous avons ici une autre méthode, le `middleware next`. Pour les besoins de l’exercice, nous avons supprimé `withAuth` des routes protégées (`dashboard` / `bank-account` etc…).
 
-- Elles ne sont donc plus protégées
+- Elles ne sont donc plus protégées.
 
-**🐶 Dans cet exercice tu vas devoir implémenter un middleware pour protéger les routes privées.**
+**🐶 Dans cet exercice, tu vas devoir implémenter un middleware pour protéger les routes privées.**
 
-\*\*\*\*Le principe va être de :
+Le principe va être de :
 
-- Analyser la route demandér (publique ou privée)
-- Décrypter le cookie
+- Analyser la route demandée (publique ou privée).
+- Décrypter le cookie.
 - Vérifier la présence ou non de `sessionId` ou `userId`
-- Rediriger en conséquence
+- Rediriger en conséquence.
   - Route privée
     - Pas de session → redirection `/login`
     - Si session → on laisse passer
@@ -75,8 +75,6 @@ Dans les exercices précédents nous avons utiliser un HOC `withAuth` pour prot�
 Fichiers
 
 - `src/middleware.ts`
-
-##
 
 ## Aller plus loin
 
@@ -92,4 +90,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=10%20middleware).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=10%20MiddleWare).
