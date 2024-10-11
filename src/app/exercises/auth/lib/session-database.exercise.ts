@@ -1,15 +1,14 @@
-/* eslint-disable no-restricted-imports */
-//⛏️ Supprime ces imports tu n'en a pas besoin
+//⛏️ Supprime ces imports, tu n'en as pas besoin
 import {
   createSession as createSessionStateLess,
   deleteSession as deleteSessionStateLess,
   verifySession as verifySessionStateless,
 } from './session-stateless'
 
-// 🐶 Importe cookies
+// 🐶 Importe `cookies`
 // import {cookies} from 'next/headers'
 
-// 🐶 Importe 'randomUUID' il va te permettre de generer des sessionId
+// 🐶 Importe `randomUUID` il va te permettre de générer des `sessionId`
 // import {randomUUID} from 'node:crypto'
 
 // 🐶 Importe les fonctions de persistance de session
@@ -19,17 +18,17 @@ import {
 //   deleteSession as deleteSessionDao,
 // } from '@/db/sgbd'
 
-// 🐶 Importe ce dont tu as besoin pour creer les sessions
+// 🐶 Importe ce dont tu as besoin pour créer les sessions
 //import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
 export async function createSession(uid: string) {
-  //⛏️ supprime cette ligne
+  //⛏️ Supprime cette ligne
   return await createSessionStateLess(uid)
 
-  // 🐶 1. Creation de la session
+  // 🐶 1. Création de la session
 
-  //  🐶 Créé 'expiresAt', une date d'expiration (similaire à session-stateless)
-  //  🐶 Créé un 'sessionId' avec 'randomUUID'
+  //  🐶 Crée `expiresAt`, une date d'expiration (similaire à session-stateless)
+  //  🐶 Crée un `sessionId` avec `randomUUID`
 
   //  🐶 Ajoute la session dans la base de données
   //  🤖
@@ -47,17 +46,17 @@ export async function createSession(uid: string) {
 }
 
 export async function verifySession() {
-  //⛏️ supprime cette ligne
+  //⛏️ Supprime cette ligne
   return await verifySessionStateless()
 
   // 🐶 Récupère le cookie de la session
   // 🤖 const cookie = cookies().get('session')?.value
 
-  // 🐶 Decrypte la session (similaire à session-stateless)
+  // 🐶 Décrypte la session (similaire à session-stateless)
 
-  // 🐶 Si la session n'est pas valide (session ou sessionId non défini), on s'arrette la (return)
+  // 🐶 Si la session n'est pas valide (session où sessionId non défini), on s'arrêtte la `return`
 
-  // 🐶 Récuperation de la session en base de données avec 'findSessionDao'
+  // 🐶 Récupération de la session en base de données avec `findSessionDao`
   // 🐶 Si la session existe et n'est pas expirée (isExpired), on retourne les informations de l'utilisateur
   // return {
   //   isAuth: true,
@@ -68,13 +67,13 @@ export async function verifySession() {
 }
 
 export function deleteSession() {
-  //⛏️ supprime cette ligne
+  //⛏️ Supprime cette ligne
   return deleteSessionStateLess()
 
   // 🐶 Récupère le cookie de la session
   // 🤖 const cookie = cookies().get('session')?.value
 
-  // 🐶 Decrypte la session (similaire à session-stateless)
+  // 🐶 Décrypte la session (similaire à session-stateless)
   // 🐶 Si la session est valide, on supprime la session de la base de données
 
   // 🐶 Supression du cookie : cookies().delete

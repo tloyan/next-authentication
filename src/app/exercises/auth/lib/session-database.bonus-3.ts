@@ -1,4 +1,4 @@
-//3. 🚀 Session segmenter par user agent
+//3. 🚀 Session segmentée par user agent
 import {cookies, headers} from 'next/headers'
 import {randomUUID} from 'node:crypto'
 import {
@@ -10,7 +10,7 @@ import {
 } from '@/db/sgbd'
 import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
-//3. 🚀 Session segmenter par user agent
+//3. 🚀 Session segmentée par user agent
 export async function createSession(uid: string) {
   const headersList = headers()
   const userAgent = headersList.get('User-Agent')
@@ -18,7 +18,7 @@ export async function createSession(uid: string) {
 
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
 
-  //1 . recuperation session par uid et userAgent
+  //1 . Récupération session par `uid` et `userAgent`
   const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
 
   // SESSION EXISTE ET NON EXPIRE
@@ -41,7 +41,7 @@ export async function createSession(uid: string) {
     })
     return
   }
-  // NOUVEL SESSION (ancien algo)
+  // NOUVELLE SESSION (ancien algo)
   // 1. Create a session in the database
   const sessionId = randomUUID()
 

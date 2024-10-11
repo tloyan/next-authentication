@@ -1,28 +1,23 @@
 # Database Session Management
 
-### 💡 Comprendre les Sessions gérer en base de données
+### 💡 Comprendre les Sessions gérées en base de données
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans les sections précédentes nous avons implémenté une gestion des sessions en cookies, c’est à dire sans état (aucune gestion de la session coté serveur).
+Dans les sections précédentes, nous avons implémenté une gestion des sessions en cookies, c’est à dire sans état (aucune gestion de la session côté serveur).
 
-Seul le client gère sa session (_date d’expiration par exemple_), aucune information de session est sauvegardé coté serveur.
+Seul le client gère sa session (_date d’expiration par exemple_), aucune information de session est sauvegardée côté serveur.
 
-Avoir une session gérer en base de données coté serveur permet de gérer la fin de sessions, les multisessions etc …
+Avoir une session gérée en base de données côté serveur permet de gérer la fin de sessions, les multisessions etc…
 
-Pour fonctionner il faut pouvoir persister les données de sessions en BDD. Pour les besoins de l’exercice nous avons déjà des fonctions permettant de gérer cela
+Pour fonctionner, il faut pouvoir persister les données de sessions en BDD. Pour les besoins de l’exercice, nous avons déjà des fonctions permettant de gérer cela.
 
 ```tsx
-import {
-  addSession,
-  findSession,
-  updateSession,
-  deleteSession,
-} from '@/db/sgbd'
+import {addSession, findSession, updateSession, deleteSession} from '@/db/sgbd'
 
 const session = await findSession(sessionId)
 const session = await addSession(session)
@@ -30,7 +25,7 @@ const session = await updateSession(session)
 await deleteSession(sessionId)
 ```
 
-Pour ne pas confondre ces fonctions de la couche de persistance avec la couche de gestion de sessions nous les renommerons en `DAO`
+Pour ne pas confondre ces fonctions de la couche de persistance avec la couche de gestion de sessions, nous les renommerons en `DAO`
 
 ```tsx
 import {
@@ -48,28 +43,28 @@ await deleteSessionDao(sessionId)
 
 ### Les Cookies ?
 
-- Les cookies sont toujours utile mais cette fois ci, aucune information (comme le `userId`) et garder dans les cookies.
+- Les cookies sont toujours utiles mais cette fois-ci, aucune information (comme le `userId`) et garder dans les cookies.
 - La seule information stockée et utile est la `sessionId`
-- Avec cette infirmation on pourra retrouver : la `session`, puis le `userId`, puis le `user`
+- Avec cette information, on pourra retrouver : la `session`, puis le `userId`, puis le `user`
 
 ## Exercice
 
-**👨‍✈️ Hugo le chef de projet demande de pouvoir gérer 2 types de sessions dans l’application.**
+**👨‍✈️ Hugo, le chef de projet, demande de pouvoir gérer 2 types de sessions dans l’application.**
 
-- Les sessions `stateless` (déjà fait)
-- Les sessions gérer en BDD (à implémenter)
+- Les sessions `stateless`(déjà fait).
+- Les sessions gérées en BDD (à implémenter).
 
-Nous allons donc avoir les même fonctions mais avec des implémentations différentes
+Nous allons donc avoir les mêmes fonctions mais avec des implémentations différentes
 
-- `createSession` (création la session : Cookies + BDD)
+- `createSession`(création de la session : Cookies + BDD)
 - `verifySession`
   - Décode la session via les Cookies
-  - Vérifie la date d’expiration en BDD (et non basé sur expiration date du cookies)
+  - Vérifie la date d’expiration en BDD (et non basée sur l’expiration de la date du cookies)
 - `deleteSession` : Suppression Cookie + BDD
 
-**🐶 Implémente ces fonctions dans le fichier `session-database.ts` .** Pour simplifier l’exercice nous avons modifier les imports de `auth.ts` et `dal.ts` pour qu’ils appellent les fonction de **`session-database.ts`$**
+**🐶 Implémente ces fonctions dans le fichier `session-database.ts` .** Pour simplifier l’exercice, nous avons modifié les imports de `auth.ts` et `dal.ts` pour qu’ils appellent les fonctions de **`session-database.ts`$**
 
-Pour le moment **`session-database.ts` est un simple wrapper qui appelle `session-stateless.ts`**
+Pour le moment, **`session-database.ts` est un simple `wrapper` qui appelle `session-stateless.ts`**
 
 ```tsx
 import {
@@ -91,17 +86,17 @@ export function deleteSession() {
 }
 ```
 
-En conclusion pour le moment nous avons le même fonctionnement qu’avant (`statless`). Tu vas simplement pouvoir implémenter la sessions database ici sans te préoccuper des imports.
+En conclusion, pour le moment nous avons le même fonctionnement qu’avant (`statless`). Tu vas simplement pouvoir implémenter la session `database` ici sans te préoccuper des imports.
 
-**🐶 Edite `session-database.ts` et implémente le database session**
+**🐶 Édite `session-database.ts` et implémente la `database` session.**
 
-_ps : edite le `.env.local` si tu souhaites lire le données des cookies dans le browser_
+_PS : Édite le `.env.local` si tu souhaites lire les données des cookies dans le browser_
 
 ```tsx
-SESSION_USE_JWT=false
+SESSION_USE_JWT = false
 ```
 
-_ps2: Regarde le fichier `db.json` pour analyser les sessions_
+_PS2 : Regarde le fichier `db.json` pour analyser les sessions_
 
 ```tsx
  "sessions": [
@@ -125,38 +120,38 @@ Fichiers
 
 ### 1. 🚀 Update Session
 
-On peut parfois avoir besoin de mettre à jour la session (étendre la date d’expiration par exemple) ou invalider la session (cela déconnectera les users utilisant la session).
+On peut parfois avoir besoin de mettre à jour la session (étendre la date d’expiration par exemple) ou invalider la session (cela déconnectera les `users` utilisant la session).
 
-**🐶 Dans cet exercice tu vas devoir implémenter `updateSession` .** Pour simplifier l’exercice `updateSession` est deja appeler dans `getConnectedUser` de `dal.ts`.
+**🐶 Dans cet exercice, tu vas devoir implémenter `updateSession`.** Pour simplifier l’exercice `updateSession` est déjà appelé dans `getConnectedUser` de `dal.ts`.
 
-L’idée est de mettre à jour la session a chaque fois qu’un requête utilisateur arrive
+L’idée est de mettre à jour la session à chaque fois qu’une requête utilisateur arrive.
 
-Voila les grandes étapes :
+Voilà les grandes étapes :
 
-- Récupération et décryptage de la session
-- Recalcule d’une nouvelle date d’expiration
+- Récupération et décryptage de la session.
+- Recalcule d’une nouvelle date d’expiration.
 
 ```tsx
 const expires = new Date(Date.now() + EXPIRE_TIME)
 ```
 
-- Recherche de la session en BDD (`findSessionDao`)
-- Mise à jour du champs `expiresAt`
-- Mise a jour de la session en BDD (`updateSessionDao`)
-- Essaye egalement de mettre à jour le cookie (`expires`)
+- Recherche de la session en BDD (`findSessionDao`).
+- Mise à jour du champ `expiresAt`.
+- Mise à jour de la session en BDD (`updateSessionDao`).
+- Essaie également de mettre à jour le cookie (`expires`).
 
 ```tsx
-  cookies().set('session', session, {
-    httpOnly: true,
-    secure: true,
-    expires,
-    sameSite: 'lax',
-    path: '/',
-  })
+cookies().set('session', session, {
+  httpOnly: true,
+  secure: true,
+  expires,
+  sameSite: 'lax',
+  path: '/',
+})
 ```
 
 - Constate le problème : `Cookies can only be modified in a Server Action or Route Handler`
-- Constate le probleme de boucle (HMR) et fait un build de prod
+- Constate le problème de boucle (`HMR`) et fait un `build` de prod.
 
 Fichiers
 
@@ -164,28 +159,28 @@ Fichiers
 
 ### 2. 🚀 Session Unique
 
-Si le même utilisateur se connecte plusieurs fois (sans `logout`), plusieurs sessions seront en BDD. Parfois il est nécessaire de gérer les sessions et de s’assurer qu’une seule session est gérer.
+Si le même utilisateur se connecte plusieurs fois (sans `logout`), plusieurs sessions seront en BDD. Parfois il est nécessaire de gérer les sessions et de s’assurer qu’une seule session est gérée.
 
-**👨‍✈️ Hugo le chef de projet te demande d’adapter `createSession` pour ne pas dupliquer les sessions**
+**👨‍✈️ Hugo, le chef de projet, te demande d’adapter `createSession` pour ne pas dupliquer les sessions**
 
 Les grandes étapes.
 
 - Vérifier la présence d’une session en BDD : `const sessionByUid = await findSessionByUid(uid)`
-  - vérifier expiration
+  - Vérifier expiration
 - Si présence, alors ne pas créer de nouvelle session et mettre à jour la session avec nouvelle date d’expiration
 - Sinon créer une nouvelle session
 - Mettre à jour le cookie
 
-### 2. 🚀 Session segmenter par user agent
+### 3. 🚀 Session segmentée par user agent
 
-On peut aussi avoir a gérer des session distincte par user agent (Ihpone, Ipad, Chrome) etc … Ce qui permet d’identifier (et déconnecter) certain appareil.
+On peut aussi avoir à gérer des sessions distinctes par user agent (`Ihpone`, `Ipad`, `Chrome`) etc… Ce qui permet d’identifier (et déconnecter) certain appareil.
 
-**👨‍✈️ Hugo le chef de projet te demande d’adapter `createSession` pour gerer les sessions par user et userAgent**
+**👨‍✈️ Hugo, le chef de projet, te demande d’adapter `createSession` pour gérer les sessions par `user` et `userAgent`.**
 
-Les grandes étapes.
+Les grandes étapes :
 
-- Identique a précédemment mis a part
-- Recuperation du User Agent via le header
+- Identique à précédemment mis à part.
+- Récupération du `User Agent` via le `header`.
 
 ```tsx
 const headersList = headers()
@@ -193,20 +188,20 @@ const userAgent = headersList.get('User-Agent')
 
 //creation session avec userAgent
 await addSessionDao({
-    sessionId,
-    userId: uid,
-    expiresAt: expiresAt.toISOString(),
-    userAgent,
-  })
+  sessionId,
+  userId: uid,
+  expiresAt: expiresAt.toISOString(),
+  userAgent,
+})
 // Recherche
 const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
 ```
 
 - **🐶 Adapte l’algorithme**
 
-_ps : Supprime les sessions de la BDD pour le user-agent_
+_PS : Supprime les sessions de la BDD pour le `user-agent`._
 
-_ps : Connecte toi avec 2 navigateurs (navigation privé) et expire les date en BDD pour constater les déconnexion_
+_PS : Connecte toi avec 2 navigateurs (navigation privé) et expire les dates en BDD pour constater les déconnexions._
 
 `ps : on pourrait affiner les sessions avec IP etc …`
 
@@ -228,4 +223,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=08-session-database).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=08%20Session%20-%20Database).

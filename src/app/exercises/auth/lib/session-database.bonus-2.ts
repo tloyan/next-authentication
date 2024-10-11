@@ -14,7 +14,7 @@ import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 export async function createSession(uid: string) {
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
 
-  //1 . recuperation session par uid et userAgent
+  //1 . Récupération session par `uid` et `userAgent`
   const sessionByUid = await findSessionByUid(uid)
 
   // SESSION EXISTE ET NON EXPIRE
@@ -37,7 +37,7 @@ export async function createSession(uid: string) {
     })
     return
   }
-  // NOUVEL SESSION (ancien algo)
+  // NOUVELLE SESSION (ancien algo)
   // 1. Create a session in the database
   const sessionId = randomUUID()
 
