@@ -4,37 +4,57 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Pour mettre en place une authentification (répondant à la question "QUI se connecte"), il est nécessaire de disposer d'une base de données utilisateurs contenant des couples d'identifiants et de mots de passe (credentials). Cet identifiant peut être un `email`, un `nom d'utilisateur`, ou les deux.
+Pour mettre en place une authentification (répondant à la question "QUI se connecte"), il existe plusieurs manières :
+
+### Auth/OpenID Connect (OIDC) :
+
+Permettre l'accès à des tiers sans partager les identifiants des utilisateurs. Idéal pour les connexions via les réseaux sociaux et les solutions de `Single Sign-On` (SSO). Ils ajoutent une couche d'identité avec `OpenID Connect`.
+
+### Passkeys/WebAuthn :
+
+Utilise des identifiants cryptographiques uniques pour chaque site, offrant une grande sécurité contre le `phishing`. Sécurisé mais nouveau, cette stratégie peut être difficile à mettre en œuvre.
+
+### Authentification sans mot de passe / par jeton :
+
+Utilise des liens magiques par email ou des codes uniques envoyés par SMS pour un accès sécurisé sans mot de passe. Populaire pour sa commodité et sa sécurité renforcée, cette méthode aide à réduire la fatigue des mots de passe. Sa limitation est la dépendance à la disponibilité de l'email ou du téléphone de l'utilisateur.
+
+### Authentification par identifiants (Email + Mot de passe) :
+
+Un choix standard pour les applications web, où les utilisateurs se connectent avec un email et un mot de passe. Familier et facile à mettre en œuvre, cela nécessite des mesures de sécurité robustes contre les menaces telles que le `phishing`.
+
+Dans notre cas, nous allons utiliser cette dernière.
+
+Pour cela, il est nécessaire de disposer d'une base de données utilisateurs contenant des couples d'identifiants et de mots de passe (`credentials`). Cet identifiant peut être un `email`, un `nom d'utilisateur`, ou les deux.
 
 - Les utilisateurs doivent pouvoir créer un compte (`register`)
-- Les utilisateurs doivent pouvoir créer se connecter (`login`), c’est à dire vérifier le couple email/mot de passe
+- Les utilisateurs doivent pouvoir se connecter (`login`), c’est à dire vérifier le couple email/mot de passe
 
-Avec cette information (qui est connecté) nous pourrons décider de quelles ressources du site sont autorisées ou pas.
+Avec cette information (qui est connecté), nous pourrons décider de quelles ressources du site sont autorisées ou pas.
 
-Dans le cas d’application Next ce fonctionnement peut être découpé de la manière suivante :
+Dans le cas d’application `Next` ce fonctionnement peut être découpé de la manière suivante :
 
 - `FORM` : Formulaires contenant les champs à transmettre au backend (`action`)
 - `ACTION` : Valide le formulaire et appelle la librairie d’authentification
 - `AUTH LIB` : Librairie contenant la logique / norme / d’authentification
-- `DATABASE` : persistance de données
+- `DATABASE` : Persistance de données
 
-![archi](/course/form-action-lib-db.png)
+![form-action-lib-db.png](/course/form-action-lib-db.png)
 
 ## Exercice
 
-Nous allons dans un premier temps connecter les formulaires aux actions.
+Nous allons, dans un premier temps connecter les formulaires aux actions.
 
-Les formulaires / actions permettrons de
+Les formulaires / actions permettront de :
 
 1. Valider les champs et afficher des éventuelles erreurs sur les champs.
 2. Si la validation est OK, appelle de la librairie d’authentification
 3. Gestion des erreurs liées à la librairie d’authentification
 
-Le type de retour des action permet de gérer les messages d’erreurs sur les champs ou un message d’erreur plus général (auth par exemple)
+Le type de retour des actions permet de gérer les messages d’erreurs sur les champs ou un message d’erreur plus général (auth par exemple)
 
 ```tsx
 export type FormState =
@@ -51,7 +71,7 @@ export type FormState =
 
 - Auth Librairie
 
-Pour le moment cette librairie est `mockée`, nous l’implémenterons plus tard.
+Pour le moment, cette librairie est `mockée`, nous l’implémenterons plus tard.
 
 ```tsx
 const signUp = async (email: string, password: string) => {
@@ -92,7 +112,7 @@ throw {
 } as SignInError
 ```
 
-ps : Les schémas Zod sont déjà fournis dans `/auth/lib/type.ts`
+Ps : Les schémas `Zod` sont déjà fournis dans `/auth/lib/type.ts`
 
 ```tsx
 export const LoginFormSchema = z.object({
@@ -102,9 +122,9 @@ export const LoginFormSchema = z.object({
 //etc ...
 ```
 
-🐶 Dans cet exercice , tu vas devoir
+🐶 Dans cet exercice, tu vas devoir :
 
-- Implémenter les 2 formulaires (login/register) en utilisant le hook `useActionState`
+- Implémenter les 2 formulaires (`login/register`) en utilisant le hook `useActionState`
 - Gérer le `status pending` (`useFormState`)
 - Valider les champs avec `Zod`
 - Gérer les messages d’erreurs
@@ -115,17 +135,16 @@ Fichiers
 - `exercise/auth/action.tsx`
 - `exercise/auth/form/form-login.tsx`
 - `exercise/auth/form/form-register.tsx`
--
 
 ## Bonus
 
 ### 1. 🚀 Gestion status pending via state (logout)
 
-Pour le `logout` nous avons juste à appeler une fonction logout`await  logout()`. Nous n’avons pas de formulaire ni de champs a valider.
+Pour le `logout` nous avons juste à appeler une fonction `logout` `await logout()`. Nous n’avons pas de formulaire ni de champs à valider.
 
 Nous appelons directement une action. Nous n’avons pas accès à `useFormStatus`.
 
-Pour cela allons gerer le status avec un simple `state`. Le principe est d’attendre le retour du server action `logout`
+Pour cela, nous allons gérer le statut avec un simple `state`. Le principe est d’attendre le retour du serveur action `logout`
 
 ```tsx
 setPending(true)
@@ -133,13 +152,11 @@ await logout()
 setPending(false)
 ```
 
-- **🐶** implémente cela pour le logout
+- **🐶** Implémente cela pour le logout
 
 Fichiers
 
 - `exercise/auth/form/form-logout.tsx`
-
-###
 
 ## Aller plus loin
 
@@ -155,4 +172,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=02%20validation%20action).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=02%20Authentification%20-%20Validation%20Form).
