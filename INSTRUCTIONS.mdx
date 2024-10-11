@@ -4,23 +4,23 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans le développement de logiciels, il est souvent nécessaire de pouvoir modifier le comportement d'un objet sans changer son code source. C'est là que le pattern Strategy intervient. Ce pattern permet de définir une famille d'algorithmes, de les encapsuler individuellement et de les rendre interchangeables. Cela permet de varier l'algorithme ou la logique utilisée par un objet sans altérer son fonctionnement global.
+Dans le développement de logiciels, il est souvent nécessaire de pouvoir modifier le comportement d'un objet sans changer son code source. C'est là que le `Pattern Strategy` intervient. Ce pattern permet de définir une famille d'algorithmes, de les encapsuler individuellement et de les rendre interchangeables. Cela permet de varier l'algorithme ou la logique utilisée par un objet sans altérer son fonctionnement global.
 
-Le pattern Strategy est particulièrement utile dans les situations où plusieurs algorithmes pour effectuer une tâche sont disponibles et où l'algorithme à utiliser peut varier en fonction du contexte. Ce pattern favorise également la réutilisabilité du code et la séparation des préoccupations.
+Le `pattern Strategy` est particulièrement utile dans les situations où plusieurs algorithmes pour effectuer une tâche sont disponibles et où l'algorithme à utiliser peut varier en fonction du contexte. Ce pattern favorise également la réutilisabilité du code et la séparation des préoccupations.
 
-### Exemple Pratique dans Next.js
+### Exemple Pratique dans `Next.js`
 
-Pour illustrer le pattern Strategy, prenons l'exemple de la gestion des sessions utilisateur dans une application Next.js. Selon l'environnement ou les exigences spécifiques, vous pouvez choisir de gérer les sessions de manière **stateless** (sans état) ou en les stockant dans une **base de données**. Le pattern Strategy permet de basculer entre ces deux méthodes de manière transparente.
+Pour illustrer le `pattern Strategy`, prenons l'exemple de la gestion des sessions utilisateur dans une application `Next.js`. Selon l'environnement ou les exigences spécifiques, vous pouvez choisir de gérer les sessions de manière **`stateless`** (sans état) ou en les stockant dans une **base de données**. Le `pattern Strategy` permet de basculer entre ces deux méthodes de manière transparente.
 
 ### Définition des Stratégies
 
-Nous avons developper deux stratégies pour la gestion des sessions :
+Nous avons développé deux stratégies pour la gestion des sessions :
 
-1. **Stateless** : Les sessions sont gérées sans état, souvent à l'aide de JSON Web Tokens (JWT).
+1. **Stateless** : Les sessions sont gérées sans état, souvent à l'aide de `JSON Web Tokens` (`JWT`).
 2. **Database** : Les sessions sont stockées dans une base de données.
 
 Nous avons des fonctions spécifiques pour chaque méthode de gestion des sessions :
@@ -32,11 +32,11 @@ Nous avons des fonctions spécifiques pour chaque méthode de gestion des sessio
 
 Chacune de ces fonctions a une implémentation pour chaque stratégie.
 
-### Implémentation du Pattern Strategy
+### Implémentation du `Pattern Strategy`
 
-L’idée est que les couches qui appellent les fonctions de sessions n’ont pas a ce préoccuper du type de gestion de session.
+L’idée est que les couches qui appellent les fonctions de sessions n’ont pas à se préoccuper du type de gestion de session.
 
-Pour cela nous allons interdire ce type d’import spécifique
+Pour cela, nous allons interdire ce type d’import spécifique :
 
 ```tsx
 //❌
@@ -49,7 +49,7 @@ import {createSession, deleteSession} from './session-stateless'
 import {createSession, deleteSession} from './session'
 ```
 
-Il est possible de définir des règles au niveau du `linter` pour interdire ces imports
+Il est possible de définir des règles au niveau du `linter` pour interdire ces imports.
 
 ```json
 //.eslintrc.json
@@ -74,7 +74,7 @@ Il est possible de définir des règles au niveau du `linter` pour interdire ces
 
 ## Exercice
 
-Dans cet exercice tu as un type à disposition : `SessionType`
+Dans cet exercice, tu as un type à disposition : `SessionType`
 
 ```tsx
 export enum SessionType {
@@ -83,19 +83,19 @@ export enum SessionType {
 }
 ```
 
-Et le type de session sera définis en variable d’environnement
+Et le type de session sera défini en variable d’environnement
 
 ```json
 SESSION_TYPE=DATABASE
 ```
 
-Pour déterminer le type il suffira de faire dans notre fichier `session.ts`
+Pour déterminer le type, il suffira de faire dans notre fichier `session.ts`
 
 ```tsx
 const SESSION_TYPE: SessionType = process.env.SESSION_TYPE as SessionType
 ```
 
-Pour les besoins de l’exercice nous avons modifier tous les imports de sessions dans `auth.ts et dal.ts` et nous avons maintenant un fichier `sessions.ts` qui appelle la version stateless
+Pour les besoins de l’exercice, nous avons modifié tous les imports de sessions dans `auth.ts et dal.ts` et nous avons maintenant un fichier `sessions.ts` qui appelle la version `stateless`
 
 ```tsx
 export async function createSession(userId: string) {
@@ -113,9 +113,9 @@ export function deleteSession() {
 }
 ```
 
-- **🐶 Implémente le stategy pattern pour pouvoir switcher d’implementation en fonction de** `SESSION_TYPE` défini dans le `.env`
+- **🐶 Implémente le `stategy pattern` pour pouvoir switcher d’implémentation en fonction de** `SESSION_TYPE` défini dans le `.env`
 
-ps : pense à tester tous les cas de types de sessions
+PS : Pense à tester tous les cas de types de sessions
 
 ```tsx
 //.env
@@ -142,4 +142,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=09-stategy-pattern).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=09%20Stategy%20Pattern).
