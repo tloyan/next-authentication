@@ -4,19 +4,19 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans les sections précédentes nous avons créé des `routes / form / actions` mockés à la librairie d’authentification.
+Dans les sections précédentes, nous avons créé des `routes / form / actions` mockés à la librairie d’authentification.
 
-![archi](/course/form-action-lib-db.png)
+![form-action-lib-db.png](/course/form-action-lib-db.png)
 
-Nous allons donc maintenant implémenter la librairie d’authentification. Cette couche aura pour role de gérer la logique d’encryption du mot de passe et insertion en base de données. Ensuite la lecture et la vérification du credencials (email/mot de passe)
+Nous allons donc maintenant implémenter la librairie d’authentification. Cette couche aura pour rôle de gérer la logique d’encryption du mot de passe et insertion en base de données. Ensuite la lecture et la vérification du credencials (email/mot de passe)
 
-### Introduction aux Credentials et au Hachage des Mots de Passe
+### Introduction aux `Credentials` et au `Hachage` des Mots de Passe
 
-Lors de la mise en place d'un système d'authentification, il est crucial de garantir la sécurité des informations sensibles des utilisateurs, notamment les mots de passe. Pour ce faire, nous utilisons des techniques de hachage et de salage afin de protéger les mots de passe stockés dans la base de données.
+Lors de la mise en place d'un système d'authentification, il est crucial de garantir la sécurité des informations sensibles des utilisateurs, notamment les mots de passe. Pour ce faire, nous utilisons des techniques de `hachage` et de `salage` afin de protéger les mots de passe stockés dans la base de données.
 
 ### Credentials
 
@@ -24,29 +24,28 @@ Les credentials (ou identifiants) désignent généralement l'ensemble des infor
 
 ### Hachage et Salage des Mots de Passe
 
-Le hachage est un processus cryptographique qui transforme un mot de passe en une chaîne de caractères unique, appelée "hash". Ce processus est unidirectionnel, ce qui signifie qu'il est pratiquement impossible de récupérer le mot de passe original à partir du hash. Pour renforcer davantage la sécurité, nous ajoutons un "sel" (salt) au mot de passe avant de le hacher.
+Le `hachage` est un processus cryptographique qui transforme un mot de passe en une chaîne de caractères unique, appelée `"hash"`. Ce processus est unidirectionnel, ce qui signifie qu'il est pratiquement impossible de récupérer le mot de passe original à partir du hash. Pour renforcer davantage la sécurité, nous ajoutons un "sel" (`salt`) au mot de passe avant de le `hacher`.
 
-Le salage est l'ajout d'une valeur aléatoire unique à chaque mot de passe avant de le hacher. Cela empêche les attaquants d'utiliser des tables de hachage pré-calculées (ou "rainbow tables") pour deviner les mots de passe.
+Le `salage` est l'ajout d'une valeur aléatoire unique à chaque mot de passe avant de le `hacher`. Cela empêche les attaquants d'utiliser des tables de hachage pré-calculées (ou `"rainbow tables"`) pour deviner les mots de passe.
 
 Voici un exemple de code utilisant `bcrypt` pour hacher et saler un mot de passe :
 
 ```tsx
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 
 // Génération du sel avec un nombre de tours spécifié
-const salt = await bcrypt.genSalt(saltRounds);
+const salt = await bcrypt.genSalt(saltRounds)
 
 // Hachage du mot de passe avec le sel
-const hashedPassword = await bcrypt.hash(password, salt);
+const hashedPassword = await bcrypt.hash(password, salt)
 
-console.log('Mot de passe haché :', hashedPassword);
-
+console.log('Mot de passe haché :', hashedPassword)
 ```
 
 ## Exercice
 
-Dans cette exercice nous allons implémenter `signIn` et `signUp,` pour cela nous avons deja des fonction permettant de lire et d’accéder à notre base de données
+Dans cet exercice, nous allons implémenter `signIn` et `signUp`, pour cela nous avons déjà des fonctions permettant de lire et d’accéder à notre base de données.
 
 ```tsx
 import {addUser, getUserByEmail} from '@/db/sgbd'
@@ -58,7 +57,7 @@ Spécification des 2 fonctions
   1. Vérification du user en BDD (`getUserByEmail`)
   2. `Error` si l’utilisateur existe déjà
   3. Génération d’un `SALT`
-  4. Hash du mot de passe avec `bcrypt.hash`
+  4. `Hash` du mot de passe avec `bcrypt.hash`
   5. Création du user en BDD(`addUser`)
   6. Retourne le user créé
 - `signUp` (fonction de connexion)
@@ -74,7 +73,7 @@ Spécification des 2 fonctions
 - Les erreurs (doublons et user inexistant)
 
 <aside>
-💡 Tu peux supprimer le fichier `src/db/db.json` pour reset les users en BDD. Par default : [a@a.fr](mailto:a@a.fr) avec le mot de passe `a` existe.
+💡 Tu peux supprimer le fichier `src/db/db.json` pour reset les users en BDD. Par défaut : [a@a.fr](mailto:a@a.fr) avec le mot de passe `a` existe.
 
 </aside>
 
@@ -96,4 +95,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=03%20persistance-hash-salt).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=03%20Credentials%20-%20Persistance%20-%20hash%20-%20salt).
