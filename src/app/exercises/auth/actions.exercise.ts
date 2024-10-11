@@ -21,16 +21,16 @@ export type FormState =
         email?: string[]
         password?: string[]
         confirmPassword?: string[]
-        //🐶 Note que nous avons ajouter role dans le FormState
+        //🐶 Notes que nous avons ajouté `role` dans le `FormState`
         role?: string[]
       }
       message?: string
     }
   | undefined
 
-// 🐶 'changeConnectedUserRole' : Cette fonction permet de changer le role de l'utilisateur connecté
+// 🐶 `changeConnectedUserRole` : Cette fonction permet de changer le `role` de l'utilisateur connecté
 // sans aucune restriction
-// Adapte la pour emepecher un utilisateur de se donner un role superieur au sien
+// Adapte la pour emepêcher un utilisateur de se donner un `role` supérieur au sien
 export async function changeConnectedUserRole(
   _currentState: FormState,
   formData: FormData
@@ -53,8 +53,8 @@ export async function changeConnectedUserRole(
   if (!userConnected) {
     return {message: 'vous etes pas connecté'}
   }
-  // 🐶 Empeche l'appel à 'updateUserRole' si le role demandé est superieur au role de l'utilisateur connecté
-  // pour cela on va se basé sur l'ordre des roles
+  // 🐶 Empêche l'appel à `updateUserRole` si le `role` demandé est supérieur au `role` de l'utilisateur connecté
+  // Pour cela on va se baser sur l'ordre des rôles
   // const roleHierarchy = [
   //   RoleEnum.USER,
   //   RoleEnum.REDACTOR,
@@ -63,12 +63,12 @@ export async function changeConnectedUserRole(
   //   RoleEnum.SUPER_ADMIN,
   // ]
 
-  // 🐶 Determine le niveau de l'utilisateur
+  // 🐶 Détermine le niveau de l'utilisateur
   const userRoleIndex = 1
-  // 🐶 Determine le niveau demandé
+  // 🐶 Détermine le niveau demandé
   const requestedRoleIndex = 1
 
-  // 🐶 Si le role demandé est superieur au role de l'utilisateur connecté, on retourne une erreur
+  // 🐶 Si le `role` demandé est supérieur au `role` de l'utilisateur connecté, on retourne une erreur
 
   // return {
   //   errors: {
@@ -80,7 +80,7 @@ export async function changeConnectedUserRole(
   //     'Vous ne pouvez pas vous attribuer un rôle avec plus de privilèges',
   // }
 
-  // 🐶 Note : Tu peux deplacer ce code dans une fonction 'checkRoleHierarchy'
+  // 🐶 Note : Tu peux déplacer ce code dans une fonction `checkRoleHierarchy`
 
   try {
     await updateUserRole(userConnected.email, requestedRole)
@@ -93,7 +93,7 @@ export async function changeConnectedUserRole(
   return {message: 'change role successful'}
 }
 
-// 🐶 Adapte cette fonction pour empecher un utilisateur non admin de changer le role des autres users
+// 🐶 Adapte cette fonction pour empêcher un utilisateur non admin de changer le role des autres users
 export async function changeUserRole(
   _currentState: FormState,
   formData: FormData
@@ -118,7 +118,7 @@ export async function changeUserRole(
     return {message: 'vous etes pas connecté'}
   }
 
-  // 🐶 Verifie que le role du userConnected est OK
+  // 🐶 Vérifie que le role du `userConnected` est OK
 
   // SINON on retourne une erreur
   // return {

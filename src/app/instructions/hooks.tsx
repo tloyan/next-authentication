@@ -1,8 +1,8 @@
 import {useEffect} from 'react'
 import {useTheme} from 'next-themes'
 
-// Permet de switcher de Theme Prism
-// fonctionne avec des fichiers styles dans 'public/styles/themes'
+// Permet de switcher de Theme `Prism`
+// Fonctionne avec des fichiers styles dans `public/styles/themes`
 export function usePrismTheme() {
   const {theme = 'dark'} = useTheme()
 

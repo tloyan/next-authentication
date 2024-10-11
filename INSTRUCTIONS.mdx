@@ -4,29 +4,29 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Nous avons vu précèdent comment vérifier qu’un utilisateur est connecté ou non pour autoriser l’accès à des routes. Nous avons également vu comment autoriser certaines routes en fonction du rôle (RBAC)
+Nous avons vu précédemment comment vérifier qu’un utilisateur est connecté ou non pour autoriser l’accès à des routes. Nous avons également vu comment autoriser certaines routes en fonction du rôle (`RBAC`)
 
-Il est important également de protéger les Server Actions (qui ne sont pas des routes). Un méthode simple consiste a vérifier que le user est `authentifier` (via la session par exemple)
+Il est important également de protéger les `Server Actions` (qui ne sont pas des routes). Une méthode simple consiste à vérifier que le `user` est `authentifier` (via la session par exemple).
 
 ```tsx
 //action.ts
-'use server';
+'use server'
 export async function addItem(formData: FormData) {
-  const {userId} = session();
+  const {userId} = session()
 
   if (!userId) {
-    throw new Error('You must be signed in to add an item to your cart');
+    throw new Error('You must be signed in to add an item to your cart')
   }
 
-  console.log('add item server action', formData);
-  }
+  console.log('add item server action', formData)
+}
 ```
 
-Mais il est également possible de protéger certaines fonctionnalité en fonction du `role`. Exemple
+Mais il est également possible de protéger certaines fonctionnalités en fonction du `role`. Exemple :
 
 ```tsx
 //action.ts
@@ -43,7 +43,7 @@ export async function addItem(formData: FormData) {
 
 ## Exercice
 
-Dans cet exercice nous avons sur la page `exercices/auth` 2 nouveaux formulaires.
+Dans cet exercice, nous avons sur la page `exercices/auth` 2 nouveaux formulaires.
 
 ```tsx
 //exercices/auth/page.tsx
@@ -53,25 +53,23 @@ Dans cet exercice nous avons sur la page `exercices/auth` 2 nouveaux formulaires
 
 2 formulaires qui permettent de :
 
-- `ChangeRoleForm` : Changer le rôle de l’utilisateur connecté
-- `AdminChangeRoleForm` : Changer le rôle de n’importe quel user dans l’application
+- `ChangeRoleForm` : Changer le rôle de l’utilisateur connecté.
+- `AdminChangeRoleForm` : Changer le rôle de n’importe quel user dans l’application.
 
-Pour simplifier l’exercice, ces formulaire sont fournis et connecté au server actions.
+Pour simplifier l’exercice, ces formulaires sont fournis et connectés au `server action`.
 
 Mais aucune règle n’est présente pour déterminer ce que l’utilisateur peut faire.
 
-**👨‍✈️ Hugo le chef de projet te demande de gérer l’autorisation des actions avec les règles suivantes :**
+**👨‍✈️ Hugo, le chef de projet, te demande de gérer l’autorisation des actions avec les règles suivantes :**
 
-- **Les utilisateurs peuvent changer `LEURS` rôles ( `changeConnectedUserRole` ) mais sans augmentation de privilèges** Exemple:
+- **Les utilisateurs peuvent changer `LEURS` rôles ( `changeConnectedUserRole`) mais sans augmentation de privilèges.** Exemple :
   - Passer de `ADMIN` à `REDACTOR` → OK
-  - Passer de `REDACTOR` à `ADMIN` → KO
-- Les `ADMIN` et `SUPER_ADMIN` peuvent changer le rôles de n’importe qu’el user dans l’application (`changeUserRole`)
+  - Passer de `REDACTOR` à `ADMIN`→ KO
+- Les `ADMIN` et `SUPER_ADMIN` peuvent changer le rôle de n’importe quel `user` dans l’application (`changeUserRole`)
 
 Fichiers
 
 - `exercise/auth/action.ts`
-
-##
 
 ## Aller plus loin
 
@@ -87,4 +85,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=12-authorization-server-action).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=12%20Authorization-server-action).
