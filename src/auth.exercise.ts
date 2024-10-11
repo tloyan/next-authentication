@@ -2,12 +2,12 @@
 import NextAuth from 'next-auth'
 import type {NextAuthConfig} from 'next-auth'
 
-// 🐶 import les provider 'Google' et 'Resend'
+// 🐶 Importe les providers `Google` et `Resend`
 // 🤖 import Google from 'next-auth/providers/google'
 // 🤖 import Resend from 'next-auth/providers/resend'
 import Credentials from 'next-auth/providers/credentials'
 
-// 🐶 importe 'getUserByEmail' et 'verifyPassword'
+// 🐶 Importe `getUserByEmail` et `verifyPassword`
 //import {getUserByEmail} from './db/sgbg-unstorage'
 //import {verifyPassword} from './app/exercises/auth/lib/crypt'
 import {UnstorageAdapter} from '@auth/unstorage-adapter'
@@ -17,7 +17,7 @@ console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
   providers: [
-    // 🐶 Ajoute les provider Google et Resend en plus de Credentials
+    // 🐶 Ajoute les providers `Google` et `Resend` en plus de `Credentials`
     // Google,
     // Resend,
     Credentials({
@@ -27,20 +27,20 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
       },
 
       authorize: async (credentials) => {
-        // 🐶 Utilise 'getUserByEmail' pour recuperer le user en BDD
+        // 🐶 Utilise `getUserByEmail` pour récupérer le user en BDD
         const user = {}
 
-        // 🐶 Utilise 'verifyPassword' pour verifier le mot de passe
+        // 🐶 Utilise `verifyPassword` pour vérifier le mot de passe
         // 🤖
         // const passwordMatch = verifyPassword(
         //   user?.password as string,
         //   credentials.password as string
         // )
 
-        // 🐶 lève une error 'User not found.' si le user n'existe pas
-        // 🐶 lève une error 'Password incorrect.' si le mot de passe est incorrect
+        // 🐶 Lève une error `User not found.` si le user n'existe pas
+        // 🐶 Lève une error `Password incorrect.` si le mot de passe est incorrect
 
-        // 🐶 retoure le user
+        // 🐶 Retoure le `user`
         return user
       },
     }),

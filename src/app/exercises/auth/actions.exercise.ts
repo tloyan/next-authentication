@@ -1,7 +1,7 @@
 'use server'
-// 🐶 adapte la fonction 'authenticate'
+// 🐶 Adapte la fonction `authenticate`
 
-// 🐶 importe {signIn, signOut} de NextAuth
+// 🐶 Importe {signIn, signOut} de `NextAuth`
 // 🤖 import {signIn, signOut} from '@/auth'
 import {RoleEnum} from '@/lib/type'
 import {auth} from '@/app/exercises/auth/lib/auth'
@@ -31,7 +31,7 @@ export type FormState =
     }
   | undefined
 
-// 🐶 adapte 'authenticate'
+// 🐶 Adapte `authenticate`
 export async function authenticate(
   _currentState: FormState,
   formData: FormData
@@ -51,19 +51,19 @@ export async function authenticate(
     }
   }
   try {
-    // ⛏️ supprime l'appelle a 'auth.signIn' notre auth custom
+    // ⛏️ Supprime l'appel à `auth.signIn` notre auth custom
     const user = await auth.signIn(email, password)
-    // 🐶 remplace par 'signIn' de nextAuth
+    // 🐶 Remplace par `signIn` de `nextAuth`
     console.log('Signed in:', user)
   } catch (error) {
     console.error('authenticate error:', error)
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
-    // 🐶 Next auth 5 étant en beta il y a un workaround 'isRedirectError'
+    // 🐶 Next auth 5 étant en beta il y a un workaround `isRedirectError`
     if (isRedirectError(error)) {
       throw error
     }
     const signInError = error as SignInError
-    // 🐶 Catch les error de nextAuth (levè dans auth.ts)
+    // 🐶 Catch les error de `nextAuth` (lève dans auth.ts)
 
     // 🤖
     // if (error instanceof AuthError) {
@@ -107,17 +107,17 @@ export async function register(
     }
   }
   try {
-    // 🐶 NextAuth n'a pas de SignUp on gardre notre implementation
+    // 🐶 `NextAuth` n'a pas de `SignUp` on gardre notre implémentation
     const user = await auth.signUp(email, password)
     console.log('Signed UP:', user)
 
-    // 🐶 Il faut ensuite gerer un signIn ici pour creer la session JWT
+    // 🐶 Il faut ensuite gérer un `signIn` ici pour créer la session `JWT`
     //
     // 🤖 await signIn('credentials', formData)
 
     // ATTENTION EDGE
-    // La creation du user ne se fait pas (edge ne supporte pas FS)
-    // pour les besoin de l exercice on bypass avec un fake signIn
+    // La création du user ne se fait pas (edge ne supporte pas FS)
+    // pour les besoins de l'exercice on bypass avec un fake `signIn`
     // WORKAROUND FOR EDGE UNCACHE ISSUE
     // const formDataOverrided = new FormData()
     // formDataOverrided.append('email', 'admin@mikecodeur.com')
@@ -168,7 +168,7 @@ export async function changeConnectedUserRole(
   if (!userConnected) {
     return {message: 'vous etes pas connecté'}
   }
-  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  // Tout le monde peut changer de rôle sauf pour les rôles `ADMIN` et `SUPER_ADMIN`
   if (checkRoleHierarchy(userConnected, requestedRole)) {
     return checkRoleHierarchy(userConnected, requestedRole)
   }
@@ -249,7 +249,7 @@ export async function changeUserRole(
   if (!userConnected) {
     return {message: 'vous etes pas connecté'}
   }
-  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  // Tout le monde peut changer de rôle sauf pour les rôles `ADMIN` et `SUPER_ADMIN`
   if (checkIsAdmin(userConnected)) {
     return checkIsAdmin(userConnected)
   }

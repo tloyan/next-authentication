@@ -149,7 +149,7 @@ export async function changeConnectedUserRole(
   if (!userConnected) {
     return {message: 'vous etes pas connecté'}
   }
-  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  // Tout le monde peut changer de rôle sauf pour les rôles `ADMIN` et `SUPER_ADMIN`
   if (checkRoleHierarchy(userConnected, requestedRole)) {
     return checkRoleHierarchy(userConnected, requestedRole)
   }
@@ -230,7 +230,7 @@ export async function changeUserRole(
   if (!userConnected) {
     return {message: 'vous etes pas connecté'}
   }
-  // Tout le monde peut changer de rôle sauf pour les rôles ADMIN et SUPER_ADMIN
+  // Tout le monde peut changer de rôle sauf pour les rôles `ADMIN` et `SUPER_ADMIN`
   if (checkIsAdmin(userConnected)) {
     return checkIsAdmin(userConnected)
   }

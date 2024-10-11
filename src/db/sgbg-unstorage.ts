@@ -191,7 +191,7 @@ export async function getPosts(): Promise<Post[]> {
   const response = await fetch('https://jsonplaceholder.typicode.com/posts')
   const postsApi: Post[] = await response.json()
   const data = await getData()
-  const posts = externalData ? postsApi ?? [] : data.posts ?? []
+  const posts = externalData ? (postsApi ?? []) : (data.posts ?? [])
   return posts
 }
 

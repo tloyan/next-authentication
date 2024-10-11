@@ -3,7 +3,7 @@ import {SignJWT, jwtVerify} from 'jose'
 import bcrypt from 'bcryptjs'
 
 const ONE_MINUTE = 60 * 1000
-export const EXPIRE_TIME = 10 * ONE_MINUTE //expires in 10 minutes
+export const EXPIRE_TIME = 10 * ONE_MINUTE //Expires in 10 minutes
 const secretKey = process.env.SESSION_SECRET
 const useJwt = process.env.SESSION_USE_JWT === 'true'
 const key = new TextEncoder().encode(secretKey)

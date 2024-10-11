@@ -22,7 +22,7 @@ export const getConnectedUser = cache(async () => {
 export function userDTO(user: User): UserDTO | undefined {
   if (!user) return undefined
   taintUniqueValue('Do not pass password to the client.', user, user?.password)
-  // autre exemple
+  // Autre exemple
   // experimental_taintObjectReference(
   //   'Do not pass ALL environment variables to the client.',
   //   process.env

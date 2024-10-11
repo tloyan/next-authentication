@@ -4,13 +4,13 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans les modules précédents, nous avons créé notre propre système d'authentification par credentials ainsi que la gestion des sessions. Cependant, il est parfois nécessaire d'utiliser un ou plusieurs systèmes d'authentifications tiers, qu'ils soientt privés ou publique.
+Dans les modules précédents, nous avons créé notre propre système d'authentification par `credentials` ainsi que la gestion des sessions. Cependant, il est parfois nécessaire d'utiliser un ou plusieurs systèmes d'authentifications tiers, qu'ils soient privés ou publiques.
 
-Par exemple, nous pourrions avoir besoin de permettre la connexion via Google, Facebook, Github ou n'importe quel autre fournisseur. Pour cela, il existe une librairie appelée `Next Auth`, récemment renommée [`AuthJS`](https://authjs.dev/getting-started/installation?framework=next.js). Son objectif est d'abstraire la gestion des sessions et de simplifier l'intégration avec d'autres systèmes d'authentification.
+Par exemple, nous pourrions avoir besoin de permettre la connexion via `Google`, `Facebook`, `Github` ou n'importe quel autre fournisseur. Pour cela, il existe une librairie appelée `Next Auth`, récemment renommée [`AuthJS`](https://authjs.dev/getting-started/installation?framework=next.js). Son objectif est d'abstraire la gestion des sessions et de simplifier l'intégration avec d'autres systèmes d'authentification.
 
 ## Installation :
 
@@ -18,13 +18,13 @@ Les 3 fichiers principaux :
 
 ### `auth.ts`
 
-Le fichier principal contenant toute la configuration, providers etc …
+Le fichier principal contenant toute la configuration, providers etc…
 
 ```tsx
 //./auth.ts
-import NextAuth from "next-auth"
+import NextAuth from 'next-auth'
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const {handlers, signIn, signOut, auth} = NextAuth({
   providers: [],
 })
 ```
@@ -35,8 +35,8 @@ La route de callback
 
 ```tsx
 //./app/api/auth/[...nextauth]/route.ts
-import { handlers } from "@/auth" // Referring to the auth.ts we just created
-export const { GET, POST } = handlers
+import {handlers} from '@/auth' // Referring to the auth.ts we just created
+export const {GET, POST} = handlers
 ```
 
 ### `middleware.ts`
@@ -45,46 +45,44 @@ Le middleware
 
 ```tsx
 //./middleware.ts
-export { auth as middleware } from "@/auth"
+export {auth as middleware} from '@/auth'
 ```
 
-📑 Le liens vers la doc [https://fr.reactjs.org/docs/getting-started.html](https://fr.reactjs.org/docs/getting-started.html)
+📑 Le lien vers la doc [https://fr.reactjs.org/docs/getting-started.html](https://fr.reactjs.org/docs/getting-started.html)
 
 ## Providers :
 
-Il existe de nombreux providers comme Google, Facebook etc …
+Il existe de nombreux providers comme `Google`, `Facebook`, etc…
 
-Il sont regroupés par types
+Ils sont regroupés par types :
 
 - Oauth
 - Magic Link
 - Credential
 - WebAuthn
 
-Pour ajouter un provider( exemple Google)
+Pour ajouter un provider( exemple Google) :
 
 ```tsx
+import NextAuth from 'next-auth'
+import Google from 'next-auth/providers/google'
 
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const {handlers, signIn, signOut, auth} = NextAuth({
   providers: [Google],
 })
-
 ```
 
-Et ensuite
+Et ensuite :
 
 ```tsx
-import { signIn } from "@/auth"
+import {signIn} from '@/auth'
 
 export function SignIn() {
   return (
     <form
       action={async () => {
-        "use server"
-        await signIn("google")
+        'use server'
+        await signIn('google')
       }}
     >
       <button type="submit">Signin with Google</button>
@@ -97,11 +95,11 @@ Doc : https://authjs.dev/getting-started/authentication/oauth
 
 ## Exercice
 
-Dans cet exercice tu vas devoir décommissionner l’ancien mode de fonctionnement et utiliser `Next-Auth`
+Dans cet exercice, tu vas devoir décommissionner l’ancien mode de fonctionnement et utiliser `Next-Auth`
 
 <aside>
 💡 
-Les middlewares de `Next.js` et `NextAuth` fonctionnent avec le runtime `Edge`, optimisés pour des réponses rapides. Ils n'incluent pas l**'intégralité des API Node.js**, notamment `fs` (système de fichiers). Cela permet une exécution plus légère et sécurisée en environnement Edge.
+Les middlewares de `Next.js` et `NextAuth` fonctionnent avec le runtime `Edge`, optimisés pour des réponses rapides. Ils n'incluent pas l**'intégralité des API Node.js**, notamment `fs` (système de fichiers). Cela permet une exécution plus légère et sécurisée en environnement `Edge`.
 
 </aside>
 
@@ -111,16 +109,16 @@ Runtime check
 console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 ```
 
-Pour les besoins de l’exercice nous avons changer `lowDb` par `Unstorage` qui permet d’avoir un DB en mémoire (ce qui nous permet d’appeler des fonction comme `getUserByEmail` depuis le middleware/nextAuth).
+Pour les besoins de l’exercice, nous avons changé `lowDb` par `Unstorage` qui permet d’avoir une DB en mémoire (ce qui nous permet d’appeler des fonctions comme `getUserByEmail` depuis le `middleware/nextAuth`).
 
-En production et pour de projet de plus grande ampleur il faut utiliser une librairie de gestion de BDD compatible
+En production et pour des projets de plus grande ampleur, il faut utiliser une librairie de gestion de BDD compatible :
 
 - [https://authjs.dev/getting-started/database](https://authjs.dev/getting-started/database)
-- `bcrypt` à été remplacer par `bcryptjs` mais le fonctionnement reste le meme
+- `bcrypt` a été remplacé par `bcryptjs` mais le fonctionnement reste le même.
 
-Pour simplifier l’exercice voila l’ensemble du décommissionnement
+Pour simplifier l’exercice, voilà l’ensemble du décommissionnement.
 
-### Décommissionnement
+### Décommissionnement :
 
 - `@/db/sgbd`
   - Remplacé par `@/db/sgbd-unstorage`
@@ -135,38 +133,38 @@ Pour simplifier l’exercice voila l’ensemble du décommissionnement
   - Remplacé par `bcryptjs`
 - dal (`verifySession`)
   - `Next-Auth`
-- action (`import {auth} from '@/app/exercises/auth/lib/auth`’)
+- action (`import {auth} from '@/app/exercises/auth/lib/auth`)
   - `Next-Auth`
 
-Tu retrouveras également des formulaires déjà connecté
+Tu retrouveras également des formulaires déjà connectés :
 
 ```tsx
- <div className="mx-auto max-w-2xl p-6  text-lg ">
-      {/* <LoginForm></LoginForm> */}
-      <h1 className="mb-4 text-center text-3xl font-bold">Google</h1>
-      <SignInGoogle></SignInGoogle>
-      <h1 className="mb-4 text-center text-3xl font-bold">Credentials</h1>
-      <SignInCredential />
-      <h1 className="mb-4 text-center text-3xl font-bold">Resend</h1>
-      <SignInResend />
-    </div>
+<div className="mx-auto max-w-2xl p-6  text-lg ">
+  {/* <LoginForm></LoginForm> */}
+  <h1 className="mb-4 text-center text-3xl font-bold">Google</h1>
+  <SignInGoogle></SignInGoogle>
+  <h1 className="mb-4 text-center text-3xl font-bold">Credentials</h1>
+  <SignInCredential />
+  <h1 className="mb-4 text-center text-3xl font-bold">Resend</h1>
+  <SignInResend />
+</div>
 ```
 
-Pour [Google](https://developers.google.com/identity/protocols/oauth2?hl=fr) autre provider cela requiert des clef API a créer sur Google Cloud ou sur [Github](https://authjs.dev/guides/configuring-github)
+Pour [Google](https://developers.google.com/identity/protocols/oauth2?hl=fr) autre provider, cela requiert des clés `API` à créer sur `Google Cloud` ou sur [Github](https://authjs.dev/guides/configuring-github)
 
 Nous allons ici nous concentrer sur le `credentials` `<SignInCredential />`
 
-Dans la documentation nous avons a appel à singIn
+Dans la documentation, nous avons un appel à `singIn` :
 
 ```tsx
-import { signIn } from "@/auth"
+import {signIn} from '@/auth'
 
 export function SignIn() {
   return (
     <form
       action={async (formData) => {
-        "use server"
-        await signIn("credentials", formData)
+        'use server'
+        await signIn('credentials', formData)
       }}
     >
       <label>
@@ -183,14 +181,14 @@ export function SignIn() {
 }
 ```
 
-Dans notre cas nous appellerons d’abord le server action avec le hook `useActionstate` ce qui nous permettra de gerer les errors et le `formStatus`
+Dans notre cas, nous appellerons d’abord le `server action` avec le hook `useActionstate` ce qui nous permettra de gérer les erreurs et le `formStatus`
 
 ```tsx
 const [actionState, authenticateAction] = useActionState(authenticate, {})
 ```
 
-- **🐶 Dans un premier temps va décommissionner l’appel a notre lib `auth.ts` perso dans la fonction `authenticate` et utilise `signIn` de `nextAuth` à la place**
-- **🐶** Déplace la logique de validation user/mdp dans le fichier auth.ts de `nextAuth`
+- **🐶 Dans un premier temps, il va décommissionner l’appel à notre lib `auth.ts` perso dans la fonction `authenticate` et utilise `signIn` de `nextAuth` à la place**
+- **🐶** Déplace la logique de validation `user/mdp` dans le fichier `auth.ts` de `nextAuth`
 
 Fichiers
 
@@ -209,10 +207,10 @@ Fichiers
 
 ### 2. 🚀 Protected route (Role Based)
 
-Pou protéger les routes
+Pour protéger les routes :
 
 ```tsx
-import { auth } from "@/auth"
+import {auth} from '@/auth'
 
 export default async function Page() {
   const session = await auth()
@@ -228,7 +226,7 @@ export default async function Page() {
 
 https://authjs.dev/getting-started/session-management/protecting
 
-Mais il est possible de le faire dans auth.ts grace un callback `authorized`
+Mais il est possible de le faire dans `auth.ts` grâce à un callback `authorized`
 
 ```tsx
 export const {handlers, signIn, signOut, auth} = NextAuth({
@@ -242,10 +240,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
   },
 ```
 
-Dans cet exercice tu vas devoir implémenter la même règle de protection des routes que précédemment : Rappel :
+Dans cet exercice, tu vas devoir implémenter la même règle de protection des routes que précédemment : Rappel :
 
 ```tsx
-
 // 1. Specify protected and public routes
 const protectedRoutes = new Set([
   '/exercises/dashboard',
@@ -300,7 +297,7 @@ export async function middleware(request: NextRequest) {
 }
 ```
 
-- **🐶 Récupère le ROLE du user avec `getUserByEmail` et implémente les même règles**
+- **🐶 Récupère le RÔLE du user avec `getUserByEmail` et implémente les mêmes règles.**
 
 Fichiers
 
@@ -320,4 +317,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=13-next-auth).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=13%20Next%20-%20Auth).
