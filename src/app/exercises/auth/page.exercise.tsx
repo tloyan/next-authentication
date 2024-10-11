@@ -1,10 +1,10 @@
 import {Label} from '@/components/ui/label'
-// 🐶 Importe 'verifySession' et 'getUserById'
+// 🐶 Importe `verifySession` et `getUserById`
 // import {verifySession} from './lib/session-stateless'
 // import {getUserById} from '@/db/sgbd'
 
 async function Page() {
-  // 🐶 Appelle 'verifySession' pour récupérer la session
+  // 🐶 Appelle `verifySession` pour récupérer la session
   // const session = await verifySession()
   // 🐶 Récupère l'utilisateur avec l'id de la session
   // const user = await getUserById(session?.userId as string)

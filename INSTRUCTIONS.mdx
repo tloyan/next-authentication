@@ -1,10 +1,10 @@
 # Session Management - Cookies
 
-### 💡 Comprendre les sessions stateless
+### 💡 Comprendre les sessions `stateless`
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
@@ -14,24 +14,24 @@ Cela évite la nécessité de se reconnecter à plusieurs reprises, améliorant 
 
 Il existe deux méthodes principales pour la gestion des sessions :
 
-- les **sessions basées sur les cookies** (`stateless session`)
-- et les sessions stockées en **base de données**. (`database session`)
+- les **sessions basées sur les cookies** (`stateless session`).
+- Et les sessions stockées en **base de données**. (`database session`).
 
-Dans cet section nous verrons les sessions simple basées sur les cookies.
+Dans cette section, nous verrons les sessions simples basées sur les cookies.
 
 ### Principe :
 
-- Lorsque l’utilisateur est connecté → Création d’un Cookie avec `userId` par exemple
-- Ce cookie est présent dans le header des requêtes HTTP
-- La session est décodée / vérifiée pour extraire le `userId` coté le server
-- Il est ensuite possible d’accéder aux données utilisateurs (`userId` ) et de gérer les accès par exemple.
+- Lorsque l’utilisateur est connecté → Création d’un Cookie avec `userId` par exemple.
+- Ce cookie est présent dans le header des requêtes HTTP.
+- La session est décodée / vérifiée pour extraire le `userId` côté le serveur.
+- Il est ensuite possible d’accéder aux données utilisateurs (`userId`) et de gérer les accès par exemple.
 
-### Cookie server avec Next
+### Cookie server avec `Next`
 
 ```tsx
 'use server'
 
-import { cookies } from 'next/headers'
+import {cookies} from 'next/headers'
 
 export async function handleLogin(sessionData) {
   const encryptedSessionData = encrypt(sessionData) // Encrypt your session data
@@ -47,9 +47,9 @@ export async function handleLogin(sessionData) {
 
 ## Exercice
 
-Dans cet exercice tu vas devoir créer le mécanisme de session gérer par cookies.
+Dans cet exercice, tu vas devoir créer le mécanisme de session géré par des cookies.
 
-Pour simplifier l’exercice, nous n’allons pas encore encrypter le cookie, mais seulement manipuler du JSON
+Pour simplifier l’exercice, nous n’allons pas encore encrypter le cookie, mais seulement manipuler du `JSON`
 
 ```tsx
 //lib/crypt.ts
@@ -57,18 +57,20 @@ export async function encrypt(payload: SessionPayload) {
   return JSON.stringify(payload)
 }
 
-export async function decrypt(session: string | undefined = ''): Promise<SessionPayload | undefined> {
+export async function decrypt(
+  session: string | undefined = ''
+): Promise<SessionPayload | undefined> {
   return JSON.parse(session)
 }
 ```
 
-🐶 Dans un premier temps, implémente les 3 fonctions suivantes
+🐶 Dans un premier temps, implémente les 3 fonctions suivantes :
 
 - `createSession`
 - `verifySession`
 - `deleteSession`
 
-**🐶** Dans **`auth.ts`** créé une session après la création de compte ou la connexion et supprime le cookie sur le `logout`
+**🐶** Dans **`auth.ts`** crée une session après la création de compte ou la connexion et supprime le cookie sur le `logout`
 
 Fichiers
 
@@ -79,10 +81,10 @@ Fichiers
 
 ### 1. 🚀 Gestion de page avec information session utilisateur
 
-Maintenant que nous savons créer des cookies de sessions nous pouvons les utiliser dans nos pages pour récupérer les informations utilisateur.
+Maintenant que nous savons créer des cookies de sessions, nous pouvons les utiliser dans nos pages pour récupérer les informations utilisateur.
 
-- Dans cet exercice, **👨‍✈️ Hugo le chef de projet** te demande de modifier la route [/exercices/auth](http://localhost:3000/exercises/auth). Actuellement cette page affiche : **`You are not connected`.**
-- Utilise `verifySession()` et `getUserById` pour afficher : `Hello {user.email}` si un utilisateur est connecter
+- Dans cet exercice, **👨‍✈️ Hugo, le chef de projet,** te demande de modifier la route [/exercices/auth](http://localhost:3000/exercises/auth). Actuellement cette page affiche : **`You are not connected`.**
+- Utilise `verifySession()` et `getUserById` pour afficher : `Hello {user.email}` si un utilisateur est connecté.
 
 Fichiers
 
@@ -102,4 +104,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=04%20session-management-cookies).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=04%20Session%20-%20Management%20-%20Cookies).

@@ -1,7 +1,7 @@
 import {SessionPayload} from './type'
 
 const ONE_MINUTE = 60 * 1000
-export const EXPIRE_TIME = 10 * ONE_MINUTE //expires in 10 minutes
+export const EXPIRE_TIME = 10 * ONE_MINUTE //Expires in 10 minutes
 
 export async function encrypt(payload: SessionPayload) {
   console.log(`Encrypt ... payload`, payload)
