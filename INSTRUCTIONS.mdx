@@ -4,15 +4,15 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans le monde de la sécurité informatique, deux concepts fondamentaux jouent un rôle crucial dans la protection des systèmes et des données : l'authentification (AuthN) et l'autorisation (AuthZ). Bien que souvent confondus, ces termes désignent des processus distincts mais complémentaires. Comprendre la différence entre l'authentification et l'autorisation est essentiel pour sécuriser efficacement vos applications et services.
+Dans le monde de la sécurité informatique, deux concepts fondamentaux jouent un rôle crucial dans la protection des systèmes et des données : l'authentification (`AuthN`) et l'autorisation (`AuthZ`). Bien que souvent confondus, ces termes désignent des processus distincts mais complémentaires. Comprendre la différence entre l'authentification et l'autorisation est essentiel pour sécuriser efficacement vos applications et services.
 
 ### **Authentification (AuthN)** :
 
-L'authentification est le processus de vérification de l'identité d'un utilisateur. Elle répond à la question "Qui es-tu ?". Lorsqu'un utilisateur tente d'accéder à une application ou un service, il doit prouver son identité, généralement par des moyens tels qu'un nom d'utilisateur et un mot de passe, un jeton (token), ou d'autres formes de preuve d'identité comme des empreintes digitales ou des codes envoyés par SMS. Une fois l'identité vérifiée, l'utilisateur est authentifié.
+L'authentification est le processus de vérification de l'identité d'un utilisateur. Elle répond à la question "Qui es-tu ?". Lorsqu'un utilisateur tente d'accéder à une application ou un service, il doit prouver son identité, généralement par des moyens tels qu'un nom d'utilisateur et un mot de passe, un jeton (`token`), ou d'autres formes de preuve d'identité comme des empreintes digitales ou des codes envoyés par `SMS`. Une fois l'identité vérifiée, l'utilisateur est authentifié.
 
 Exemple :
 
@@ -24,7 +24,7 @@ L'autorisation, en revanche, détermine les permissions et les niveaux d'accès 
 
 Exemple :
 
-- **Accès aux fonctionnalités** : Après s'être connecté, un utilisateur avec le rôle "Admin" peut avoir accès à des fonctionnalités d'administration comme la gestion des utilisateurs et la modification des paramètres du site, tandis qu'un utilisateur avec le rôle "Utilisateur" n'aura accès qu'à ses propres données et fonctionnalités limitées.
+- **Accès aux fonctionnalités** : Après s'être connecté, un utilisateur avec le rôle `"Admin"` peut avoir accès à des fonctionnalités d'administration comme la gestion des utilisateurs et la modification des paramètres du site, tandis qu'un utilisateur avec le rôle `"Utilisateur"` n'aura accès qu'à ses propres données et fonctionnalités limitées.
 
 ### Pourquoi ces distinctions sont-elles importantes ?
 
@@ -32,15 +32,15 @@ Dans toute application sécurisée, il est crucial de mettre en œuvre à la foi
 
 ### En résumé
 
-- **Authentification (AuthN)** : Vérifie l'identité de l'utilisateur.
-- **Autorisation (AuthZ)** : Détermine ce que l'utilisateur authentifié est autorisé à faire.
+- **Authentification (`AuthN`)** : Vérifie l'identité de l'utilisateur.
+- **Autorisation (`AuthZ`)** : Détermine ce que l'utilisateur authentifié est autorisé à faire.
 
-Jusqu'à la nous avons mise en place l’authentification, nous allons maintenant faire de l’autorisation avec un cas relativement basique. La protection de routes en fonction des rôles. Jusque là nous avions :
+Jusque-là, nous avons mis en place l’authentification, nous allons maintenant faire de l’autorisation avec un cas relativement basique. La protection de routes en fonction des rôles. Jusque-là, nous avions :
 
 - Non authentifier → routes publiques
 - Authentifier → routes protégées
 
-Nous n’avons pas assez de finesse pour gérer d’autres type de routes comme par exemple celles d’un administrateur. Pour faire cela nous allons introduire des ROLES
+Nous n’avons pas assez de finesse pour gérer d’autres types de routes, comme par exemple celles d’un administrateur. Pour faire cela, nous allons introduire des `ROLES`
 
 ```tsx
 export enum RoleEnum {
@@ -53,17 +53,17 @@ export enum RoleEnum {
 }
 ```
 
-Il va falloir ce baser sur ces rôles pour gérer les accès.
+Il va falloir se baser sur ces rôles pour gérer les accès.
 
 ### Accès Database dans le middleware ?
 
-Dans le middleware nous accédons a la session stocké dans le cookies
+Dans le middleware, nous accédons à la session stockée dans les cookies.
 
 ```tsx
 const hasSession = session?.userId || session?.sessionId
 ```
 
-On pourrait envisager faire un appelle à cette fonction pour récupérer le rôle
+On pourrait envisager de faire un appel à cette fonction pour récupérer le rôle.
 
 ```tsx
 const user = await getUserById(session?.userId)
@@ -72,27 +72,27 @@ user.role
 
 **Mais cela n’est pas une bonne approche !**
 
-- Le middleware s’exécute dans le runtime [EDGE](https://vercel.com/docs/functions/runtimes/edge-runtime) (qui n’a pas accès toutes l’api de Node, comme par exemple FS) Il nous est donc impossible d’appeler notre BDD.
-- On pourrait utiliser d’autre système compatible (`unstorage`, `drizzle`) mais il ne faut pas oublier que le `midleware` est exécuter à chaque requête serveur. Faire des appels en BDD ralentirait considérablement le site.
+- Le middleware s’exécute dans le runtime [EDGE](https://vercel.com/docs/functions/runtimes/edge-runtime) (qui n’a pas accès à toutes les `API` de `Node`, comme par exemple `FS`). Il nous est donc impossible d’appeler notre BDD.
+- On pourrait utiliser d’autres systèmes compatibles (`unstorage`, `drizzle`), mais il ne faut pas oublier que le `midleware` est exécuté à chaque requête serveur. Faire des appels en BDD ralentirait considérablement le site.
 
 **La solution ?**
 
 - Mettre l’information rôle dans la session (cookie)
-- Il sera peu couteux de récupérer cette information dans le middleware
+- Il sera peu coûteux de récupérer cette information dans le middleware
 
-**Est ce sécure ?**
+**Est-ce sécurisé ?**
 
-- Un utilisateur malveillant pourrait envoyer une requête en changeant le role (USER→ ADMIN) dans la requête HTTP.
-- Pour éviter cela, **IL EST IMPERATIF d’utiliser JWT. Avec** JWT une requête modifiée serait invalidée coté serveur.
+- Un utilisateur malveillant pourrait envoyer une requête en changeant le rôle (`USER`→ `ADMIN`) dans la requête `HTTP`.
+- Pour éviter cela, **IL EST IMPÉRATIF d’utiliser JWT. Avec** `JWT`, une requête modifiée serait invalidée côté serveur.
 
 ## Exercice
 
-**👨‍✈️ Hugo le chef de projet te demande** d’implémenter un système d’autorisation et d’implémenter les règles suivantes
+**👨‍✈️ Hugo, le chef de projet, te demande** d’implémenter un système d’autorisation et d’implémenter les règles suivantes
 
 - Si un utilisateur a le rôle `ADMIN` ou `SUPER_AMDIN` : il peut accéder à tout plus : `/exercices/admin`
 - Si un utilisateur a le rôle `REDACTOR` ou `MODERATOR` : il peut accéder à tout plus : `/exercices/ban`
 
-Pour simplifier l’exercice le `rôle` a été ajouté dans la session, il sera donc accessible dans le middleware.
+Pour simplifier l’exercice, le `rôle` a été ajouté dans la session, il sera donc accessible dans le middleware.
 
 ```tsx
 //type.ts
@@ -111,16 +111,16 @@ const session = await encrypt({
 })
 ```
 
-2 routes fictives ont été ajoutées
+2 routes fictives ont été ajoutées.
 
 - `/admin`
 - `/redaction`
 
-Ainsi qu’une route `/restricted` qui affiche un message de restriction
+Ainsi qu’une route `/restricted` qui affiche un message de restriction.
 
-**🐶 Implémente les règles demandé par le chef de projet.**
+**🐶 Implémente les règles demandées par le chef de projet.**
 
-ps : édite le fichier `src/db/db.json` pour changer les rôles
+PS : Édite le fichier `src/db/db.json` pour changer les rôles.
 
 Fichiers
 
@@ -140,4 +140,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=11-middleware-authorization).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=11%20Middleware%20-%20Authorization).
