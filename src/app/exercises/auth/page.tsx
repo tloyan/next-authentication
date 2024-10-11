@@ -1,6 +1,6 @@
 export {default} from './page.exercise'
 
-//1. 🚀 Gestion de page avec information session utilisateur
+//1. 🚀 Cache
 //export {default} from './page.bonus-1'
 
 //2. 🚀 DAL et DTO Pattern (Data Tranform Object)

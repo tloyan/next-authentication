@@ -4,17 +4,17 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Dans l’exemple précèdent le cookie (contenant des informations sensibles comme le `userId`) était quasiment en claire dans le navigateur (URL encodé)
+Dans l’exemple précédent, le cookie (contenant des informations sensibles comme le `userId`) était quasiment en clair dans le navigateur (URL encodé) :
 
 ```html
 %7B%22userId%22%3A%222%22%2C%22expiresAt%22%3A%222024-07-10T08%3A58%3A44.997Z%22%7D
 ```
 
-Il existe une technique pour crypter du json. le [JWT (JSON Web Token)](https://jwt.io/) Ce format est composé d’un Header et d’un Payload (données utiles). Il existe un package JavaScript qui permet de manipuler du JWT.
+Il existe une technique pour crypter du `JSON`. Le [JWT (JSON Web Token)](https://jwt.io/), ce format est composé d’un `Header` et d’un `Payload` (données utiles). Il existe un package `JavaScript` qui permet de manipuler du `JWT`.
 
 - [https://www.npmjs.com/package/jose](https://www.npmjs.com/package/jose)
 
@@ -23,12 +23,12 @@ Nous utiliserons [SignJWT](https://github.com/panva/jose/blob/main/docs/classes/
 ```tsx
 //EXEMPLE d'encodage
 const secret = new TextEncoder().encode(
-  'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2',
+  'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2'
 )
 const alg = 'HS256'
 
-const jwt = await new jose.SignJWT({ 'urn:example:claim': true })
-  .setProtectedHeader({ alg })
+const jwt = await new jose.SignJWT({'urn:example:claim': true})
+  .setProtectedHeader({alg})
   .setIssuedAt()
   .setIssuer('urn:example:issuer')
   .setAudience('urn:example:audience')
@@ -38,14 +38,16 @@ const jwt = await new jose.SignJWT({ 'urn:example:claim': true })
 console.log(jwt)
 ```
 
-Decode
+Décode :
 
 ```tsx
-const secret = jose.base64url.decode('zH4NRP1HMALxxCFnRZABFA7GOJtzU_gIj02alfL1lvI')
+const secret = jose.base64url.decode(
+  'zH4NRP1HMALxxCFnRZABFA7GOJtzU_gIj02alfL1lvI'
+)
 const jwt =
   'eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..MB66qstZBPxAXKdsjet_lA.WHbtJTl4taHp7otOHLq3hBvv0yNPsPEKHYInmCPdDDeyV1kU-f-tGEiU4FxlSqkqAT2hVs8_wMNiQFAzPU1PUgIqWCPsBrPP3TtxYsrtwagpn4SvCsUsx0Mhw9ZhliAO8CLmCBQkqr_T9AcYsz5uZw.7nX9m7BGUu_u1p1qFHzyIg'
 
-const { payload, protectedHeader } = await jose.jwtDecrypt(jwt, secret, {
+const {payload, protectedHeader} = await jose.jwtDecrypt(jwt, secret, {
   issuer: 'urn:example:issuer',
   audience: 'urn:example:audience',
 })
@@ -56,9 +58,9 @@ console.log(payload)
 
 ## Exercice
 
-Dans cet exercice tu vas devoir implémenter `JWT`
+Dans cet exercice, tu vas devoir implémenter `JWT`.
 
-Pour les simplifier nous avons mis un fichier `.env.local`
+Pour les simplifier, nous avons mis un fichier `.env.local`
 
 ```tsx
 //JWT ou JSON
@@ -68,7 +70,7 @@ SESSION_SECRET=t9wpZYUcVVsdMkb8J+GrJxbYCOHy9mT44S7S0IqFcrg=
 
 ```
 
-- 🐶 Crypt et Decrypt la session avec JWT
+- 🐶 `Crypt` et `Decrypt` la session avec `JWT`.
 
 Fichiers
 
@@ -78,7 +80,7 @@ Fichiers
 
 ### 1. 🚀 Cache
 
-Dans la route `/exercice/auth` nous appelons ce code pour décoder la session et récupérer le user en base de données.
+Dans la route `/exercice/auth` nous appelons ce code pour décoder la session et récupérer le `user` en base de données.
 
 ```tsx
 const session = await verifySession()
@@ -86,7 +88,7 @@ const user = await getUserById(session?.userId as string)
 console.log('Page : user', user)
 ```
 
-Dans une application il existe de nombreuses ressources / pages qui devront avoir un affichage spécifique pour chaque utilisateur connecté. Comme par exemple
+Dans une application, il existe de nombreuses ressources / pages qui devront avoir un affichage spécifique pour chaque utilisateur connecté. Comme par exemple :
 
 - `login`
 - `logout`
@@ -101,21 +103,21 @@ Tu vas devoir créer une fonction `getConnectedUser` que l’on pourra utiliser 
 
 ```tsx
 //Exemple
-import {cache} from 'react';
-import calculateMetrics from 'lib/metrics';
+import {cache} from 'react'
+import calculateMetrics from 'lib/metrics'
 
-const getMetrics = cache(calculateMetrics);
+const getMetrics = cache(calculateMetrics)
 
 function Chart({data}) {
-  const report = getMetrics(data);
+  const report = getMetrics(data)
   // ...
 }
 ```
 
-- **🐶 Créé** `getConnectedUser` dans page de `auth` (plus tard nous le deplaceront dans le dossier lib)
+- **🐶 Crée** `getConnectedUser` dans la page de `auth` (plus tard nous le déplacerons dans le dossier lib)
 
 <aside>
-💡 A noter que le `cache` fonctionne par requête HTTP
+💡 À noter que le `cache` fonctionne par requête HTTP.
 
 </aside>
 
@@ -136,18 +138,17 @@ Fichiers
 
 ### 2. 🚀 DAL et DTO Pattern (Data Tranform Object)
 
-Quand on regarde les `log` de `console.log('Page : user', user)` on peut voir l’objet `user` complet (avec le password/salt etc autres informations sensibles)
+Quand on regarde les `log` de `console.log('Page : user', user)` on peut voir l’objet `user` complet (avec le `password`/`salt` et autres informations sensibles)
 
-Pour éviter d’exposer dans données sensibles nous pouvons ajouter une couche qui vient nettoyer certains données : **DAL (Data Accès Layout)**
+Pour éviter d’exposer dans données sensibles, nous pouvons ajouter une couche qui vient nettoyer certaines données : **`DAL` (`Data Acces Layer`)**
 
-![dal](/course/dal.png)
+![dal.png](/course/dal.png)
 
-Le principe est une fonction qui prend un entrée une donnée (venant de la BDD par exemple) et retourner une donné alléger , exemple
+Le principe est une fonction qui prend une entrée une donnée (venant de la BDD par exemple) et retourner une donnée allégée, exemple :
 
 ```tsx
 //user with password
 function userDTO(user: User): UserDTO {
-
   return {
     email: user?.email ?? '',
     name: user?.name,
@@ -157,7 +158,7 @@ function userDTO(user: User): UserDTO {
 }
 ```
 
-- **🐶 Creer ce DTO et retourne un DTO dans `getConnectedUser`**
+- **🐶 Crée ce `DTO` et retourne un `DTO` dans `getConnectedUser`**
 
 Fichiers
 
@@ -165,7 +166,7 @@ Fichiers
 
 ### 3. 🚀 taintUniqueValue et taintObjectReference
 
-React 19 ajoute également deux nouvelles fonctionnalités ont été introduites pour améliorer la sécurité et la gestion des données sensibles lors de l'utilisation des composants serveurs : `taintObjectReference` et `taintUniqueValue`.
+`React 19` ajoute également deux nouvelles fonctionnalités ont été introduites pour améliorer la sécurité et la gestion des données sensibles lors de l'utilisation des composants serveurs : `taintObjectReference` et `taintUniqueValue`.
 
 ### Résumé
 
@@ -176,30 +177,35 @@ React 19 ajoute également deux nouvelles fonctionnalités ont été introduites
    - **Exemple** : Empêcher l'objet `user` d'être envoyé aux composants clients en l'état.
 
    ```tsx
-   import { experimental_taintObjectReference } from 'react';
+   import {experimental_taintObjectReference} from 'react'
 
-   const user = { id: 1, name: 'John Doe', password: 'secret' };
-   experimental_taintObjectReference('Do not pass the entire user object to the client.', user);
-
+   const user = {id: 1, name: 'John Doe', password: 'secret'}
+   experimental_taintObjectReference(
+     'Do not pass the entire user object to the client.',
+     user
+   )
    ```
 
 2. **`taintUniqueValue`** :
 
    - **Usage** : Marque des valeurs uniques, telles que des mots de passe, des clés ou des jetons, pour empêcher leur passage aux composants clients.
-   - **Utilisation typique** : Protéger des valeurs sensibles comme des clés API ou des mots de passe pour éviter qu'ils ne soient accidentellement exposés aux composants clients.
+   - **Utilisation typique** : Protéger des valeurs sensibles comme des clés `API` ou des mots de passe pour éviter qu'ils ne soient accidentellement exposés aux composants clients.
    - **Exemple** : Empêcher une clé API d'être envoyée aux composants clients.
 
    ```tsx
-   import { experimental_taintUniqueValue } from 'react';
+   import {experimental_taintUniqueValue} from 'react'
 
-   const apiKey = '12345-ABCDE';
-   experimental_taintUniqueValue('Do not pass the API key to the client.', globalThis, apiKey);
-
+   const apiKey = '12345-ABCDE'
+   experimental_taintUniqueValue(
+     'Do not pass the API key to the client.',
+     globalThis,
+     apiKey
+   )
    ```
 
-Ces fonctionnalités ajoutent une couche de protection supplémentaire pour éviter les erreurs de manipulation et de transmission de données sensibles dans les applications React, renforçant ainsi la sécurité globale des applications.
+Ces fonctionnalités ajoutent une couche de protection supplémentaire pour éviter les erreurs de manipulation et de transmission de données sensibles dans les applications `React`, renforçant ainsi la sécurité globale des applications.
 
-Comme c’est encore expérimental il faut éditer `next.config.ts`
+Comme c’est encore expérimental, il faut éditer `next.config.ts`
 
 ```tsx
 experimental: {
@@ -207,13 +213,15 @@ experimental: {
   },
 ```
 
-- **🐶 Modifie le DTO en ajoutant `experimental_taintUniqueValue` pour le champs passworrd de objet user**
+- **🐶 Modifie le `DTO` en ajoutant `experimental_taintUniqueValue` pour le champ `password` de l’objet user.**
+
+📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
+
+PS : `getConnectedUser` et `userDTO` seront déplacés ensuite dans un fichier `dal.ts` (`data access layer`)
 
 Fichiers
 
 - `exercise/auth/page.tsx`
-
-📑 Le lien vers la doc [https://react.dev/reference/react/experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)
 
 ## Aller plus loin
 
@@ -229,4 +237,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=0).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=05%20Session%20-%20JWT%20-%20DTO).

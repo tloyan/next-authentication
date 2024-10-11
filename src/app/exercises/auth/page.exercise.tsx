@@ -2,11 +2,11 @@
 import {Label} from '@/components/ui/label'
 import {verifySession} from './lib/session-stateless'
 import {getUserById} from '@/db/sgbd'
-// 🐶 Importe cache de react
+// 🐶 Importe `cache` de react
 // import {cache} from 'react'
 
 async function Page() {
-  // 🐶 Remplace verifySession/getUserById par 'getConnectedUser' (à implementer en bas du fichier)
+  // 🐶 Remplace `verifySession/getUserById` par `getConnectedUser` (à implementer en bas du fichier)
   // const user = await getConnectedUser()
   const session = await verifySession()
   const user = await getUserById(session?.userId as string)
@@ -26,5 +26,5 @@ export default Page
 // 🐶 Ajoute cette fonction en cache
 // https://react.dev/reference/react/cache
 export const getConnectedUser = async () => {
-  // 🐶 Utilise 'verifySession' et 'getUserById' pour retourner le user ou undefined
+  // 🐶 Utilise `verifySession` et `getUserById` pour retourner le `user` ou `undefined`
 }
