@@ -1,14 +1,14 @@
 # HOC User Session
 
-### 💡 Proteger des routes avec un HOC
+### 💡 Protéger des routes avec un HOC
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Nous avons maintenant une `session` qui permet de récupérer un `user` connecté. Nous avons créé la fonction `getConnectedUser` (que nous avons déplacer dans `dal.ts`) qui nous permet de détecter si un user est connecté et de gérer l’affichage en fonction, Exemple :
+Nous avons maintenant une `session` qui permet de récupérer un `user` connecté. Nous avons créé la fonction `getConnectedUser` (que nous avons déplacée dans `dal.ts`) qui nous permet de détecter si un `user` est connecté et de gérer l’affichage en fonction, exemple :
 
 ```tsx
 function Page() {
@@ -30,15 +30,14 @@ Ce qui revient à
 
 ```tsx
 function Page() {
-
   const user = await getConnectedUser()
   if (!user) {
-	  return <Label>You are not connected</Label>
+    return <Label>You are not connected</Label>
   }
 
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
-        <Label>Hello {user.email}</Label>
+      <Label>Hello {user.email}</Label>
     </div>
   )
 }
@@ -48,21 +47,21 @@ export default Page
 On pourrait ajouter ce bout de code dans toutes nos routes protégées
 
 ```tsx
-  const user = await getConnectedUser()
-  if (!user) {
-	  return <Label>You are not connected</Label>
-  }
+const user = await getConnectedUser()
+if (!user) {
+  return <Label>You are not connected</Label>
+}
 ```
 
-Mais on va toujours dupliquer beaucoup de code, ce qui rend la maintenance compliquée (Ne respecte pas le principe `DRY` : [Don't Repeat Yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
+Mais on va toujours dupliquer beaucoup de code, ce qui rend la maintenance compliquée (Ne respecte pas le principe `DRY`: [Don't Repeat Yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself))
 
-Pour protéger nos routes nous allons utiliser un [HOC : High Order Component](https://blog.logrocket.com/understanding-react-higher-order-components/) . Les 3 points d’un HOC
+Pour protéger nos routes, nous allons utiliser un [HOC : High Order Component](https://blog.logrocket.com/understanding-react-higher-order-components/) . Les 3 points d’un `HOC` :
 
-- 1. Réutilisation de la Logique des Composants
-- 2. Manipulation des Props
-- 3. Abstraction et Découplage
+- 1. Réutilisation de la Logique des Composants.
+- 2. Manipulation des `Props`.
+- 3. Abstraction et Découplage.
 
-Exemple
+Exemple :
 
 ```tsx
 import React, { useState, useEffect } from 'react';
@@ -83,13 +82,13 @@ return withEnhancement(NormalComponent)
 
 ## Exercice
 
-**🐶** Dans cet exercice tu vas devoir créer un HOC qui aura pour but de
+**🐶** Dans cet exercice, tu vas devoir créer un `HOC` qui aura pour but de :
 
-- Récupérer le user connecté avec `getConnectedUser`
-- Afficher : `You are not connected` si pas de `user`
-- Injecter le `props user` au composant afin qu’il puisse être utilisé
+- Récupérer le user connecté avec `getConnectedUser`.
+- Afficher : `You are not connected` si pas de `user`.
+- Injecter le `props user` au composant afin qu’il puisse être utilisé.
 
-🐶 Utilise ensuite ce HOC dans `/auth/page` et les routes protégées
+🐶 Utilise ensuite ce HOC dans `/auth/page` et les routes protégées.
 
 Fichiers
 
@@ -100,9 +99,9 @@ Fichiers
 
 ### 1. 🚀 Protéger les routes `dashboard` et `bank-account`
 
-**🐶** Protège les routes `dashboard` et `bank-account` avec le HOC.
+**🐶** Protège les routes `dashboard` et `bank-account` avec le `HOC`.
 
-**🐶** Ajoute également le HOC sur `Logout` car on doit être connecté pour pouvoir logout
+**🐶** Ajoute également le `HOC` sur `Logout` car on doit être connecté pour pouvoir `logout`.
 
 Fichiers
 
@@ -124,4 +123,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=5.Next%20Auth&entry.533578441=06-hoc-user-session).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=06%20HOC%20User%20Session).
