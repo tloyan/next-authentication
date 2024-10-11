@@ -2,12 +2,12 @@
 import React, {useState} from 'react'
 import {Button} from '@/components/ui/button'
 import {logout} from '../actions'
-// 🐶 Importe le hook 'useRouter'
+// 🐶 Importe le hook `useRouter`
 //  et non -> {redirect} from 'next/navigation' car nous sommes en RCC
 
 // 🤖 import {useRouter} from 'next/navigation'
 
-// 🐶 Modifie le composant <LogoutButton> pour faire la redirection
+// 🐶 Modifie le composant `<LogoutButton>` pour faire la redirection
 export default function Logout() {
   return (
     <div className="">
@@ -18,7 +18,7 @@ export default function Logout() {
 }
 function LogoutButton() {
   const [pending, setPending] = useState(false)
-  // 🐶 Utilise 'useRouter'
+  // 🐶 Utilise `useRouter`
   // 📑 https://nextjs.org/docs/app/api-reference/functions/use-router
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,7 +26,7 @@ function LogoutButton() {
     setPending(true)
     await logout()
     setPending(false)
-    // 🐶 Fait une redirection vers '/exercises/'
+    // 🐶 Fais une redirection vers `/exercises/`
   }
 
   return (

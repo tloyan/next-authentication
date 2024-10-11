@@ -4,18 +4,18 @@
 
 ## 📝 Tes notes
 
-Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
+Détaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeur.com/course-notes-template)
 
 ## Comprendre
 
-Après une connexion ou déconnexion on peut avoir a rédiger vers des pages spécifiques. Le mécanisme de redirection est different entre les RCC et RSC
+Après une connexion ou déconnexion, on peut avoir à rédiger vers des pages spécifiques. Le mécanisme de redirection est différent entre les `RCC` et `RSC`
 
 **Redirection RSC (`redirect`) :**
 
 ```tsx
-import { redirect } from 'next/navigation'
+import {redirect} from 'next/navigation'
 
-export default async function Profile({ params }) {
+export default async function Profile({params}) {
   const user = await getUser()
   if (!user) {
     redirect('/login')
@@ -23,44 +23,39 @@ export default async function Profile({ params }) {
 }
 ```
 
-📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/redirect
+📑 Le lien vers la doc https://nextjs.org/docs/app/api-reference/functions/redirect
 
 **Redirection RCC (`useRouter`) :**
 
 ```tsx
 'use client'
 
-import { useRouter } from 'next/navigation'
+import {useRouter} from 'next/navigation'
 
 export default function Page() {
   const router = useRouter()
 
   return (
-    <button
-      type="button"
-      onClick={() => router.push('/dashboard')}
-    >
+    <button type="button" onClick={() => router.push('/dashboard')}>
       Dashboard
     </button>
   )
 }
 ```
 
-📑 Le liens vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
+📑 Le lien vers la doc https://nextjs.org/docs/app/api-reference/functions/use-router#userouter
 
 ## Exercice
 
-- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers le `dahsboard /exercises/dashboard` après une connexion (ou si l’utilisateur est connecté).**
-- **👨‍✈️ Hugo le chef de projet, te demande de rediriger vers `auth /exercises/auth` après une inscription (ou si l’utilisateur est connecté).**
-- **👨‍✈️ Il te demande également de revenir sur la page `Home (/exercises/)` après une déconnexion**
+- **👨‍✈️ Hugo, le chef de projet, te demande de rediriger vers le `dahsboard /exercises/dashboard` après une connexion (ou si l’utilisateur est connecté).**
+- **👨‍✈️ Hugo, le chef de projet, te demande de rediriger vers `auth /exercises/auth` après une inscription (ou si l’utilisateur est connecté).**
+- **👨‍✈️ Il te demande également de revenir sur la page `Home (/exercises/)` après une déconnexion.**
 
 Fichiers
 
 - `exercise/login/page.tsx`
 - `exercise/register/page.tsx`
 - `exercise/auth/form/logout-form.tsx`
-
-##
 
 ## Aller plus loin
 
@@ -76,4 +71,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-react-avis).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=05.Next%20Auth&entry.533578441=07%20Auth-redirection).
