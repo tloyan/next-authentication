@@ -3,7 +3,6 @@ import 'server-only'
 import {cookies} from 'next/headers'
 
 import {EXPIRE_TIME, decrypt, encrypt} from './crypt'
-import {getUserById} from '@/db/sgbd'
 
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
