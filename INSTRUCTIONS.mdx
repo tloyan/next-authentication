@@ -207,45 +207,9 @@ Fichiers
 
 - `/app/exercices/auth/action.ts`
 
-### 2. 🚀 Protected route
+###
 
-Pour protéger les routes :
-
-```tsx
-import { auth } from "@/auth"
-
-export default async function Page() {
-  const session = await auth()
-  if (!session) return <div>Not authenticated</div>
-
-  return (
-    <div>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
-    </div>
-  )
-}
-```
-
-**🐶 Protège les routes pour les user :**
-
-- /exercises/dashboard
-- /exercises/bank-account
-- /exercises/bank-account
-
-**🐶 Protège les routes avec ROLES pour :**
-
-- **/admin**
-- /redaction
-
-Fichiers
-
-- `/exercises/dashboard.tsx`
-- `/exercises/bank-account.tsx`
-- `/admin/page.tsx`
-- `/admin/page.tsx`
-- `/redaction/page.tsx`
-
-### 3. 🚀 Protected route avec MiddleWare
+### 2. 🚀 Protected route avec MiddleWare
 
 https://authjs.dev/getting-started/session-management/protecting
 
@@ -358,6 +322,44 @@ Fichiers
 
 - `auth.ts`
 - `middleware.ts`
+
+### 3. 🚀 Protected route (sans middleware)
+
+Pour protéger les routes :
+
+```tsx
+import { auth } from "@/auth"
+
+export default async function Page() {
+  const session = await auth()
+  if (!session) return <div>Not authenticated</div>
+
+  return (
+    <div>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+**🐶 Protège les routes pour les user :**
+
+- /exercises/dashboard
+- /exercises/bank-account
+- /exercises/bank-account
+
+**🐶 Protège les routes avec ROLES pour :**
+
+- **/admin**
+- /redaction
+
+Fichiers
+
+- `/exercises/dashboard.tsx`
+- `/exercises/bank-account.tsx`
+- `/admin/page.tsx`
+- `/admin/page.tsx`
+- `/redaction/page.tsx`
 
 ## Aller plus loin
 
