@@ -99,8 +99,8 @@ export async function register(
   }
   try {
     const user = await auth.signUp(email, password)
-
     console.log('Signed UP:', user)
+    await signIn('credentials', formData)
   } catch (error) {
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
     if (isRedirectError(error)) {

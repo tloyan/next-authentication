@@ -24,6 +24,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     authorized: async ({auth, request: {nextUrl}}) => {
+      console.log(' callbacksauthorized', auth)
       // Logged in users are authenticated, otherwise redirect to login page
 
       const hasSession = auth?.user?.email

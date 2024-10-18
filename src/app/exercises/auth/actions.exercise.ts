@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use server'
 // 🐶 Adapte la fonction `authenticate`
 
 // 🐶 Importe {signIn, signOut} de `NextAuth`
 // 🤖 import {signIn, signOut} from '@/auth'
 import {RoleEnum} from '@/lib/type'
+// eslint-disable-next-line no-restricted-imports
 import {auth} from '@/app/exercises/auth/lib/auth'
 import {
   ChangeRoleSchema,
@@ -107,6 +109,7 @@ export async function register(
     }
   }
   try {
+    //BONUS 1
     // 🐶 `NextAuth` n'a pas de `SignUp` on gardre notre implémentation
     const user = await auth.signUp(email, password)
     console.log('Signed UP:', user)
@@ -114,15 +117,6 @@ export async function register(
     // 🐶 Il faut ensuite gérer un `signIn` ici pour créer la session `JWT`
     //
     // 🤖 await signIn('credentials', formData)
-
-    // ATTENTION EDGE
-    // La création du user ne se fait pas (edge ne supporte pas FS)
-    // pour les besoins de l'exercice on bypass avec un fake `signIn`
-    // WORKAROUND FOR EDGE UNCACHE ISSUE
-    // const formDataOverrided = new FormData()
-    // formDataOverrided.append('email', 'admin@mikecodeur.com')
-    // formDataOverrided.append('password', 'Azerty123')
-    // await signIn('credentials', formDataOverrided)
   } catch (error) {
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
     if (isRedirectError(error)) {

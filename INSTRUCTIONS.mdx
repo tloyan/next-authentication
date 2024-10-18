@@ -22,9 +22,9 @@ Le fichier principal contenant toute la configuration, providers etc…
 
 ```tsx
 //./auth.ts
-import NextAuth from 'next-auth'
+import NextAuth from "next-auth"
 
-export const {handlers, signIn, signOut, auth} = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [],
 })
 ```
@@ -35,8 +35,8 @@ La route de callback
 
 ```tsx
 //./app/api/auth/[...nextauth]/route.ts
-import {handlers} from '@/auth' // Referring to the auth.ts we just created
-export const {GET, POST} = handlers
+import { handlers } from "@/auth" // Referring to the auth.ts we just created
+export const { GET, POST } = handlers
 ```
 
 ### `middleware.ts`
@@ -45,7 +45,7 @@ Le middleware
 
 ```tsx
 //./middleware.ts
-export {auth as middleware} from '@/auth'
+export { auth as middleware } from "@/auth"
 ```
 
 📑 Le lien vers la doc [https://fr.reactjs.org/docs/getting-started.html](https://fr.reactjs.org/docs/getting-started.html)
@@ -64,25 +64,27 @@ Ils sont regroupés par types :
 Pour ajouter un provider( exemple Google) :
 
 ```tsx
-import NextAuth from 'next-auth'
-import Google from 'next-auth/providers/google'
 
-export const {handlers, signIn, signOut, auth} = NextAuth({
+import NextAuth from "next-auth"
+import Google from "next-auth/providers/google"
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
 })
+
 ```
 
 Et ensuite :
 
 ```tsx
-import {signIn} from '@/auth'
+import { signIn } from "@/auth"
 
 export function SignIn() {
   return (
     <form
       action={async () => {
-        'use server'
-        await signIn('google')
+        "use server"
+        await signIn("google")
       }}
     >
       <button type="submit">Signin with Google</button>
@@ -109,7 +111,7 @@ Runtime check
 console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 ```
 
-Pour les besoins de l’exercice, nous avons changé `lowDb` par `Unstorage` qui permet d’avoir une DB en mémoire (ce qui nous permet d’appeler des fonctions comme `getUserByEmail` depuis le `middleware/nextAuth`).
+Pour les besoins de l’exercice, nous avons changé `lowDb` par `Unstorage` qui permet d’avoir une DB compatible avec NextAuth
 
 En production et pour des projets de plus grande ampleur, il faut utiliser une librairie de gestion de BDD compatible :
 
@@ -139,15 +141,15 @@ Pour simplifier l’exercice, voilà l’ensemble du décommissionnement.
 Tu retrouveras également des formulaires déjà connectés :
 
 ```tsx
-<div className="mx-auto max-w-2xl p-6  text-lg ">
-  {/* <LoginForm></LoginForm> */}
-  <h1 className="mb-4 text-center text-3xl font-bold">Google</h1>
-  <SignInGoogle></SignInGoogle>
-  <h1 className="mb-4 text-center text-3xl font-bold">Credentials</h1>
-  <SignInCredential />
-  <h1 className="mb-4 text-center text-3xl font-bold">Resend</h1>
-  <SignInResend />
-</div>
+ <div className="mx-auto max-w-2xl p-6  text-lg ">
+      {/* <LoginForm></LoginForm> */}
+      <h1 className="mb-4 text-center text-3xl font-bold">Google</h1>
+      <SignInGoogle></SignInGoogle>
+      <h1 className="mb-4 text-center text-3xl font-bold">Credentials</h1>
+      <SignInCredential />
+      <h1 className="mb-4 text-center text-3xl font-bold">Resend</h1>
+      <SignInResend />
+    </div>
 ```
 
 Pour [Google](https://developers.google.com/identity/protocols/oauth2?hl=fr) autre provider, cela requiert des clés `API` à créer sur `Google Cloud` ou sur [Github](https://authjs.dev/guides/configuring-github)
@@ -157,14 +159,14 @@ Nous allons ici nous concentrer sur le `credentials` `<SignInCredential />`
 Dans la documentation, nous avons un appel à `singIn` :
 
 ```tsx
-import {signIn} from '@/auth'
+import { signIn } from "@/auth"
 
 export function SignIn() {
   return (
     <form
       action={async (formData) => {
-        'use server'
-        await signIn('credentials', formData)
+        "use server"
+        await signIn("credentials", formData)
       }}
     >
       <label>
@@ -187,7 +189,7 @@ Dans notre cas, nous appellerons d’abord le `server action` avec le hook `useA
 const [actionState, authenticateAction] = useActionState(authenticate, {})
 ```
 
-- **🐶 Dans un premier temps, il va décommissionner l’appel à notre lib `auth.ts` perso dans la fonction `authenticate` et utilise `signIn` de `nextAuth` à la place**
+- **🐶 Dans un premier temps, tu vas décommissionner l’appel à notre lib `auth.ts` perso dans la fonction `authenticate` et utilise `signIn` de `nextAuth` à la place**
 - **🐶** Déplace la logique de validation `user/mdp` dans le fichier `auth.ts` de `nextAuth`
 
 Fichiers
@@ -205,12 +207,12 @@ Fichiers
 
 - `/app/exercices/auth/action.ts`
 
-### 2. 🚀 Protected route (Role Based)
+### 2. 🚀 Protected route
 
 Pour protéger les routes :
 
 ```tsx
-import {auth} from '@/auth'
+import { auth } from "@/auth"
 
 export default async function Page() {
   const session = await auth()
@@ -224,9 +226,43 @@ export default async function Page() {
 }
 ```
 
+**🐶 Protège les routes pour les user :**
+
+- /exercises/dashboard
+- /exercises/bank-account
+- /exercises/bank-account
+
+**🐶 Protège les routes avec ROLES pour :**
+
+- **/admin**
+- /redaction
+
+Fichiers
+
+- `/exercises/dashboard.tsx`
+- `/exercises/bank-account.tsx`
+- `/admin/page.tsx`
+- `/admin/page.tsx`
+- `/redaction/page.tsx`
+
+### 3. 🚀 Protected route avec MiddleWare
+
 https://authjs.dev/getting-started/session-management/protecting
 
-Mais il est possible de le faire dans `auth.ts` grâce à un callback `authorized`
+Mais il est possible de le faire dans `auth.ts` grâce à un callback `authorized` si le middleware est associé a `nextauth`
+
+<aside>
+💡
+
+Attention cela va switcher l’authentification avec le nuntine EDGE
+
+</aside>
+
+```tsx
+//middleware.ts
+export {auth as middleware} from '@/auth'
+
+```
 
 ```tsx
 export const {handlers, signIn, signOut, auth} = NextAuth({
@@ -243,6 +279,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 Dans cet exercice, tu vas devoir implémenter la même règle de protection des routes que précédemment : Rappel :
 
 ```tsx
+
 // 1. Specify protected and public routes
 const protectedRoutes = new Set([
   '/exercises/dashboard',
@@ -299,9 +336,28 @@ export async function middleware(request: NextRequest) {
 
 - **🐶 Récupère le RÔLE du user avec `getUserByEmail` et implémente les mêmes règles.**
 
+Constate le problème de runtime `edge` avec `unstorage.`
+
+Cette solution n’est donc compatible qu’avec des solutions compatibles `edge`
+
+Pour simuler cela on va passer un une DB en memory pour l’exercice
+
+```tsx
+//unstorage-store.ts
+import memoryDriver from 'unstorage/drivers/memory' // Utilisation d'un driver en mémoire pour l'exemple
+const storage = createStorage({
+  driver: memoryDriver(),
+})
+
+export default storage
+```
+
+Constate
+
 Fichiers
 
 - `auth.ts`
+- `middleware.ts`
 
 ## Aller plus loin
 

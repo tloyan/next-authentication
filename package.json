@@ -12,7 +12,6 @@
     "format:fix": "prettier . --write"
   },
   "dependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@auth/unstorage-adapter": "^2.4.1",
     "@hookform/resolvers": "^3.9.0",
     "@mdx-js/loader": "^3.0.1",
@@ -30,11 +29,13 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@tailwindcss/typography": "^0.5.15",
     "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/mdx": "^2.0.13",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
-    "@types/mdx": "^2.0.13",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "fsevents": "^2.3.3",
     "jose": "^5.4.0",
     "lowdb": "^7.0.1",
     "lucide-react": "^0.368.0",
@@ -50,9 +51,9 @@
     "server-only": "^0.0.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
-    "unstorage": "^1.10.2",
     "tailwindcss-animate": "^1.0.7",
     "unified": "^11.0.5",
+    "unstorage": "^1.10.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

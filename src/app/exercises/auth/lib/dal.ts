@@ -12,6 +12,7 @@ export const getConnectedUser = cache(async () => {
   console.log('getConnectedUser session.user', session.user)
   try {
     const user = await getUserByEmail(session.user.email as string)
+    if (!user) return
     return userDTO(user as User)
   } catch (error) {
     console.error('Failed to fetch user', error)

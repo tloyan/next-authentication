@@ -2,5 +2,5 @@ export * from './auth.exercise'
 
 //export * from './auth.final'
 
-//2. 🚀 Protected route (Role Based)
+//3. 🚀 Protected route avec MiddleWare
 //export * from './auth.bonus-2'
