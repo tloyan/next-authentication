@@ -15,7 +15,9 @@ export async function createSession(userId: string) {
   // 🐶 Définit le cookie de session
   // 📑 https://nextjs.org/docs/app/api-reference/functions/cookies#cookiessetname-value-options
 
-  // 🤖 cookies().set('session', session ...
+  // 🤖  const cookieStore = await cookies()
+  // cookieStore.set('session', session ...
+
   // 🐶 les params
   // Met le cookie en httpOnly
   // Met le cookie en secure si on est en production

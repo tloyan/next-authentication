@@ -7,8 +7,9 @@ import {EXPIRE_TIME, decrypt, encrypt} from './crypt'
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
   const session = await encrypt({userId, expiresAt})
+  const cookieStore = await cookies()
 
-  cookies().set('session', session, {
+  cookieStore.set('session', session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     expires: expiresAt,
@@ -18,7 +19,8 @@ export async function createSession(userId: string) {
 }
 
 export async function verifySession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   console.log('verifySession cookie', cookie, session)
 
@@ -30,6 +32,7 @@ export async function verifySession() {
   return {isAuth: true, userId: session.userId}
 }
 
-export function deleteSession() {
-  cookies().delete('session')
+export async function deleteSession() {
+  const cookieStore = await cookies()
+  cookieStore.delete('session')
 }

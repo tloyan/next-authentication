@@ -53,7 +53,8 @@
     "react/prop-types": "off",
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "error",
-     "eslint-comments/no-use": "warn"
+     "eslint-comments/no-use": "warn",
+     "no-await-expression-member":"off"
   },
   "ignorePatterns": ["src/**/*.js"]
 }
