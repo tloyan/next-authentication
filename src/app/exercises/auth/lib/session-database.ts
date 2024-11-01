@@ -7,20 +7,18 @@ import {
   deleteSession as deleteSessionDao,
   updateSession as updateSessionDao,
   findSessionByUidUserAgent,
-  getUserById,
 } from '@/db/sgbd'
 import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
 //3. 🚀 Session segmentée par user agent
 export async function createSession(uid: string) {
-  const headersList = headers()
+  const headersList = await headers()
   const userAgent = headersList.get('User-Agent')
   console.log('createSession userAgent', userAgent)
 
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
-  const user = await getUserById(uid)
 
-  //1 . Récupération session par uid et userAgent
+  //1 . Récupération session par `uid` et `userAgent`
   const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
 
   // SESSION EXISTE ET NON EXPIRE
@@ -33,9 +31,9 @@ export async function createSession(uid: string) {
     const session = await encrypt({
       sessionId: sessionByUid.sessionId,
       expiresAt,
-      role: user?.role,
     })
-    cookies().set('session', session, {
+    const cookieStore = await cookies()
+    cookieStore.set('session', session, {
       httpOnly: true,
       secure: true,
       expires: expiresAt,
@@ -53,13 +51,13 @@ export async function createSession(uid: string) {
     userId: uid,
     expiresAt: expiresAt.toISOString(),
     userAgent,
-    role: user?.role, // 2. Encrypt the session ID
   })
   // 2. Encrypt the session ID
-  const session = await encrypt({sessionId, expiresAt, role: user?.role})
+  const session = await encrypt({sessionId, expiresAt})
 
   // 3. Store the session in cookies for optimistic auth checks
-  cookies().set('session', session, {
+  const cookieStore = await cookies()
+  cookieStore.set('session', session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -69,7 +67,8 @@ export async function createSession(uid: string) {
 }
 
 export async function verifySession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   console.log('verifySession cookie', cookie, session)
 
@@ -84,7 +83,6 @@ export async function verifySession() {
       isAuth: true,
       userId: sessionDao.userId,
       sessionId: session.sessionId,
-      role: sessionDao.role,
     }
   }
   console.log('verifySession Session (database) expired')
@@ -95,18 +93,18 @@ export async function verifySession() {
 }
 
 export async function deleteSession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   if (session) {
     deleteSessionDao(session.sessionId ?? '')
   }
-  cookies().delete('session')
+  cookieStore.delete('session')
 }
 
 //1. 🚀 Update Session
 export async function updateSession() {
-  // disable because infinite loop in dev env
-  //
+  // disable
   // const session = cookies().get('session')?.value
   // const payload = await decrypt(session)
   // if (!session || !payload) {

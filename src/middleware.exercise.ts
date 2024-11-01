@@ -24,8 +24,8 @@ export async function middleware(request: NextRequest) {
 
   // 🐶 Vérifie si la route est une route redactor
   // 🤖 isRedactorRoute
-
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
 
   const hasSession = session?.userId || session?.sessionId

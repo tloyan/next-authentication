@@ -21,7 +21,8 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = adminRoutes.has(path)
   const isRedactorRoute = redactorRoutes.has(path)
 
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
 
   const role = session?.role
