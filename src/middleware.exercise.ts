@@ -24,7 +24,8 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = true
 
   // 🐶 3. Récupère le cookie de session
-  // 🤖 const cookie = cookies().get('session')?.value
+  // 🤖 const cookieStore = await cookies()
+  // const cookie = cookieStore.get('session')?.value
   // 🤖 const session = await decrypt(cookie)
 
   // 🐶 4. Vérifie si l'utilisateur a une session (session?.userId || session?.sessionId)

@@ -13,8 +13,8 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   const isProtectedRoute = protectedRoutes.has(path)
   const isPublicRoute = publicRoutes.has(path)
-
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
 
   const hasSession = session?.userId || session?.sessionId
