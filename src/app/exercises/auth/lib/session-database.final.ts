@@ -23,7 +23,8 @@ export async function createSession(uid: string) {
   const session = await encrypt({sessionId, expiresAt})
 
   // 3. Store the session in cookies for optimistic auth checks
-  cookies().set('session', session, {
+  const cookieStore = await cookies()
+  cookieStore.set('session', session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -33,7 +34,8 @@ export async function createSession(uid: string) {
 }
 
 export async function verifySession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   console.log('verifySession cookie', cookie, session)
 
@@ -58,12 +60,13 @@ export async function verifySession() {
 }
 
 export async function deleteSession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   if (session) {
     deleteSessionDao(session.sessionId ?? '')
   }
-  cookies().delete('session')
+  cookieStore.delete('session')
 }
 
 export function updateSession() {}

@@ -42,7 +42,8 @@ export async function createSession(uid: string) {
   // const session = await encrypt({sessionId, expiresAt})
 
   // 🐶 3. Stocke la session dans les cookies
-  // 🤖 cookies().set('session', session ...
+  // 🤖  const cookieStore = await cookies()
+  // cookieStore.set('session', session ...
 }
 
 export async function verifySession() {
