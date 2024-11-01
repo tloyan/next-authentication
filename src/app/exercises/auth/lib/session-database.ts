@@ -12,7 +12,7 @@ import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
 //3. 🚀 Session segmentée par user agent
 export async function createSession(uid: string) {
-  const headersList = headers()
+  const headersList = await headers()
   const userAgent = headersList.get('User-Agent')
   console.log('createSession userAgent', userAgent)
 
@@ -32,7 +32,8 @@ export async function createSession(uid: string) {
       sessionId: sessionByUid.sessionId,
       expiresAt,
     })
-    cookies().set('session', session, {
+    const cookieStore = await cookies()
+    cookieStore.set('session', session, {
       httpOnly: true,
       secure: true,
       expires: expiresAt,
@@ -55,7 +56,8 @@ export async function createSession(uid: string) {
   const session = await encrypt({sessionId, expiresAt})
 
   // 3. Store the session in cookies for optimistic auth checks
-  cookies().set('session', session, {
+  const cookieStore = await cookies()
+  cookieStore.set('session', session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -65,7 +67,8 @@ export async function createSession(uid: string) {
 }
 
 export async function verifySession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   console.log('verifySession cookie', cookie, session)
 
@@ -90,18 +93,18 @@ export async function verifySession() {
 }
 
 export async function deleteSession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   if (session) {
     deleteSessionDao(session.sessionId ?? '')
   }
-  cookies().delete('session')
+  cookieStore.delete('session')
 }
 
 //1. 🚀 Update Session
 export async function updateSession() {
-  // disable because infinite loop in dev env
-  //
+  // disable
   // const session = cookies().get('session')?.value
   // const payload = await decrypt(session)
   // if (!session || !payload) {
