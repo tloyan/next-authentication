@@ -1,6 +1,6 @@
 'use client'
-import React from 'react'
-import {useFormState as useActionState, useFormStatus} from 'react-dom'
+import React, {useActionState} from 'react'
+import {useFormStatus} from 'react-dom'
 import {changeConnectedUserRole} from '../actions'
 import {Button} from '@/components/ui/button'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
