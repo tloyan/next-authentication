@@ -14,7 +14,7 @@ import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
 
 //3. 🚀 Session segmentée par user agent
 export async function createSession(uid: string) {
-  const headersList = headers()
+  const headersList = await headers()
   const userAgent = headersList.get('User-Agent')
   console.log('createSession userAgent', userAgent)
 
@@ -23,7 +23,7 @@ export async function createSession(uid: string) {
 
   //1 . Récupération session par `uid` et `userAgent`
   const sessionByUid = await findSessionByUidUserAgent(uid, userAgent ?? '')
-
+  const cookieStore = await cookies()
   // SESSION EXISTE ET NON EXPIRE
   if (sessionByUid && !isExpired(sessionByUid.expiresAt)) {
     // 1. Update the session in the database
@@ -36,7 +36,8 @@ export async function createSession(uid: string) {
       expiresAt,
       role: user?.role,
     })
-    cookies().set('session', session, {
+
+    cookieStore.set('session', session, {
       httpOnly: true,
       secure: true,
       expires: expiresAt,
@@ -60,7 +61,8 @@ export async function createSession(uid: string) {
   const session = await encrypt({sessionId, expiresAt, role: user?.role})
 
   // 3. Store the session in cookies for optimistic auth checks
-  cookies().set('session', session, {
+
+  cookieStore.set('session', session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -70,7 +72,8 @@ export async function createSession(uid: string) {
 }
 
 export async function verifySession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   console.log('verifySession cookie', cookie, session)
 
@@ -96,12 +99,13 @@ export async function verifySession() {
 }
 
 export async function deleteSession() {
-  const cookie = cookies().get('session')?.value
+  const cookieStore = await cookies()
+  const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
   if (session) {
     deleteSessionDao(session.sessionId ?? '')
   }
-  cookies().delete('session')
+  cookieStore.delete('session')
 }
 
 //1. 🚀 Update Session

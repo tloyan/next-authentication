@@ -1,6 +1,7 @@
 'use client'
-import React from 'react'
-import {useFormState as useActionState, useFormStatus} from 'react-dom'
+import React, {useActionState} from 'react'
+
+import {useFormStatus} from 'react-dom'
 import {register} from '@/app/exercises/auth/actions'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
