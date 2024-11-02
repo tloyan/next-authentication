@@ -1,5 +1,6 @@
 'use client'
-import {useFormState as useActionState, useFormStatus} from 'react-dom'
+import {useActionState} from 'react'
+import {useFormStatus} from 'react-dom'
 import {authenticate} from '@/app/exercises/auth/actions'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'

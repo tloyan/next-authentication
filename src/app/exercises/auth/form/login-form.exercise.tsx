@@ -1,6 +1,7 @@
 // 🐶 Met le type de composant (RCC ou RSC)
 // 🐶 importe 'useActionState' et 'useFormStatus'
-// 🤖 import {useFormState as useActionState, useFormStatus} from 'react-dom'
+// 🤖 import {useFormStatus} from 'react-dom'
+// 🤖 import {useActionState} from 'react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 
