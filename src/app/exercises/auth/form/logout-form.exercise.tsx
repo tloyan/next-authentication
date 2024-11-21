@@ -1,9 +1,7 @@
-//1. 🚀 Gestion status pending via state (logout)
-
-// 🐶 Met le type de composant (RCC ou RSC)
+'use client'
 import {Button} from '@/components/ui/button'
-// 🐶 importe logout de la lib auth
-// 🤖 import {logout} from '../actions'
+import {logout} from '../actions'
+import {useState} from 'react'
 
 export default function Logout() {
   return (
@@ -14,16 +12,17 @@ export default function Logout() {
   )
 }
 function LogoutButton() {
-  // 🐶 Crée un state `pending`` avec la valeur initiale ``false``
-  // const [pending, setPending] ...
+  const [pending, setPending] = useState(false)
 
-  // 🐶 Créé une fonction `handleClick`
-  // 🤖 const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-  // - 🐶 Met à jour le state `pending` à `true`
-  // - 🐶 Appelle 🤖 await logout()
-  // - 🐶 Met à jour le state `pending` à `false`
+  const handleClick = async () => {
+    setPending(true)
+    await logout()
+    setPending(false)
+  }
 
-  // 🐶 active / desactive le button sur le state pending
-  // 🐶 utilise `handleClick`
-  return <Button>Logout</Button>
+  return (
+    <Button onClick={handleClick} disabled={pending}>
+      Logout
+    </Button>
+  )
 }

@@ -1,20 +1,16 @@
-// 🐶 Met le type de composant (RCC ou RSC)
-// 🐶 importe 'useActionState' et 'useFormStatus'
-// 🤖 import {useFormStatus} from 'react-dom'
-// 🤖 import {useActionState} from 'react'
+'use client'
+import {useFormStatus} from 'react-dom'
+import {useActionState} from 'react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 
-// 🐶 importe la fonction 'authenticate' depuis le server action
-//import {authenticate} from '@/app/exercises/auth/actions'
+import {authenticate} from '@/app/exercises/auth/actions'
 export default function LoginForm() {
-  // 🐶 utilise le hook 'useActionState'
-  // 🤖 const [actionState, authenticateAction] ...
+  const [actionState, authenticateAction] = useActionState(authenticate, {})
   return (
     <div>
       <h1 className="mb-4 text-center text-3xl font-bold">Login</h1>
-      {/* 🐶 Ajoute l'action au <form> */}
-      <form>
+      <form action={authenticateAction}>
         <Input
           type="email"
           name="email"
@@ -22,9 +18,7 @@ export default function LoginForm() {
           required
           className="mb-4"
         />
-        {/* 🐶 gère l'erreur sur ce champs  */}
-        {/* 🤖 className="text-sm text-red-500" */}
-        {/* 🤖 `actionState.errors.email` */}
+        <p className="text-sm text-red-500">{actionState?.errors?.email}</p>
         <Input
           type="password"
           name="password"
@@ -32,16 +26,18 @@ export default function LoginForm() {
           required
           className="mb-4"
         />
-        {/* 🐶 gère l'erreur sur ce champs  */}
-
+        <p className="text-sm text-red-500">{actionState?.errors?.password}</p>
         <LoginButton />
-        {/* 🐶 gère l'erreur globale  */}
-        {/* 🤖 `actionState.message` */}
+        <p className="text-sm text-red-500">{actionState?.message}</p>
       </form>
     </div>
   )
 }
 function LoginButton() {
-  // 🐶 gère le status pending avec 'useFormStatus'
-  return <Button type="submit">Login</Button>
+  const {pending} = useFormStatus()
+  return (
+    <Button type="submit" disabled={pending}>
+      Login
+    </Button>
+  )
 }

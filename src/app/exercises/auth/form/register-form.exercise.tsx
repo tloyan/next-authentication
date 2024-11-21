@@ -1,20 +1,16 @@
-// 🐶 Met le type de composant (RCC ou RSC)
-// 🐶 importe 'useActionState' et 'useFormStatus'
-// 🤖 import {useFormStatus} from 'react-dom'
-// 🤖 import {useActionState} from 'react'
+'use client'
+import {useFormStatus} from 'react-dom'
+import {useActionState} from 'react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 
-// 🐶 importe la fonction 'register' depuis le server action
-//import {register} from '@/app/exercises/auth/actions'
+import {register} from '@/app/exercises/auth/actions'
 export default function RegisterForm() {
-  // 🐶 utilise le hook 'useActionState'
-  // 🤖 const [actionState, registerAction] ...
+  const [actionState, registerAction] = useActionState(register, {})
   return (
     <div>
       <h1 className="mb-4 text-center text-3xl font-bold">Register</h1>
-      {/* 🐶 Ajoute l'action au <form> */}
-      <form>
+      <form action={registerAction}>
         <Input
           type="email"
           name="email"
@@ -22,9 +18,7 @@ export default function RegisterForm() {
           required
           className="mb-4"
         />
-        {/* 🐶 gère l'erreur sur ce champs  */}
-        {/* 🤖 className="text-sm text-red-500" */}
-        {/* 🤖 `actionState.errors.email` */}
+        <p className="text-sm text-red-500">{actionState?.errors?.email}</p>
         <Input
           type="password"
           name="password"
@@ -32,7 +26,7 @@ export default function RegisterForm() {
           required
           className="mb-4"
         />
-        {/* 🐶 gère l'erreur sur ce champs  */}
+        <p className="text-sm text-red-500">{actionState?.errors?.password}</p>
         <Input
           type="password"
           name="confirmPassword"
@@ -40,14 +34,20 @@ export default function RegisterForm() {
           className="mb-4"
           placeholder="Confirm Password"
         />
-        {/* 🐶 gère l'erreur sur ce champs  */}
-        <LoginButton />
-        {/* 🐶 gère l'erreur globale  */}
-        {/* 🤖 `actionState.message` */}
+        <p className="text-sm text-red-500">
+          {actionState?.errors?.confirmPassword}
+        </p>
+        <RegisterButton />
+        <p className="text-sm text-red-500">{actionState?.message}</p>
       </form>
     </div>
   )
 }
-function LoginButton() {
-  return <Button type="submit">Register</Button>
+function RegisterButton() {
+  const {pending} = useFormStatus()
+  return (
+    <Button type="submit" disabled={pending}>
+      Register
+    </Button>
+  )
 }
