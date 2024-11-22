@@ -59,6 +59,13 @@
       "password": "$2b$10$AH61UXSvLf6Tyg4Ru4Y04eiInNQSH4.Umwp5.gAGAyewQwkMaozci",
       "name": "John Doe",
       "role": "SUPER_ADMIN"
+    },
+    {
+      "id": "3",
+      "email": "thomas.loyan@gmail.com",
+      "password": "$2b$10$JA6rL3EumviceSG4t2V/vugV9N0vIXwif5VziOAj3PUdz0udgLNQy",
+      "name": "John Doe",
+      "role": "SUPER_ADMIN"
     }
   ],
   "sessions": [
