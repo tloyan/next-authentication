@@ -2,14 +2,12 @@
 import {Label} from '@/components/ui/label'
 import {verifySession} from './lib/session-stateless'
 import {getUserById} from '@/db/sgbd'
-// 🐶 Importe `cache` de react
-// import {cache} from 'react'
+
+import {cache, experimental_taintUniqueValue} from 'react'
+import {RoleEnum, User} from '@/lib/type'
 
 async function Page() {
-  // 🐶 Remplace `verifySession/getUserById` par `getConnectedUser` (à implementer en bas du fichier)
-  // const user = await getConnectedUser()
-  const session = await verifySession()
-  const user = await getUserById(session?.userId as string)
+  const user = await getConnectedUser()
   console.log('Page : user', user)
   return (
     <div className="mx-auto max-w-2xl space-y-8 p-6 text-center text-lg">
@@ -23,8 +21,32 @@ async function Page() {
 }
 export default Page
 
-// 🐶 Ajoute cette fonction en cache
-// https://react.dev/reference/react/cache
-export const getConnectedUser = async () => {
-  // 🐶 Utilise `verifySession` et `getUserById` pour retourner le `user` ou `undefined`
+export const getConnectedUser = cache(async () => {
+  const session = await verifySession()
+  if (!session) return
+  try {
+    const user = await getUserById(session?.userId as string)
+    return userDTO(user as User)
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+function userDTO(user: User): UserDTO {
+  experimental_taintUniqueValue(
+    'Do not pass user password to the client.',
+    user,
+    user.password
+  )
+  return {
+    email: user?.email ?? '',
+    name: user?.name,
+    role: user?.role,
+  }
+}
+
+type UserDTO = {
+  email: string
+  name?: string
+  role?: RoleEnum
 }

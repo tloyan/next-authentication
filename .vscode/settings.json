@@ -7,6 +7,12 @@
     "editor.suggestSelection": "recentlyUsed",
     "editor.suggest.showKeywords": false
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.suggestSelection": "recentlyUsed",
+    "editor.suggest.showKeywords": false
+  },
+
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
