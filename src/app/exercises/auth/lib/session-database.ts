@@ -9,9 +9,10 @@ import {
   findSessionByUidUserAgent,
 } from '@/db/sgbd'
 import {decrypt, encrypt, EXPIRE_TIME, isExpired} from './crypt'
+import {RoleEnum} from '@/lib/type'
 
 //3. 🚀 Session segmentée par user agent
-export async function createSession(uid: string) {
+export async function createSession(uid: string, role: RoleEnum) {
   const headersList = await headers()
   const userAgent = headersList.get('User-Agent')
   console.log('createSession userAgent', userAgent)
@@ -49,6 +50,7 @@ export async function createSession(uid: string) {
   await addSessionDao({
     sessionId,
     userId: uid,
+    role,
     expiresAt: expiresAt.toISOString(),
     userAgent,
   })

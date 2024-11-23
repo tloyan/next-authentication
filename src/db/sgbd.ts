@@ -339,6 +339,7 @@ export async function addSession(session: Session) {
     sessions?.push({
       sessionId: session.sessionId,
       userId: session.userId,
+      role: session.role,
       expiresAt: session.expiresAt,
       userAgent: session.userAgent,
     })

@@ -24,7 +24,7 @@ const signUp = async (email: string, password: string) => {
     role: RoleEnum.SUPER_ADMIN, //RoleEnum.USER,
   }
   const createdUser = await addUser(newUser)
-  await createSession(createdUser.id)
+  await createSession(createdUser.id, createdUser.role)
   return {email: createdUser.email, role: createdUser.role}
 }
 
@@ -50,7 +50,7 @@ const signIn = async (email: string, password: string) => {
       message: 'Invalid credentials.',
     } as SignInError
   }
-  await createSession(user.id)
+  await createSession(user.id, user.role)
   return {email: user.email, role: user.role}
 }
 

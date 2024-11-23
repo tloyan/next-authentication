@@ -1,6 +1,7 @@
 import {cookies} from 'next/headers'
 import {NextResponse, type NextRequest} from 'next/server'
 import {decrypt} from './app/exercises/auth/lib/crypt'
+import {RoleEnum} from './lib/type'
 
 const protectedRoutes = new Set([
   '/exercises/dashboard',
@@ -8,37 +9,40 @@ const protectedRoutes = new Set([
 ])
 const publicRoutes = new Set(['/'])
 
-// 🐶 Spécifie les routes 'admin'
-// 'isAdminRoute' est un Set qui contient les routes admin
+const adminRoute = new Set(['/admin'])
 
-// 🐶 Spécifie les routes 'redactor'
-// 'isRedactorRoute' est un Set qui contient les routes redactor
+const redactorRoute = new Set(['/redaction'])
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   const isProtectedRoute = protectedRoutes.has(path)
   const isPublicRoute = publicRoutes.has(path)
+  const isAdminRoute = adminRoute.has(path)
+  const isRedactorRoute = redactorRoute.has(path)
 
-  // 🐶 Vérifie si la route est une route admin
-  // 🤖 isAdminRoute
-
-  // 🐶 Vérifie si la route est une route redactor
-  // 🤖 isRedactorRoute
   const cookieStore = await cookies()
   const cookie = cookieStore.get('session')?.value
   const session = await decrypt(cookie)
 
   const hasSession = session?.userId || session?.sessionId
+  const isAdmin =
+    session?.role === RoleEnum.ADMIN || session?.role === RoleEnum.SUPER_ADMIN
+  const isRedactor =
+    session?.role === RoleEnum.REDACTOR || session?.role === RoleEnum.MODERATOR
+
+  console.log(session)
 
   if (isProtectedRoute && !hasSession) {
     return NextResponse.redirect(new URL('/exercises/login', request.nextUrl))
   }
 
-  // 🐶 Redirige l'utilisateur si la route est une route admin
-  // Redirige vers '/restricted/' si l'utilisateur n'est pas admin
+  if (isAdminRoute && !isAdmin) {
+    return NextResponse.redirect(new URL('/restricted/', request.nextUrl))
+  }
 
-  // 🐶 Redirige l'utilisateur si la route est une route redactor
-  // Redirige vers '/restricted/' si l'utilisateur n'est pas redactor ou admin
+  if (isRedactorRoute && !isRedactor && !isAdmin) {
+    return NextResponse.redirect(new URL('/restricted/', request.nextUrl))
+  }
 
   if (isPublicRoute && hasSession) {
     return NextResponse.redirect(new URL('/exercises/auth', request.nextUrl))

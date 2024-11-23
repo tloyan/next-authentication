@@ -12,16 +12,17 @@ import {
   updateSession as updateSessionStateLess,
   verifySession as verifySessionStateless,
 } from './session-stateless'
+import {RoleEnum} from '@/lib/type'
 
 const SESSION_TYPE: SessionType = process.env.SESSION_TYPE as SessionType
 //strategy pattern
-export async function createSession(userId: string) {
+export async function createSession(userId: string, role: RoleEnum) {
   switch (SESSION_TYPE) {
     case SessionType.STATELESS: {
-      return await createSessionStateLess(userId)
+      return await createSessionStateLess(userId, role)
     }
     case SessionType.DATABASE: {
-      return await createSessionDb(userId)
+      return await createSessionDb(userId, role)
     }
     default: {
       throw new Error('Invalid session type')

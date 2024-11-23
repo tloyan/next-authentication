@@ -3,10 +3,11 @@ import 'server-only'
 import {cookies} from 'next/headers'
 
 import {EXPIRE_TIME, decrypt, encrypt} from './crypt'
+import {RoleEnum} from '@/lib/type'
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, role: RoleEnum) {
   const expiresAt = new Date(Date.now() + EXPIRE_TIME)
-  const session = await encrypt({userId, expiresAt})
+  const session = await encrypt({userId, role, expiresAt})
 
   const cookieStore = await cookies()
   cookieStore.set('session', session, {
