@@ -1,8 +1,8 @@
-import {RoleEnum} from '@/lib/type'
+import { RoleEnum } from '@/lib/type'
 import bcrypt from 'bcrypt'
-import {addUser, getUserByEmail} from '@/db/sgbd'
-import {SignInError} from './type'
-import {createSession, deleteSession} from './session-stateless'
+import { addUser, getUserByEmail } from '@/db/sgbd'
+import { SignInError } from './type'
+import { createSession, deleteSession } from './session-stateless'
 
 const signUp = async (email: string, password: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -25,7 +25,7 @@ const signUp = async (email: string, password: string) => {
   }
   const createdUser = await addUser(newUser)
   await createSession(createdUser.id)
-  return {email: createdUser.email, role: createdUser.role}
+  return { email: createdUser.email, role: createdUser.role }
 }
 
 const signIn = async (email: string, password: string) => {
@@ -51,13 +51,13 @@ const signIn = async (email: string, password: string) => {
     } as SignInError
   }
   await createSession(user.id)
-  return {email: user.email, role: user.role}
+  return { email: user.email, role: user.role }
 }
 
 async function logout() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  deleteSession()
-  return {message: 'Logout successful'}
+  await deleteSession()
+  return { message: 'Logout successful' }
 }
 
-export const auth = {signIn, signUp, logout}
+export const auth = { signIn, signUp, logout }
