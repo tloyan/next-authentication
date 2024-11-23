@@ -66,6 +66,21 @@
       "sessionId": "1",
       "userId": "1",
       "expiresAt": "2024-07-12T09:46:07.059Z"
+    },
+    {
+      "sessionId": "ab640f5f-0546-4c6c-baf0-5f2c1c7c37c1",
+      "userId": "1",
+      "expiresAt": "2024-11-23T16:38:26.643Z"
+    },
+    {
+      "sessionId": "8ee3b19d-3ce2-451f-975d-17433ff3931e",
+      "userId": "1",
+      "expiresAt": "2024-11-23T17:16:18.504Z"
+    },
+    {
+      "sessionId": "e58bc7bb-46e9-4794-96fd-79baa48d1a78",
+      "userId": "1",
+      "expiresAt": "2024-11-23T19:34:16.919Z"
     }
   ]
 }

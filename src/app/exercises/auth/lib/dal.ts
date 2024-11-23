@@ -8,7 +8,7 @@ import {UserDTO} from './type'
 export const getConnectedUser = cache(async () => {
   const session = await verifySession()
   if (!session || !session?.isAuth) return
-  updateSession()
+  await updateSession()
   console.log('getConnectedUser', session)
   try {
     const user = await getUserById(session.userId as string)
